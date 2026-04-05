@@ -46,17 +46,19 @@ export default function PricingCard({ card }: PricingCardProps) {
         </div>
 
         <ul className="mt-5 flex-1 space-y-3 rounded-lg bg-slate-50 px-4 py-4">
-          {card.features.map((line) => (
-            <li
-              key={line}
-              className="flex gap-2 text-sm leading-snug text-slate-700"
-            >
-              <span className="mt-0.5 shrink-0 font-bold text-[#ea580c]">
-                »
-              </span>
-              <span>{line}</span>
-            </li>
-          ))}
+          {card.features
+            .filter((line) => line.trim().length > 0)
+            .map((line, i) => (
+              <li
+                key={`${card.id}-feat-${i}`}
+                className="flex gap-2 text-sm leading-snug text-slate-700"
+              >
+                <span className="mt-0.5 shrink-0 font-bold text-[#ea580c]">
+                  »
+                </span>
+                <span>{line}</span>
+              </li>
+            ))}
         </ul>
 
         <p className="mt-4 text-center text-sm font-semibold text-red-600">

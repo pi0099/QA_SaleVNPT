@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   notifyCmsUpdated,
   useCms,
@@ -118,48 +118,50 @@ function SortableSectionBlock({
     <div
       ref={setNodeRef}
       style={style}
-      className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+      className="mb-6 overflow-hidden rounded-xl border-2 border-gray-300 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="flex flex-wrap items-start gap-3 border-b border-slate-100 pb-4">
-        <button
-          type="button"
-          className="mt-2 cursor-grab rounded-lg border border-slate-200 p-2 text-slate-500 hover:bg-slate-50 active:cursor-grabbing"
-          {...attributes}
-          {...listeners}
-          aria-label="Kéo để sắp xếp mục"
-        >
-          <GripIcon />
-        </button>
-        <div className="min-w-0 flex-1 space-y-2">
-          <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Tiêu đề mục
-          </label>
-          <input
-            type="text"
-            value={section.title}
-            onChange={(e) =>
-              onChangeSection({ ...section, title: e.target.value })
-            }
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-slate-900 outline-none ring-[#2563eb] focus:ring-2"
-          />
-          <p className="text-xs text-slate-400">ID định vị: #{section.id}</p>
+      <div className="border-b border-gray-200 bg-gray-100 p-3">
+        <div className="flex flex-wrap items-start gap-3">
+          <button
+            type="button"
+            className="mt-1 shrink-0 cursor-grab rounded-md border border-gray-300 bg-gray-200 p-2 text-gray-600 shadow-sm hover:bg-gray-300 active:cursor-grabbing"
+            {...attributes}
+            {...listeners}
+            aria-label="Kéo để sắp xếp mục"
+          >
+            <GripIcon className="text-gray-700" />
+          </button>
+          <div className="min-w-0 flex-1 space-y-2">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600">
+              Tiêu đề mục
+            </label>
+            <input
+              type="text"
+              value={section.title}
+              onChange={(e) =>
+                onChangeSection({ ...section, title: e.target.value })
+              }
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 shadow-sm outline-none ring-blue-500 focus:ring-2"
+            />
+            <p className="text-xs text-gray-500">ID định vị: #{section.id}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onDeleteSection}
+            className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
+          >
+            Xóa mục
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onDeleteSection}
-          className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
-        >
-          Xóa mục
-        </button>
       </div>
 
-      <div className="mt-4 space-y-4">
+      <div className="space-y-4 p-6">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold text-slate-800">Thẻ gói</h3>
+          <h3 className="text-sm font-semibold text-gray-800">Thẻ gói</h3>
           <button
             type="button"
             onClick={addCard}
-            className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-800 hover:bg-slate-200"
+            className="rounded-lg border border-gray-200 bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-200"
           >
             + Thêm thẻ
           </button>
@@ -220,17 +222,17 @@ function SortableCardEditor({
     <div
       ref={setNodeRef}
       style={style}
-      className="mb-3 rounded-lg border border-slate-100 bg-slate-50/80 p-3"
+      className="mb-4 rounded-lg border border-gray-300 bg-gray-50 p-4 transition-colors hover:border-blue-400"
     >
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          className="cursor-grab rounded border border-slate-200 bg-white p-1.5 text-slate-500 hover:bg-slate-100 active:cursor-grabbing"
+          className="cursor-grab rounded-md border border-gray-300 bg-gray-200 p-2 text-gray-600 shadow-sm hover:bg-gray-300 active:cursor-grabbing"
           {...attributes}
           {...listeners}
           aria-label="Kéo để sắp xếp thẻ"
         >
-          <GripIcon className="h-4 w-4" />
+          <GripIcon className="h-4 w-4 text-gray-700" />
         </button>
         <span className="text-xs font-medium uppercase text-slate-400">
           Thẻ
@@ -274,21 +276,15 @@ function SortableCardEditor({
           />
         </label>
         <label className="sm:col-span-2">
-          <span className="text-xs font-medium text-slate-600">
-            Tính năng (mỗi dòng một mục)
-          </span>
+          <span className="text-xs font-medium text-slate-600">Tính năng</span>
           <textarea
             value={featuresText}
             onChange={(e) =>
-              onChange({
-                features: e.target.value
-                  .split("\n")
-                  .map((l) => l.trim())
-                  .filter(Boolean),
-              })
+              onChange({ features: e.target.value.split("\n") })
             }
-            rows={4}
-            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2563eb]"
+            placeholder="Nhập mỗi tính năng trên một dòng"
+            spellCheck={false}
+            className="mt-1 min-h-[120px] w-full resize-y rounded border border-gray-300 bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-[#2563eb]"
           />
         </label>
         <label className="sm:col-span-2">
@@ -328,6 +324,13 @@ export default function AdminDashboard() {
   const [loginError, setLoginError] = useState(false);
   const [tab, setTab] = useState<"sections" | "settings">("sections");
   const [draft, setDraft] = useState<CmsPayload>(() => getCmsPayload());
+  const [isSaving, setIsSaving] = useState(false);
+  const saveToastIdRef = useRef(0);
+  const [saveToast, setSaveToast] = useState<{
+    id: number;
+    kind: "success" | "error";
+    exiting: boolean;
+  } | null>(null);
 
   const sectionSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -351,11 +354,51 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleSave = () => {
-    saveCmsToStorage(draft);
-    notifyCmsUpdated();
-    reload();
+  const handleSave = async () => {
+    setSaveToast(null);
+    setIsSaving(true);
+    try {
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+      });
+      saveCmsToStorage(draft);
+      notifyCmsUpdated();
+      reload();
+      saveToastIdRef.current += 1;
+      setSaveToast({
+        id: saveToastIdRef.current,
+        kind: "success",
+        exiting: false,
+      });
+    } catch {
+      saveToastIdRef.current += 1;
+      setSaveToast({
+        id: saveToastIdRef.current,
+        kind: "error",
+        exiting: false,
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  /* Toast auto-hide: new `id` starts timers; do not depend on full `saveToast` (exiting). */
+  useEffect(() => {
+    if (!saveToast) return;
+    const toastId = saveToast.id;
+    const hide = setTimeout(() => {
+      setSaveToast((t) =>
+        t && t.id === toastId ? { ...t, exiting: true } : t,
+      );
+    }, 2000);
+    const remove = setTimeout(() => {
+      setSaveToast((t) => (t && t.id === toastId ? null : t));
+    }, 2280);
+    return () => {
+      clearTimeout(hide);
+      clearTimeout(remove);
+    };
+  }, [saveToast?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- toast id only; not `exiting`
 
   const handleSectionDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -508,7 +551,22 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <>
+      {saveToast ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed top-4 right-4 z-[100] max-w-[min(100vw-2rem,22rem)] rounded-lg px-4 py-3 text-sm font-semibold text-white shadow-lg ${
+            saveToast.kind === "success" ? "bg-green-600" : "bg-red-600"
+          } ${saveToast.exiting ? "cms-save-toast-exit" : "cms-save-toast-enter"}`}
+        >
+          {saveToast.kind === "success"
+            ? "Lưu thành công!"
+            : "Lưu thất bại"}
+        </div>
+      ) : null}
+
+      <div className="min-h-screen bg-slate-100">
       <div className="mx-auto flex max-w-7xl gap-6 px-4 py-8 lg:px-8">
         <aside className="hidden w-56 shrink-0 flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:flex">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -573,9 +631,10 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={handleSave}
-                className="rounded-lg bg-[#2563eb] px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                disabled={isSaving}
+                className="rounded-lg bg-[#2563eb] px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Lưu
+                {isSaving ? "Đang lưu..." : "Lưu"}
               </button>
             </div>
           </div>
@@ -683,7 +742,7 @@ export default function AdminDashboard() {
                   strategy={verticalListSortingStrategy}
                 >
                   {draft.sections.map((section, index) => (
-                    <div key={section.id} className="mb-4">
+                    <div key={section.id}>
                       <SortableSectionBlock
                         section={section}
                         onChangeSection={(s) => updateSection(index, s)}
@@ -712,5 +771,6 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+    </>
   );
 }

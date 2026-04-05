@@ -26,3 +26,33 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes cms-save-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cms-save-toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.cms-save-toast-enter {
+  animation: cms-save-toast-in 0.28s ease-out forwards;
+}
+
+.cms-save-toast-exit {
+  animation: cms-save-toast-out 0.28s ease-in forwards;
+}
