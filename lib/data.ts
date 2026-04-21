@@ -26,11 +26,11 @@ export type SiteSettings = typeof site;
 
 /** Default SEO — used in layout metadata and when CMS has no SEO saved */
 export const defaultSeo = {
-  title: "VNPT / FPT Telecom — WiFi tốc độ cao",
+  title: "Đăng ký WiFi VNPT – Tư vấn miễn phí, lắp đặt nhanh 24h",
   description:
-    "Lắp WiFi tốc độ cao, SIM 4G, Camera — giá rõ ràng, lắp nhanh trong 24h.",
+    "Hỗ trợ đăng ký các gói WiFi VNPT, SIM 4G và camera. Tư vấn miễn phí, lắp đặt nhanh chóng, tận nơi.",
   keywords:
-    "VNPT, FPT Telecom, WiFi, internet, SIM 4G, camera, lắp mạng, tốc độ cao",
+    "dang ky WiFi VNPT, ho tro dang ky VNPT, tu van WiFi VNPT, SIM 4G, camera VNPT",
 };
 
 export type SeoSettings = typeof defaultSeo;

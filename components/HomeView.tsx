@@ -5,6 +5,45 @@ import AnimatedPricingSection from "@/components/AnimatedPricingSection";
 import { useCms } from "@/components/cms/CmsProvider";
 import { contact } from "@/lib/data";
 
+function DisclaimerNotice({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`flex items-start gap-2.5 rounded-xl border border-slate-200 bg-white/90 px-3 py-2.5 text-left text-[13px] leading-5 text-slate-500 shadow-sm ${className}`}
+    >
+      <span
+        aria-hidden="true"
+        className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          className="h-3.5 w-3.5"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M12 3L4.5 6V11.2C4.5 16.2 7.7 20.8 12 22C16.3 20.8 19.5 16.2 19.5 11.2V6L12 3Z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M8.8 12.1L11.1 14.4L15.2 10.3"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <p>
+        Chúng tôi là nhân viên/đối tác hỗ trợ đăng ký dịch vụ VNPT. Website
+        không phải trang chính thức của VNPT.
+      </p>
+    </div>
+  );
+}
+
 export default function HomeView() {
   const { cms } = useCms();
   const { sections } = cms;
@@ -50,6 +89,7 @@ export default function HomeView() {
               </div>
             </div>
           </section>
+          <DisclaimerNotice className="mt-3" />
         </div>
       </div>
 
@@ -60,6 +100,12 @@ export default function HomeView() {
           bgClassName={index % 2 === 0 ? "bg-slate-50" : "bg-white"}
         />
       ))}
+
+      <div className="border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+          <DisclaimerNotice />
+        </div>
+      </div>
     </>
   );
 }
