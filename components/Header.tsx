@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCms } from "@/components/cms/CmsProvider";
 
@@ -12,13 +11,16 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
         <Link href="/" className="flex min-w-0 items-center gap-3">
-          <Image
+          <img
             src="/logo-support.svg"
             alt="VNPT Support - Ho tro dang ky dich vu"
-            width={240}
-            height={68}
-            className="h-12 w-auto shrink-0 sm:h-14"
-            priority
+            className="h-11 w-auto shrink-0 sm:h-12"
+            loading="eager"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src.endsWith("/logo.png")) return;
+              target.src = "/logo.png";
+            }}
           />
         </Link>
 

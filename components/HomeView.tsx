@@ -22,11 +22,11 @@ export default function HomeView() {
           >
             <div className="home-hero-overlay absolute inset-0" />
             <div className="relative z-10 flex min-h-[340px] items-center px-6 py-10 sm:px-8 sm:py-12 md:min-h-[420px] md:px-10">
-              <div className="max-w-xl">
-                <h1 className="home-hero-text-shadow text-balance text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
+              <div className="home-hero-content-panel max-w-xl rounded-2xl p-4 sm:p-6">
+                <h1 className="home-hero-text-shadow text-balance text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl md:text-4xl">
                   Tư vấn chính thức từ nhân viên VNPT - chọn gói phù hợp nhất
                 </h1>
-                <p className="home-hero-text-shadow mt-4 text-base font-medium text-white sm:text-lg">
+                <p className="home-hero-text-shadow mt-3 text-base font-medium text-slate-100 sm:text-lg">
                   Hỗ trợ đăng ký nhanh - lắp đặt tận nơi trong 24h
                 </p>
 
