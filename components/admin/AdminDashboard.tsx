@@ -18,7 +18,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import {
   notifyCmsUpdated,
   useCms,
@@ -31,9 +32,6 @@ import {
   type CmsPayload,
 } from "@/lib/cms-storage";
 import type { PackageCard, PackageSection } from "@/lib/data";
-
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "123456";
 
 function GripIcon({ className }: { className?: string }) {
   return (
@@ -64,6 +62,7 @@ function emptyCard(): PackageCard {
     features: [],
     promotion: "",
     variant: "blue",
+    isPopular: false,
   };
 }
 
@@ -311,17 +310,25 @@ function SortableCardEditor({
             <option value="orange">Cam</option>
           </select>
         </label>
+        <label className="sm:col-span-2 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2">
+          <input
+            type="checkbox"
+            checked={card.isPopular}
+            onChange={(e) => onChange({ isPopular: e.target.checked })}
+            className="h-4 w-4 rounded border-slate-300 text-[#2563eb] focus:ring-[#2563eb]"
+          />
+          <span className="text-sm font-medium text-slate-700">
+            Đánh dấu là gói phổ biến nhất
+          </span>
+        </label>
       </div>
     </div>
   );
 }
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const { reload } = useCms();
-  const [authed, setAuthed] = useState(false);
-  const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
-  const [loginError, setLoginError] = useState(false);
   const [tab, setTab] = useState<"sections" | "settings" | "seo">("sections");
   const [draft, setDraft] = useState<CmsPayload>(() => getCmsPayload());
   const [isSaving, setIsSaving] = useState(false);
@@ -339,19 +346,10 @@ export default function AdminDashboard() {
     }),
   );
 
-  const hydrateDraft = useCallback(() => {
-    setDraft(getCmsPayload());
-  }, []);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
-      setLoginError(false);
-      setAuthed(true);
-      hydrateDraft();
-    } else {
-      setLoginError(true);
-    }
+  const handleLogout = async () => {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.push("/admin/login");
+    router.refresh();
   };
 
   const handleSave = async () => {
@@ -460,10 +458,15 @@ export default function AdminDashboard() {
       ...d,
       sections: d.sections.map((s) => {
         if (s.id !== sectionId) return s;
+        const isSettingPopular = patch.isPopular === true;
         return {
           ...s,
           cards: s.cards.map((c) =>
-            c.id === cardId ? { ...c, ...patch } : c,
+            c.id === cardId
+              ? { ...c, ...patch }
+              : isSettingPopular
+                ? { ...c, isPopular: false }
+                : c,
           ),
         };
       }),
@@ -491,64 +494,6 @@ export default function AdminDashboard() {
       }),
     }));
   };
-
-  if (!authed) {
-    return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-100 px-4 py-16">
-        <form
-          onSubmit={handleLogin}
-          className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-md"
-        >
-          <h1 className="text-center text-xl font-bold text-slate-900">
-            Đăng nhập CMS
-          </h1>
-          <p className="mt-2 text-center text-sm text-slate-500">
-            Quản lý nội dung trang chủ
-          </p>
-          <div className="mt-6 space-y-4">
-            <div>
-              <label className="text-xs font-medium text-slate-600">
-                Tên đăng nhập
-              </label>
-              <input
-                autoComplete="username"
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-slate-600">
-                Mật khẩu
-              </label>
-              <input
-                type="password"
-                autoComplete="current-password"
-                value={pass}
-                onChange={(e) => setPass(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
-              />
-            </div>
-            {loginError ? (
-              <p className="text-sm text-red-600">Sai tài khoản hoặc mật khẩu.</p>
-            ) : null}
-          </div>
-          <button
-            type="submit"
-            className="mt-6 w-full rounded-xl bg-[#2563eb] py-3 font-semibold text-white hover:bg-blue-700"
-          >
-            Đăng nhập
-          </button>
-          <Link
-            href="/"
-            className="mt-4 block text-center text-sm font-medium text-[#2563eb] hover:underline"
-          >
-            ← Về trang chủ
-          </Link>
-        </form>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -610,7 +555,7 @@ export default function AdminDashboard() {
           <div className="mt-auto pt-8">
             <button
               type="button"
-              onClick={() => setAuthed(false)}
+              onClick={handleLogout}
               className="w-full rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
             >
               Đăng xuất
@@ -643,6 +588,13 @@ export default function AdminDashboard() {
               >
                 Trang chủ
               </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Đăng xuất
+              </button>
               <button
                 type="button"
                 onClick={handleSave}

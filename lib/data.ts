@@ -7,6 +7,7 @@ export type PackageCard = {
   features: string[];
   promotion: string;
   variant: "blue" | "orange";
+  isPopular: boolean;
 };
 
 export type PackageSection = {
@@ -52,6 +53,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Ưu đãi tặng thêm tháng cước!",
         variant: "blue",
+        isPopular: false,
       },
       {
         id: "wifi-sky",
@@ -65,6 +67,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Ưu đãi tặng thêm tháng cước!",
         variant: "orange",
+        isPopular: true,
       },
       {
         id: "wifi-meta",
@@ -78,6 +81,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Ưu đãi tặng thêm tháng cước!",
         variant: "orange",
+        isPopular: false,
       },
     ],
   },
@@ -97,6 +101,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Miễn phí tháng đầu khi đăng ký online!",
         variant: "blue",
+        isPopular: false,
       },
       {
         id: "sim-m",
@@ -110,6 +115,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Tặng SIM trắng khi chuyển mạng giữ số!",
         variant: "orange",
+        isPopular: true,
       },
       {
         id: "sim-l",
@@ -123,6 +129,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Combo gia đình: giảm 20% từ SIM thứ 2!",
         variant: "orange",
+        isPopular: false,
       },
     ],
   },
@@ -142,6 +149,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Miễn phí lắp đặt trong tháng!",
         variant: "blue",
+        isPopular: false,
       },
       {
         id: "cam-pro",
@@ -155,6 +163,7 @@ export const defaultSections: PackageSection[] = [
         ],
         promotion: "Tặng thêm 3 tháng lưu trữ cloud!",
         variant: "orange",
+        isPopular: true,
       },
     ],
   },

@@ -56,7 +56,7 @@ export default function AnimatedPricingSection({
                 transitionDelay: `${120 + cardIndex * 120}ms`,
               }}
             >
-              <PricingCard card={card} recommended={cardIndex === 1} />
+              <PricingCard card={card} recommended={card.isPopular} />
             </li>
           ))}
         </ul>

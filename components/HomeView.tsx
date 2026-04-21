@@ -20,20 +20,20 @@ export default function HomeView() {
               backgroundImage: "url('/home-hero-banner.png')",
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#071a44]/92 via-[#0b2a74]/72 to-transparent sm:from-[#071a44]/86 sm:via-[#0b2a74]/58" />
+            <div className="home-hero-overlay absolute inset-0" />
             <div className="relative z-10 flex min-h-[340px] items-center px-6 py-10 sm:px-8 sm:py-12 md:min-h-[420px] md:px-10">
               <div className="max-w-xl">
-                <h1 className="text-balance text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
+                <h1 className="home-hero-text-shadow text-balance text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
                   Tư vấn chính thức từ nhân viên VNPT - chọn gói phù hợp nhất
                 </h1>
-                <p className="mt-4 text-base font-medium text-blue-100 sm:text-lg">
+                <p className="home-hero-text-shadow mt-4 text-base font-medium text-white sm:text-lg">
                   Hỗ trợ đăng ký nhanh - lắp đặt tận nơi trong 24h
                 </p>
 
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
                   <a
                     href={contact.phone}
-                    className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#f59e0b] to-[#ef4444] px-6 py-3 text-base font-bold text-white shadow-[0_10px_28px_-14px_rgba(239,68,68,0.9)] transition-all duration-200 ease-out hover:brightness-105 sm:w-auto"
+                    className="hero-main-cta inline-flex min-h-[50px] w-full items-center justify-center gap-2.5 rounded-full px-6 py-3 text-base font-bold text-white sm:w-auto"
                   >
                     <span aria-hidden="true">📞</span>
                     <span>Gọi tôi để tư vấn miễn phí ngay</span>

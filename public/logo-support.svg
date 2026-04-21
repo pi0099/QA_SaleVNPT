@@ -1,0 +1,13 @@
+<svg width="420" height="120" viewBox="0 0 420 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="120" rx="18" fill="white"/>
+  <g transform="translate(16,14)">
+    <circle cx="46" cy="46" r="42" fill="#1D4ED8"/>
+    <circle cx="46" cy="46" r="26" fill="#2563EB"/>
+    <circle cx="46" cy="46" r="10" fill="#DBEAFE"/>
+    <path d="M46 14C63.6731 14 78 28.3269 78 46" stroke="#93C5FD" stroke-width="6" stroke-linecap="round"/>
+    <path d="M46 24C58.1503 24 68 33.8497 68 46" stroke="#BFDBFE" stroke-width="5" stroke-linecap="round"/>
+    <path d="M46 34C52.6274 34 58 39.3726 58 46" stroke="#EFF6FF" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="118" y="54" fill="#1E40AF" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="0.2">VNPT Support</text>
+  <text x="118" y="82" fill="#475569" font-family="Inter, Segoe UI, Roboto, Arial, sans-serif" font-size="18" font-weight="600">H× trã ng ký dËch vå</text>
+</svg>

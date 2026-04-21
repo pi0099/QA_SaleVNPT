@@ -50,7 +50,18 @@ function normalizeCard(raw: Record<string, unknown>, index: number): PackageCard
       : [],
     promotion: String(raw.promotion ?? ""),
     variant: raw.variant === "orange" ? "orange" : "blue",
+    isPopular: raw.isPopular === true,
   };
+}
+
+function ensureSinglePopular(cards: PackageCard[]): PackageCard[] {
+  let found = false;
+  return cards.map((card) => {
+    if (!card.isPopular) return card;
+    if (found) return { ...card, isPopular: false };
+    found = true;
+    return card;
+  });
 }
 
 function normalizeSection(raw: Record<string, unknown>, index: number): PackageSection {
@@ -62,8 +73,8 @@ function normalizeSection(raw: Record<string, unknown>, index: number): PackageS
   return {
     id,
     title: String(raw.title ?? ""),
-    cards: cardsRaw.map((c, i) =>
-      normalizeCard(c as Record<string, unknown>, i),
+    cards: ensureSinglePopular(
+      cardsRaw.map((c, i) => normalizeCard(c as Record<string, unknown>, i)),
     ),
   };
 }
