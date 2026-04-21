@@ -153,6 +153,12 @@ body {
   transform: translateY(0);
 }
 
+.home-hero-banner {
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: contain;
+}
+
 @media (hover: hover) {
   .pricing-card-interactive:hover {
     transform: translateY(-8px) scale(1.02);
@@ -176,6 +182,12 @@ body {
 
   .pricing-cta-interactive:hover {
     transform: translateY(-1px);
+  }
+}
+
+@media (min-width: 768px) {
+  .home-hero-banner {
+    background-size: cover;
   }
 }
 
