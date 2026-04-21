@@ -322,7 +322,7 @@ export default function AdminDashboard() {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [loginError, setLoginError] = useState(false);
-  const [tab, setTab] = useState<"sections" | "settings">("sections");
+  const [tab, setTab] = useState<"sections" | "settings" | "seo">("sections");
   const [draft, setDraft] = useState<CmsPayload>(() => getCmsPayload());
   const [isSaving, setIsSaving] = useState(false);
   const saveToastIdRef = useRef(0);
@@ -595,6 +595,17 @@ export default function AdminDashboard() {
             >
               Settings
             </button>
+            <button
+              type="button"
+              onClick={() => setTab("seo")}
+              className={`rounded-lg px-3 py-2 text-left text-sm font-medium ${
+                tab === "seo"
+                  ? "bg-[#2563eb]/10 text-[#2563eb]"
+                  : "text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              SEO Settings
+            </button>
           </nav>
           <div className="mt-auto pt-8">
             <button
@@ -618,7 +629,11 @@ export default function AdminDashboard() {
             <div>
               <h1 className="text-lg font-bold text-slate-900">CMS</h1>
               <p className="text-sm text-slate-500">
-                {tab === "sections" ? "Mục & thẻ gói" : "Cài đặt trang"}
+                {tab === "sections"
+                  ? "Mục & thẻ gói"
+                  : tab === "settings"
+                    ? "Cài đặt trang"
+                    : "SEO & Google"}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -657,6 +672,15 @@ export default function AdminDashboard() {
               }`}
             >
               Settings
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("seo")}
+              className={`rounded-lg px-3 py-2 text-sm font-medium ${
+                tab === "seo" ? "bg-[#2563eb] text-white" : "bg-white"
+              }`}
+            >
+              SEO
             </button>
           </div>
 
@@ -712,6 +736,69 @@ export default function AdminDashboard() {
                       }))
                     }
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
+                  />
+                </label>
+              </div>
+            </div>
+          ) : tab === "seo" ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-base font-semibold text-slate-900">
+                SEO Settings
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Tiêu đề và mô tả hiển thị trên kết quả tìm kiếm Google (và các
+                meta tương ứng trên trang chủ).
+              </p>
+              <div className="mt-4 max-w-lg space-y-4">
+                <label className="block">
+                  <span className="text-sm font-medium text-slate-700">
+                    Title
+                  </span>
+                  <input
+                    type="text"
+                    value={draft.seo.title}
+                    onChange={(e) =>
+                      setDraft((d) => ({
+                        ...d,
+                        seo: { ...d.seo, title: e.target.value },
+                      }))
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
+                    placeholder="Tiêu đề trang (meta title / Google)"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-medium text-slate-700">
+                    Description
+                  </span>
+                  <textarea
+                    value={draft.seo.description}
+                    onChange={(e) =>
+                      setDraft((d) => ({
+                        ...d,
+                        seo: { ...d.seo, description: e.target.value },
+                      }))
+                    }
+                    rows={5}
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2563eb]"
+                    placeholder="Mô tả ngắn (meta description)"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-medium text-slate-700">
+                    Keywords
+                  </span>
+                  <input
+                    type="text"
+                    value={draft.seo.keywords}
+                    onChange={(e) =>
+                      setDraft((d) => ({
+                        ...d,
+                        seo: { ...d.seo, keywords: e.target.value },
+                      }))
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
+                    placeholder="VD: WiFi, internet, VNPT (phân cách bằng dấu phẩy)"
                   />
                 </label>
               </div>

@@ -1,8 +1,10 @@
 import {
   defaultSections,
+  defaultSeo,
   site as defaultSite,
   type PackageCard,
   type PackageSection,
+  type SeoSettings,
   type SiteSettings,
 } from "@/lib/data";
 
@@ -11,6 +13,7 @@ export const CMS_STORAGE_KEY = "vnpt_sale_cms_v1";
 export type CmsPayload = {
   sections: PackageSection[];
   site: SiteSettings;
+  seo: SeoSettings;
 };
 
 function slugId(prefix: string): string {
@@ -85,11 +88,30 @@ function parsePayload(raw: unknown): CmsPayload | null {
         }
       : { ...defaultSite };
 
+  const seoRaw = o.seo;
+  const seo: SeoSettings =
+    seoRaw && typeof seoRaw === "object"
+      ? {
+          title: String(
+            (seoRaw as Record<string, unknown>).title ?? defaultSeo.title,
+          ),
+          description: String(
+            (seoRaw as Record<string, unknown>).description ??
+              defaultSeo.description,
+          ),
+          keywords: String(
+            (seoRaw as Record<string, unknown>).keywords ??
+              defaultSeo.keywords,
+          ),
+        }
+      : { ...defaultSeo };
+
   return {
     sections: sectionsRaw.map((s, i) =>
       normalizeSection(s as Record<string, unknown>, i),
     ),
     site,
+    seo,
   };
 }
 
@@ -114,6 +136,7 @@ export function getDefaultCmsPayload(): CmsPayload {
   return {
     sections: structuredClone(defaultSections),
     site: { ...defaultSite },
+    seo: { ...defaultSeo },
   };
 }
 

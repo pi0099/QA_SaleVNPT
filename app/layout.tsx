@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Header from "@/components/Header";
 import FloatingContact from "@/components/FloatingContact";
 import { Providers } from "@/app/providers";
+import { defaultSeo } from "@/lib/data";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -11,9 +12,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "VNPT / FPT Telecom — WiFi tốc độ cao",
-  description:
-    "Lắp WiFi tốc độ cao, SIM 4G, Camera — giá rõ ràng, lắp nhanh trong 24h.",
+  title: defaultSeo.title,
+  description: defaultSeo.description,
+  keywords: defaultSeo.keywords
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean),
 };
 
 export default function RootLayout({

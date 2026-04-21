@@ -23,6 +23,17 @@ export const site = {
 
 export type SiteSettings = typeof site;
 
+/** Default SEO — used in layout metadata and when CMS has no SEO saved */
+export const defaultSeo = {
+  title: "VNPT / FPT Telecom — WiFi tốc độ cao",
+  description:
+    "Lắp WiFi tốc độ cao, SIM 4G, Camera — giá rõ ràng, lắp nhanh trong 24h.",
+  keywords:
+    "VNPT, FPT Telecom, WiFi, internet, SIM 4G, camera, lắp mạng, tốc độ cao",
+};
+
+export type SeoSettings = typeof defaultSeo;
+
 /** Default sections — used when localStorage is empty */
 export const defaultSections: PackageSection[] = [
   {
