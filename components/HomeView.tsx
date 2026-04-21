@@ -1,7 +1,7 @@
 "use client";
 
-import Section from "@/components/Section";
-import PricingCard from "@/components/PricingCard";
+import HotPromotionBanner from "@/components/HotPromotionBanner";
+import AnimatedPricingSection from "@/components/AnimatedPricingSection";
 import { useCms } from "@/components/cms/CmsProvider";
 
 export default function HomeView() {
@@ -10,6 +10,7 @@ export default function HomeView() {
 
   return (
     <>
+      <HotPromotionBanner />
       <div className="border-b border-slate-200 bg-gradient-to-b from-white via-[#f0f6ff] to-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 md:py-24">
           <h1 className="text-balance text-4xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
@@ -40,20 +41,11 @@ export default function HomeView() {
       </div>
 
       {sections.map((section, index) => (
-        <div
+        <AnimatedPricingSection
           key={section.id}
-          className={index % 2 === 0 ? "bg-slate-50" : "bg-white"}
-        >
-          <Section id={section.id} title={section.title}>
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {section.cards.map((card) => (
-                <li key={card.id} className="flex">
-                  <PricingCard card={card} />
-                </li>
-              ))}
-            </ul>
-          </Section>
-        </div>
+          section={section}
+          bgClassName={index % 2 === 0 ? "bg-slate-50" : "bg-white"}
+        />
       ))}
     </>
   );

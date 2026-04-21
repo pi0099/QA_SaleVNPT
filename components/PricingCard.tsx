@@ -2,66 +2,91 @@ import { getZaloRegisterUrl, type PackageCard as PackageCardType } from "@/lib/d
 
 type PricingCardProps = {
   card: PackageCardType;
+  recommended?: boolean;
 };
 
 const headerClass: Record<PackageCardType["variant"], string> = {
-  blue: "bg-[#2563eb]",
-  orange: "bg-[#ea580c]",
+  blue: "text-[#1d4ed8]",
+  orange: "text-[#c2410c]",
 };
 
 const buttonClass: Record<PackageCardType["variant"], string> = {
-  blue: "bg-[#2563eb] hover:bg-[#1d4ed8]",
-  orange: "bg-[#ea580c] hover:bg-[#c2410c]",
+  blue: "bg-[#2563eb] hover:bg-[#3b82f6] focus-visible:ring-[#2563eb]",
+  orange: "bg-[#ea580c] hover:bg-[#f97316] focus-visible:ring-[#ea580c]",
 };
 
-export default function PricingCard({ card }: PricingCardProps) {
+const speedAccentClass: Record<PackageCardType["variant"], string> = {
+  blue: "text-[#1e40af]",
+  orange: "text-[#b45309]",
+};
+
+export default function PricingCard({ card, recommended = false }: PricingCardProps) {
   const registerHref = getZaloRegisterUrl(card.title);
+  const features = card.features.filter((line) => line.trim().length > 0).slice(0, 5);
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-md transition-shadow duration-200 hover:shadow-xl">
-      <div
-        className={`px-5 py-4 text-center text-lg font-bold uppercase tracking-wide text-white ${headerClass[card.variant]}`}
-      >
-        {card.title}
+    <article
+      className={`pricing-card-interactive relative flex h-full w-full flex-col overflow-hidden rounded-[18px] border bg-white shadow-sm transition-all duration-300 ease-out active:opacity-95 ${
+        recommended
+          ? "pricing-card-recommended scale-[1.05] border-[#f97316] shadow-[0_16px_38px_-22px_rgba(249,115,22,0.9)]"
+          : "border-slate-200"
+      }`}
+    >
+      {recommended ? (
+        <div className="absolute right-4 top-4 z-10 rounded-full bg-[#f97316] px-3 py-1 text-xs font-bold text-white shadow-sm">
+          🔥 Phổ biến nhất
+        </div>
+      ) : null}
+
+      <div className="px-6 pb-2 pt-6 text-center">
+        <p
+          className={`text-sm font-semibold uppercase tracking-[0.18em] ${headerClass[card.variant]}`}
+        >
+          {card.title}
+        </p>
       </div>
 
-      <div className="flex flex-1 flex-col px-5 pb-6 pt-5">
-        <p className="text-center">
-          <span className="text-3xl font-extrabold leading-none text-[#ea580c] md:text-[2rem]">
+      <div className="flex flex-1 flex-col px-6 pb-6 pt-1">
+        <p className="text-center text-slate-900">
+          <span className="text-4xl font-extrabold leading-none md:text-[2.5rem]">
             {card.price}
           </span>
-          <span className="ml-1 text-base font-semibold text-slate-800">
-            {" "}
-            Vnđ/tháng
-          </span>
+          <span className="ml-1 text-base font-semibold">đ</span>
+          <span className="ml-2 text-sm font-medium text-slate-600">/tháng</span>
         </p>
 
-        <div className="mt-5 space-y-1 border-t border-slate-100 pt-5">
-          <p className="text-center text-xs font-medium uppercase tracking-wide text-slate-500">
+        <div className="mt-6 border-t border-slate-200 pt-5">
+          <p className="text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
             Download / Upload
           </p>
-          <p className="text-center text-base font-bold text-slate-900">
+          <p
+            className={`mt-1 text-center text-base font-extrabold ${speedAccentClass[card.variant]}`}
+          >
             {card.speed}
           </p>
         </div>
 
-        <ul className="mt-5 flex-1 space-y-3 rounded-lg bg-slate-50 px-4 py-4">
-          {card.features
-            .filter((line) => line.trim().length > 0)
-            .map((line, i) => (
-              <li
-                key={`${card.id}-feat-${i}`}
-                className="flex gap-2 text-sm leading-snug text-slate-700"
+        <ul className="mt-5 flex-1 space-y-3 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-4">
+          {features.map((line, i) => (
+            <li
+              key={`${card.id}-feat-${i}`}
+              className="flex items-start gap-2.5 text-sm leading-snug text-slate-700"
+            >
+              <span
+                aria-hidden="true"
+                className="pricing-feature-icon mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600"
               >
-                <span className="mt-0.5 shrink-0 font-bold text-[#ea580c]">
-                  »
-                </span>
-                <span>{line}</span>
-              </li>
-            ))}
+                ✓
+              </span>
+              <span>{line}</span>
+            </li>
+          ))}
+          {features.length === 0 ? (
+            <li className="text-sm text-slate-500">Thong tin dang cap nhat.</li>
+          ) : null}
         </ul>
 
-        <p className="mt-4 text-center text-sm font-semibold text-red-600">
+        <p className="mt-4 text-center text-sm font-semibold text-[#dc2626]">
           {card.promotion}
         </p>
 
@@ -69,9 +94,9 @@ export default function PricingCard({ card }: PricingCardProps) {
           href={registerHref}
           target="_blank"
           rel="noopener noreferrer"
-          className={`mt-6 flex min-h-[48px] w-full items-center justify-center rounded-xl px-4 py-3 text-center text-base font-bold uppercase tracking-wide text-white shadow-sm transition-colors ${buttonClass[card.variant]}`}
+          className={`pricing-cta-interactive mt-5 inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-base font-bold text-white shadow-sm ring-offset-2 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 active:opacity-95 ${buttonClass[card.variant]}`}
         >
-          ĐĂNG KÝ NGAY
+          Đăng ký ngay
         </a>
       </div>
     </article>
