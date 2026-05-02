@@ -38,13 +38,14 @@ export default function PricingCard({
           : "border-slate-200"
       }`}
     >
-      {recommended ? (
-        <div className="absolute right-4 top-4 z-10 rounded-full bg-[#f97316] px-3 py-1 text-xs font-bold text-white shadow-sm">
-          🔥 Phổ biến nhất
-        </div>
-      ) : null}
-
       <div className="px-6 pb-2 pt-6 text-center">
+        {recommended ? (
+          <div className="mb-2 flex justify-end">
+            <span className="inline-flex rounded-full bg-[#f97316] px-3 py-1 text-xs font-bold text-white shadow-sm">
+              🔥 Phổ biến nhất
+            </span>
+          </div>
+        ) : null}
         <p
           className={`text-sm font-semibold uppercase tracking-[0.18em] ${headerClass[card.variant]}`}
         >
