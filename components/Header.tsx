@@ -12,9 +12,11 @@ export default function Header() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
         <Link href="/" className="flex min-w-0 items-center gap-3">
           <img
-            src="/logo-support.svg"
-            alt="VNPT Support - Ho tro dang ky dich vu"
+            src="/logo-support.png"
+            alt="Logo hỗ trợ đăng ký dịch vụ viễn thông"
             className="h-11 w-auto shrink-0 sm:h-12"
+            width={512}
+            height={512}
             loading="eager"
             onError={(e) => {
               const target = e.currentTarget;
