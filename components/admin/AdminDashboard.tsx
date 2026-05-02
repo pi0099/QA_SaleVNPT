@@ -28,6 +28,7 @@ import {
   createCardId,
   createSectionId,
   getCmsPayload,
+  getDefaultCmsPayload,
   saveCmsToStorage,
   type CmsPayload,
 } from "@/lib/cms-storage";
@@ -342,10 +343,10 @@ export default function AdminDashboard() {
   const { reload } = useCms();
   const [tab, setTab] = useState<CmsTab>("sections");
   const [draft, setDraft] = useState<CmsPayload>(() =>
-    cloneCmsPayload(getCmsPayload()),
+    cloneCmsPayload(getDefaultCmsPayload()),
   );
   const [savedBaseline, setSavedBaseline] = useState<CmsPayload>(() =>
-    cloneCmsPayload(getCmsPayload()),
+    cloneCmsPayload(getDefaultCmsPayload()),
   );
   const [isSaving, setIsSaving] = useState(false);
   const saveToastIdRef = useRef(0);
@@ -358,6 +359,12 @@ export default function AdminDashboard() {
     string | null
   >(null);
   const [leavePrompt, setLeavePrompt] = useState<LeaveIntent | null>(null);
+
+  useEffect(() => {
+    const loaded = cloneCmsPayload(getCmsPayload());
+    setDraft(loaded);
+    setSavedBaseline(cloneCmsPayload(loaded));
+  }, []);
 
   const isDirty = useMemo(
     () => JSON.stringify(draft) !== JSON.stringify(savedBaseline),
@@ -799,8 +806,9 @@ export default function AdminDashboard() {
                 Liên hệ hiển thị trên trang chủ
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                Dùng cho nút gọi trên banner, nút nổi Zalo/Điện thoại và link
-                &quot;Đăng ký ngay&quot; trên thẻ gói.
+                Ô nào để trống thì ẩn nút/icon tương ứng trên trang chủ (gọi,
+                Messenger, Zalo; nút &quot;Đăng ký ngay&quot; chỉ hiện khi có link
+                Zalo).
               </p>
               <div className="mt-4 max-w-lg space-y-4">
                 <label className="block">
@@ -822,7 +830,29 @@ export default function AdminDashboard() {
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
                   />
                   <span className="mt-1 block text-xs text-slate-500">
-                    Hiển thị và dùng cho liên kết gọi (tel: chỉ giữ chữ số).
+                    Để trống để ẩn nút gọi và icon điện thoại (tel: chỉ giữ chữ
+                    số).
+                  </span>
+                </label>
+                <label className="block">
+                  <span className="text-sm font-medium text-slate-700">
+                    Messenger
+                  </span>
+                  <input
+                    type="url"
+                    placeholder="https://m.me/..."
+                    value={draft.site.messenger ?? ""}
+                    onChange={(e) =>
+                      setDraft((d) => ({
+                        ...d,
+                        site: { ...d.site, messenger: e.target.value },
+                      }))
+                    }
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
+                  />
+                  <span className="mt-1 block text-xs text-slate-500">
+                    Link chat Messenger (m.me hoặc deep link). Để trống để ẩn
+                    icon Messenger trên trang chủ.
                   </span>
                 </label>
                 <label className="block">
@@ -842,7 +872,8 @@ export default function AdminDashboard() {
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
                   />
                   <span className="mt-1 block text-xs text-slate-500">
-                    URL đầy đủ tới chat Zalo (hoặc deep link của bạn).
+                    URL chat Zalo. Để trống để ẩn icon Zalo và nút &quot;Đăng ký
+                    ngay&quot; trên thẻ gói.
                   </span>
                 </label>
               </div>

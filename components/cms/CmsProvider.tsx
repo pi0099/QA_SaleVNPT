@@ -12,6 +12,7 @@ import {
 import {
   CMS_STORAGE_KEY,
   getCmsPayload,
+  getDefaultCmsPayload,
   type CmsPayload,
 } from "@/lib/cms-storage";
 
@@ -23,7 +24,8 @@ type CmsContextValue = {
 const CmsContext = createContext<CmsContextValue | null>(null);
 
 export function CmsProvider({ children }: { children: ReactNode }) {
-  const [cms, setCms] = useState<CmsPayload>(() => getCmsPayload());
+  /** Defaults trước — tránh lệch SSR/HTML so với localStorage khi hydrate */
+  const [cms, setCms] = useState<CmsPayload>(() => getDefaultCmsPayload());
 
   const reload = useCallback(() => {
     setCms(getCmsPayload());

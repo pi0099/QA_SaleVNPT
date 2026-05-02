@@ -27,6 +27,7 @@ export default function PricingCard({
   zaloBaseUrl,
 }: PricingCardProps) {
   const registerHref = getZaloRegisterUrl(card.title, zaloBaseUrl);
+  const showRegister = registerHref.length > 0;
   const features = card.features.filter((line) => line.trim().length > 0).slice(0, 5);
 
   return (
@@ -95,14 +96,16 @@ export default function PricingCard({
           {card.promotion}
         </p>
 
-        <a
-          href={registerHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`pricing-cta-interactive mt-5 inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-base font-bold text-white shadow-sm ring-offset-2 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 active:opacity-95 ${buttonClass[card.variant]}`}
-        >
-          Đăng ký ngay
-        </a>
+        {showRegister ? (
+          <a
+            href={registerHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`pricing-cta-interactive mt-5 inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-base font-bold text-white shadow-sm ring-offset-2 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 active:opacity-95 ${buttonClass[card.variant]}`}
+          >
+            Đăng ký ngay
+          </a>
+        ) : null}
       </div>
     </article>
   );

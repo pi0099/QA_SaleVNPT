@@ -16,10 +16,11 @@ export type PackageSection = {
   cards: PackageCard[];
 };
 
-/** Cài đặt trang chủ: số điện thoại hiển thị + liên kết Zalo (CMS Settings) */
+/** Cài đặt trang chủ: liên hệ (CMS Settings); để trống ẩn icon/link tương ứng */
 export const site = {
   phoneNumber: "0900 000 000",
   zalo: "https://zalo.me/0900000000",
+  messenger: "",
 };
 
 export type SiteSettings = typeof site;
@@ -30,9 +31,23 @@ export function phoneNumberToTelHref(phoneNumber: string): string {
   return `tel:${digits}`;
 }
 
+/** Có ít nhất một chữ số để hiển thị nút gọi */
+export function siteHasPhone(s: SiteSettings): boolean {
+  return /\d/.test(s.phoneNumber);
+}
+
+export function siteHasZalo(s: SiteSettings): boolean {
+  return s.zalo.trim().length > 0;
+}
+
+export function siteHasMessenger(s: SiteSettings): boolean {
+  return (s.messenger ?? "").trim().length > 0;
+}
+
 export function contactFromSite(s: SiteSettings) {
   return {
     zalo: s.zalo.trim(),
+    messenger: (s.messenger ?? "").trim(),
     phone: phoneNumberToTelHref(s.phoneNumber),
     phoneDisplay: s.phoneNumber.trim(),
   };
@@ -187,8 +202,8 @@ export const defaultSections: PackageSection[] = [
 export const sections = defaultSections;
 
 export function getZaloRegisterUrl(cardTitle: string, zaloBaseUrl: string): string {
-  const base = (zaloBaseUrl || site.zalo).trim();
-  if (!base) return "#";
+  const base = zaloBaseUrl.trim();
+  if (!base) return "";
   const sep = base.includes("?") ? "&" : "?";
   const text = `Toi muon dang ky goi ${cardTitle}`;
   return `${base}${sep}text=${encodeURIComponent(text)}`;

@@ -89,10 +89,16 @@ function parsePayload(raw: unknown): CmsPayload | null {
     siteRaw && typeof siteRaw === "object"
       ? (() => {
           const r = siteRaw as Record<string, unknown>;
-          if ("phoneNumber" in r || "zalo" in r) {
+          if ("phoneNumber" in r || "zalo" in r || "messenger" in r) {
             return {
-              phoneNumber: String(r.phoneNumber ?? defaultSite.phoneNumber),
-              zalo: String(r.zalo ?? defaultSite.zalo),
+              phoneNumber:
+                "phoneNumber" in r
+                  ? String(r.phoneNumber ?? "")
+                  : defaultSite.phoneNumber,
+              zalo:
+                "zalo" in r ? String(r.zalo ?? "") : defaultSite.zalo,
+              messenger:
+                "messenger" in r ? String(r.messenger ?? "") : "",
             };
           }
           /* Legacy site.name / hero* — không còn dùng trên UI; giữ mặc định liên hệ */
