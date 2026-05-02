@@ -12,12 +12,12 @@ export default function Header() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-2.5 sm:gap-3"
+          className="flex min-w-0 items-center gap-3 sm:gap-4"
         >
           <img
             src="/logo-support.png"
             alt="Logo hỗ trợ đăng ký dịch vụ viễn thông"
-            className="h-11 w-auto shrink-0 sm:h-12"
+            className="h-12 w-auto shrink-0 sm:h-14"
             width={512}
             height={512}
             loading="eager"
@@ -28,30 +28,39 @@ export default function Header() {
             }}
           />
           <span
-            className="min-w-0 border-l border-slate-200 pl-2.5 sm:pl-3"
+            className="min-w-0 border-l border-slate-200 pl-3 sm:pl-4"
             aria-label="WiFi, SIM, Camera"
           >
-            <span className="flex flex-wrap items-baseline gap-x-0 font-semibold leading-snug tracking-tight text-[10px] sm:text-[11px] md:text-xs lg:text-[13px]">
-              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1">
-                <span className="mr-0.5 inline-block opacity-[0.92]" aria-hidden>
+            <span className="flex flex-wrap items-baseline gap-x-0.5 font-semibold leading-snug tracking-tight text-[13px] sm:text-sm md:text-[15px] lg:text-base">
+              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1.5">
+                <span
+                  className="mr-1 inline-block text-[1.15em] leading-none opacity-[0.92]"
+                  aria-hidden
+                >
                   📶
                 </span>
                 <span className="header-tagline-gradient-text">WiFi</span>
               </span>
-              <span className="header-tagline-sep" aria-hidden>
+              <span className="header-tagline-sep translate-y-px text-[0.95em]" aria-hidden>
                 •
               </span>
-              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1">
-                <span className="mr-0.5 inline-block opacity-[0.92]" aria-hidden>
+              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1.5">
+                <span
+                  className="mr-1 inline-block text-[1.15em] leading-none opacity-[0.92]"
+                  aria-hidden
+                >
                   📱
                 </span>
                 <span className="header-tagline-gradient-text">SIM</span>
               </span>
-              <span className="header-tagline-sep" aria-hidden>
+              <span className="header-tagline-sep translate-y-px text-[0.95em]" aria-hidden>
                 •
               </span>
-              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1">
-                <span className="mr-0.5 inline-block opacity-[0.92]" aria-hidden>
+              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1.5">
+                <span
+                  className="mr-1 inline-block text-[1.15em] leading-none opacity-[0.92]"
+                  aria-hidden
+                >
                   📷
                 </span>
                 <span className="header-tagline-gradient-text">Camera</span>
