@@ -52,12 +52,18 @@ export default function AdminLoginForm({ nextPath }: { nextPath: string }) {
         </p>
         <div className="mt-6 space-y-4">
           <div>
-            <label className="text-xs font-medium text-slate-600">
-              Tên đăng nhập
+            <label className="text-xs font-medium text-slate-600" htmlFor="admin-username">
+              Username
             </label>
             <input
+              id="admin-username"
               type="text"
+              name="username"
               autoComplete="username"
+              inputMode="text"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
