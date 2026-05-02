@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 import {
   ADMIN_SESSION_COOKIE,
+  adminUsernameMatches,
   getAdminCredentials,
   getAdminSessionMaxAge,
+  normalizeAdminCredential,
   resolveJwtSecret,
   signAdminSession,
 } from "@/lib/admin-auth";
 
 type LoginBody = {
   username?: string;
+  /** Legacy: điền email thay username vẫn được (lấy phần trước @ nếu trùng env). */
+  email?: string;
   password?: string;
 };
 
@@ -23,8 +27,20 @@ export async function POST(req: Request) {
     );
   }
 
-  const username = String(body.username || "").trim();
-  const password = String(body.password || "");
+  const rawLogin =
+    String(body.username || "").trim() ||
+    String(body.email || "").trim();
+  const username = normalizeAdminCredential(rawLogin);
+  const password = normalizeAdminCredential(String(body.password || ""));
+
+  const usernameCandidates = username.includes("@")
+    ? Array.from(
+        new Set([
+          normalizeAdminCredential(username.split("@")[0] || ""),
+          username,
+        ]),
+      ).filter(Boolean)
+    : [username];
 
   if (!resolveJwtSecret()) {
     return NextResponse.json(
@@ -47,7 +63,10 @@ export async function POST(req: Request) {
     );
   }
 
-  if (username !== admin.username || password !== admin.password) {
+  const usernameOk = usernameCandidates.some((u) =>
+    adminUsernameMatches(u, admin.username),
+  );
+  if (!usernameOk || password !== admin.password) {
     return NextResponse.json(
       { error: "Tên đăng nhập hoặc mật khẩu không đúng." },
       { status: 401 },

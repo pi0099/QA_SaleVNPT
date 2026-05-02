@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AdminLoginForm({ nextPath }: { nextPath: string }) {
-  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,7 +18,11 @@ export default function AdminLoginForm({ nextPath }: { nextPath: string }) {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        credentials: "same-origin",
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim(),
+        }),
       });
 
       if (!response.ok) {
@@ -29,8 +31,8 @@ export default function AdminLoginForm({ nextPath }: { nextPath: string }) {
         return;
       }
 
-      router.push(nextPath.startsWith("/") ? nextPath : "/admin");
-      router.refresh();
+      const destination = nextPath.startsWith("/") ? nextPath : "/admin";
+      window.location.assign(destination);
     } catch {
       setError("Không thể kết nối máy chủ. Vui lòng thử lại.");
     } finally {

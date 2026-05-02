@@ -22,16 +22,24 @@ function isProduction(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
+/** BOM / accidental whitespace when pasting env vars (e.g. Vercel dashboard). */
+export function normalizeAdminCredential(value: string): string {
+  return value.replace(/^\uFEFF/, "").trim();
+}
+
 /**
  * Production: chỉ ADMIN_AUTH_SECRET (bắt buộc).
  * Development: ADMIN_AUTH_SECRET → NEXTAUTH_SECRET → fallback cố định (không dùng production).
  */
 export function resolveJwtSecret(): string | null {
-  const explicit = process.env.ADMIN_AUTH_SECRET?.trim();
+  const explicit = normalizeAdminCredential(
+    process.env.ADMIN_AUTH_SECRET ?? "",
+  );
   if (explicit) return explicit;
   if (isProduction()) return null;
+  const nextAuth = normalizeAdminCredential(process.env.NEXTAUTH_SECRET ?? "");
   return (
-    process.env.NEXTAUTH_SECRET?.trim() ||
+    nextAuth ||
     "dev-only-change-me-admin-auth-secret"
   );
 }
@@ -117,42 +125,61 @@ export function getAdminCredentials(): {
   password: string;
 } | null {
   if (isProduction()) {
-    const username = process.env.ADMIN_USERNAME?.trim();
-    const password = process.env.ADMIN_PASSWORD;
-    if (
-      !username ||
-      password === undefined ||
-      password === ""
-    ) {
+    const username = normalizeAdminCredential(
+      process.env.ADMIN_USERNAME ?? "",
+    );
+    const passwordRaw = process.env.ADMIN_PASSWORD;
+    const password =
+      typeof passwordRaw === "string"
+        ? normalizeAdminCredential(passwordRaw)
+        : passwordRaw;
+    if (!username || password === undefined || password === "") {
       return null;
     }
     return { username, password };
   }
 
-  const envUser = process.env.ADMIN_USERNAME?.trim();
-  const legacyEmail = process.env.ADMIN_EMAIL?.trim();
+  const envUser = normalizeAdminCredential(process.env.ADMIN_USERNAME ?? "");
+  const legacyEmail = normalizeAdminCredential(process.env.ADMIN_EMAIL ?? "");
   const username =
     envUser ||
     (legacyEmail ? legacyEmail.split("@")[0] || legacyEmail : "") ||
     "admin";
+  const devPassRaw = process.env.ADMIN_PASSWORD;
+  const devPassword =
+    devPassRaw !== undefined && devPassRaw !== ""
+      ? normalizeAdminCredential(devPassRaw)
+      : "123456";
   return {
     username,
-    password:
-      process.env.ADMIN_PASSWORD !== undefined &&
-      process.env.ADMIN_PASSWORD !== ""
-        ? process.env.ADMIN_PASSWORD
-        : "123456",
+    password: devPassword,
   };
 }
 
 /** True when production env đủ để đăng nhập admin và ký JWT. */
 export function isAdminEnvConfigured(): boolean {
   if (!isProduction()) return true;
+  const pass = process.env.ADMIN_PASSWORD;
+  const passOk =
+    typeof pass === "string" && normalizeAdminCredential(pass) !== "";
   return Boolean(
     resolveJwtSecret() &&
-      process.env.ADMIN_USERNAME?.trim() &&
-      process.env.ADMIN_PASSWORD !== undefined &&
-      process.env.ADMIN_PASSWORD !== "",
+      normalizeAdminCredential(process.env.ADMIN_USERNAME ?? "") &&
+      passOk,
+  );
+}
+
+/** So khớp username không phân biệt hoa thường (tránh lệch so với env trên Vercel). */
+export function adminUsernameMatches(
+  inputUsername: string,
+  configuredUsername: string,
+): boolean {
+  const a = normalizeAdminCredential(inputUsername);
+  const b = normalizeAdminCredential(configuredUsername);
+  return (
+    a.localeCompare(b, undefined, {
+      sensitivity: "base",
+    }) === 0
   );
 }
 
