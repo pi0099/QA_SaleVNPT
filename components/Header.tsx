@@ -10,7 +10,10 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
-        <Link href="/" className="flex min-w-0 items-center gap-3">
+        <Link
+          href="/"
+          className="flex min-w-0 items-center gap-2.5 sm:gap-3"
+        >
           <img
             src="/logo-support.png"
             alt="Logo hỗ trợ đăng ký dịch vụ viễn thông"
@@ -24,6 +27,37 @@ export default function Header() {
               target.src = "/logo.png";
             }}
           />
+          <span
+            className="min-w-0 border-l border-slate-200 pl-2.5 sm:pl-3"
+            aria-label="WiFi, SIM, Camera"
+          >
+            <span className="flex flex-wrap items-baseline gap-x-0 font-semibold leading-snug tracking-tight text-[10px] sm:text-[11px] md:text-xs lg:text-[13px]">
+              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1">
+                <span className="mr-0.5 inline-block opacity-[0.92]" aria-hidden>
+                  📶
+                </span>
+                <span className="header-tagline-gradient-text">WiFi</span>
+              </span>
+              <span className="header-tagline-sep" aria-hidden>
+                •
+              </span>
+              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1">
+                <span className="mr-0.5 inline-block opacity-[0.92]" aria-hidden>
+                  📱
+                </span>
+                <span className="header-tagline-gradient-text">SIM</span>
+              </span>
+              <span className="header-tagline-sep" aria-hidden>
+                •
+              </span>
+              <span className="header-tagline-segment rounded-sm px-0.5 py-0.5 sm:px-1">
+                <span className="mr-0.5 inline-block opacity-[0.92]" aria-hidden>
+                  📷
+                </span>
+                <span className="header-tagline-gradient-text">Camera</span>
+              </span>
+            </span>
+          </span>
         </Link>
 
         <nav

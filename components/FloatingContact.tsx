@@ -3,26 +3,6 @@
 import { useCms } from "@/components/cms/CmsProvider";
 import { contactFromSite } from "@/lib/data";
 
-function ZaloIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path
-        d="M12 2C6.48 2 2 5.58 2 10c0 2.5 1.35 4.74 3.47 6.2L4 22l6.08-2.01C11.32 20.13 11.65 20.2 12 20.2c5.52 0 10-3.58 10-8.1S17.52 2 12 2z"
-        fill="white"
-      />
-      <circle cx="8.5" cy="10" r="1.2" fill="#0068FF" />
-      <circle cx="12" cy="10" r="1.2" fill="#0068FF" />
-      <circle cx="15.5" cy="10" r="1.2" fill="#0068FF" />
-    </svg>
-  );
-}
-
 function PhoneIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -54,10 +34,19 @@ export default function FloatingContact() {
         href={contact.zalo}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0068FF] text-white shadow-lg ring-2 ring-white/80 transition-transform hover:scale-105 active:scale-95"
+        className="flex h-14 w-14 shrink-0 overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/90 transition-transform hover:scale-105 hover:ring-[#0068FF]/35 active:scale-95"
         aria-label="Chat Zalo"
       >
-        <ZaloIcon className="h-7 w-7" />
+        <img
+          src="/zalo-icon.png"
+          alt=""
+          width={56}
+          height={56}
+          className="h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
+          aria-hidden
+        />
       </a>
       <a
         href={contact.phone}
