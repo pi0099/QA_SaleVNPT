@@ -3,11 +3,12 @@ import {
   ADMIN_SESSION_COOKIE,
   getAdminCredentials,
   getAdminSessionMaxAge,
+  resolveJwtSecret,
   signAdminSession,
 } from "@/lib/admin-auth";
 
 type LoginBody = {
-  email?: string;
+  username?: string;
   password?: string;
 };
 
@@ -22,18 +23,49 @@ export async function POST(req: Request) {
     );
   }
 
-  const email = String(body.email || "").trim().toLowerCase();
+  const username = String(body.username || "").trim();
   const password = String(body.password || "");
-  const admin = getAdminCredentials();
 
-  if (email !== admin.email.toLowerCase() || password !== admin.password) {
+  if (!resolveJwtSecret()) {
     return NextResponse.json(
-      { error: "Email hoặc mật khẩu không đúng." },
+      {
+        error:
+          "Thiếu ADMIN_AUTH_SECRET trên máy chủ. Thêm biến này trong Environment Variables.",
+      },
+      { status: 503 },
+    );
+  }
+
+  const admin = getAdminCredentials();
+  if (!admin) {
+    return NextResponse.json(
+      {
+        error:
+          "Thiếu ADMIN_USERNAME hoặc ADMIN_PASSWORD trên máy chủ. Kiểm tra Environment Variables.",
+      },
+      { status: 503 },
+    );
+  }
+
+  if (username !== admin.username || password !== admin.password) {
+    return NextResponse.json(
+      { error: "Tên đăng nhập hoặc mật khẩu không đúng." },
       { status: 401 },
     );
   }
 
-  const token = await signAdminSession(admin.email);
+  let token: string;
+  try {
+    token = await signAdminSession(admin.username);
+  } catch {
+    return NextResponse.json(
+      {
+        error:
+          "Không thể tạo phiên đăng nhập. Kiểm tra ADMIN_AUTH_SECRET và redeploy.",
+      },
+      { status: 503 },
+    );
+  }
   const response = NextResponse.json({ ok: true, role: "admin" });
   response.cookies.set({
     name: ADMIN_SESSION_COOKIE,

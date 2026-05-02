@@ -4,22 +4,46 @@ export const ADMIN_SESSION_COOKIE = "vnpt_admin_session";
 const ADMIN_SESSION_DURATION_SECONDS = 60 * 60 * 12; // 12 hours
 
 type AdminJwtPayload = {
-  email: string;
+  username: string;
   role: "admin";
 };
 
-type JwtClaims = AdminJwtPayload & {
+type JwtClaims = {
+  username?: string;
+  /** @deprecated legacy token field */
+  email?: string;
+  role: "admin";
   sub: string;
   iat: number;
   exp: number;
 };
 
-function getJwtSecret(): string {
+function isProduction(): boolean {
+  return process.env.NODE_ENV === "production";
+}
+
+/**
+ * Production: chỉ ADMIN_AUTH_SECRET (bắt buộc).
+ * Development: ADMIN_AUTH_SECRET → NEXTAUTH_SECRET → fallback cố định (không dùng production).
+ */
+export function resolveJwtSecret(): string | null {
+  const explicit = process.env.ADMIN_AUTH_SECRET?.trim();
+  if (explicit) return explicit;
+  if (isProduction()) return null;
   return (
-    process.env.ADMIN_AUTH_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
+    process.env.NEXTAUTH_SECRET?.trim() ||
     "dev-only-change-me-admin-auth-secret"
   );
+}
+
+function requireJwtSecretForSigning(): string {
+  const secret = resolveJwtSecret();
+  if (!secret) {
+    throw new Error(
+      "ADMIN_AUTH_SECRET is required in production. Add it to your environment variables.",
+    );
+  }
+  return secret;
 }
 
 function encodeBase64Url(input: string | Uint8Array): string {
@@ -54,8 +78,8 @@ function decodeBase64Url(base64url: string): Uint8Array {
   return new Uint8Array(Buffer.from(normalized, "base64"));
 }
 
-async function signHmac(input: string): Promise<Uint8Array> {
-  const secretBytes = new TextEncoder().encode(getJwtSecret());
+async function signHmac(secret: string, input: string): Promise<Uint8Array> {
+  const secretBytes = new TextEncoder().encode(secret);
   const secretBuffer = secretBytes.buffer.slice(
     secretBytes.byteOffset,
     secretBytes.byteOffset + secretBytes.byteLength,
@@ -84,31 +108,73 @@ function safeEqual(a: Uint8Array, b: Uint8Array): boolean {
   return diff === 0;
 }
 
-export function getAdminCredentials() {
+/**
+ * Production: bắt buộc ADMIN_USERNAME và ADMIN_PASSWORD trong env (không hardcode).
+ * Development: có thể dùng env hoặc fallback admin / 123456.
+ */
+export function getAdminCredentials(): {
+  username: string;
+  password: string;
+} | null {
+  if (isProduction()) {
+    const username = process.env.ADMIN_USERNAME?.trim();
+    const password = process.env.ADMIN_PASSWORD;
+    if (
+      !username ||
+      password === undefined ||
+      password === ""
+    ) {
+      return null;
+    }
+    return { username, password };
+  }
+
+  const envUser = process.env.ADMIN_USERNAME?.trim();
+  const legacyEmail = process.env.ADMIN_EMAIL?.trim();
+  const username =
+    envUser ||
+    (legacyEmail ? legacyEmail.split("@")[0] || legacyEmail : "") ||
+    "admin";
   return {
-    email: process.env.ADMIN_EMAIL || "admin@vnptsupport.local",
-    password: process.env.ADMIN_PASSWORD || "123456",
+    username,
+    password:
+      process.env.ADMIN_PASSWORD !== undefined &&
+      process.env.ADMIN_PASSWORD !== ""
+        ? process.env.ADMIN_PASSWORD
+        : "123456",
   };
+}
+
+/** True when production env đủ để đăng nhập admin và ký JWT. */
+export function isAdminEnvConfigured(): boolean {
+  if (!isProduction()) return true;
+  return Boolean(
+    resolveJwtSecret() &&
+      process.env.ADMIN_USERNAME?.trim() &&
+      process.env.ADMIN_PASSWORD !== undefined &&
+      process.env.ADMIN_PASSWORD !== "",
+  );
 }
 
 export function getAdminSessionMaxAge() {
   return ADMIN_SESSION_DURATION_SECONDS;
 }
 
-export async function signAdminSession(email: string) {
+export async function signAdminSession(username: string) {
+  const secret = requireJwtSecretForSigning();
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: "HS256", typ: "JWT" };
   const payload: JwtClaims = {
-    email,
+    username,
     role: "admin",
-    sub: email,
+    sub: username,
     iat: now,
     exp: now + ADMIN_SESSION_DURATION_SECONDS,
   };
   const encodedHeader = encodeBase64Url(JSON.stringify(header));
   const encodedPayload = encodeBase64Url(JSON.stringify(payload));
   const unsignedToken = `${encodedHeader}.${encodedPayload}`;
-  const signature = await signHmac(unsignedToken);
+  const signature = await signHmac(secret, unsignedToken);
   return `${unsignedToken}.${encodeBase64Url(signature)}`;
 }
 
@@ -116,12 +182,15 @@ export async function verifyAdminSession(
   token: string,
 ): Promise<AdminJwtPayload | null> {
   try {
+    const secret = resolveJwtSecret();
+    if (!secret) return null;
+
     const [encodedHeader, encodedPayload, encodedSignature] = token.split(".");
     if (!encodedHeader || !encodedPayload || !encodedSignature) return null;
 
     const unsignedToken = `${encodedHeader}.${encodedPayload}`;
     const actualSignature = decodeBase64Url(encodedSignature);
-    const expectedSignature = await signHmac(unsignedToken);
+    const expectedSignature = await signHmac(secret, unsignedToken);
     if (!safeEqual(actualSignature, expectedSignature)) return null;
 
     const payloadJson = new TextDecoder().decode(decodeBase64Url(encodedPayload));
@@ -129,12 +198,18 @@ export async function verifyAdminSession(
     const now = Math.floor(Date.now() / 1000);
     if (typeof payload.exp !== "number" || payload.exp <= now) return null;
 
-    if (payload.role !== "admin" || typeof payload.email !== "string") {
-      return null;
-    }
+    if (payload.role !== "admin") return null;
+
+    const username =
+      typeof payload.username === "string"
+        ? payload.username
+        : typeof payload.email === "string"
+          ? payload.email
+          : null;
+    if (!username) return null;
 
     return {
-      email: payload.email,
+      username,
       role: "admin",
     };
   } catch {

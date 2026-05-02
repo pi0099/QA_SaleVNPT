@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function AdminLoginForm({ nextPath }: { nextPath: string }) {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +20,7 @@ export default function AdminLoginForm({ nextPath }: { nextPath: string }) {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
@@ -52,12 +52,14 @@ export default function AdminLoginForm({ nextPath }: { nextPath: string }) {
         </p>
         <div className="mt-6 space-y-4">
           <div>
-            <label className="text-xs font-medium text-slate-600">Email</label>
+            <label className="text-xs font-medium text-slate-600">
+              Tên đăng nhập
+            </label>
             <input
-              type="email"
+              type="text"
               autoComplete="username"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
               required
             />
