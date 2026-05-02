@@ -19,7 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   notifyCmsUpdated,
   useCms,
@@ -32,6 +32,17 @@ import {
   type CmsPayload,
 } from "@/lib/cms-storage";
 import type { PackageCard, PackageSection } from "@/lib/data";
+
+function cloneCmsPayload(p: CmsPayload): CmsPayload {
+  return structuredClone(p);
+}
+
+type CmsTab = "sections" | "settings" | "seo";
+
+type LeaveIntent =
+  | { type: "href"; href: string }
+  | { type: "tab"; next: CmsTab }
+  | { type: "logout" };
 
 function GripIcon({ className }: { className?: string }) {
   return (
@@ -329,8 +340,13 @@ function SortableCardEditor({
 export default function AdminDashboard() {
   const router = useRouter();
   const { reload } = useCms();
-  const [tab, setTab] = useState<"sections" | "settings" | "seo">("sections");
-  const [draft, setDraft] = useState<CmsPayload>(() => getCmsPayload());
+  const [tab, setTab] = useState<CmsTab>("sections");
+  const [draft, setDraft] = useState<CmsPayload>(() =>
+    cloneCmsPayload(getCmsPayload()),
+  );
+  const [savedBaseline, setSavedBaseline] = useState<CmsPayload>(() =>
+    cloneCmsPayload(getCmsPayload()),
+  );
   const [isSaving, setIsSaving] = useState(false);
   const saveToastIdRef = useRef(0);
   const [saveToast, setSaveToast] = useState<{
@@ -338,6 +354,15 @@ export default function AdminDashboard() {
     kind: "success" | "error";
     exiting: boolean;
   } | null>(null);
+  const [pendingScrollSectionId, setPendingScrollSectionId] = useState<
+    string | null
+  >(null);
+  const [leavePrompt, setLeavePrompt] = useState<LeaveIntent | null>(null);
+
+  const isDirty = useMemo(
+    () => JSON.stringify(draft) !== JSON.stringify(savedBaseline),
+    [draft, savedBaseline],
+  );
 
   const sectionSensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -346,11 +371,49 @@ export default function AdminDashboard() {
     }),
   );
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await fetch("/api/admin/logout", { method: "POST" });
     router.push("/admin/login");
     router.refresh();
-  };
+  }, [router]);
+
+  const requestNavigate = useCallback(
+    (intent: LeaveIntent) => {
+      if (!isDirty) {
+        if (intent.type === "href") {
+          router.push(intent.href);
+        } else if (intent.type === "tab") {
+          setTab(intent.next);
+        } else {
+          void handleLogout();
+        }
+        return;
+      }
+      setLeavePrompt(intent);
+    },
+    [isDirty, router, handleLogout],
+  );
+
+  const confirmLeaveWithoutSaving = useCallback(() => {
+    if (!leavePrompt) return;
+    const intent = leavePrompt;
+    setLeavePrompt(null);
+    if (intent.type === "href") {
+      router.push(intent.href);
+    } else if (intent.type === "tab") {
+      setTab(intent.next);
+    } else {
+      void handleLogout();
+    }
+  }, [leavePrompt, router, handleLogout]);
+
+  const goToTab = useCallback(
+    (next: CmsTab) => {
+      if (next === tab) return;
+      requestNavigate({ type: "tab", next });
+    },
+    [tab, requestNavigate],
+  );
 
   const handleSave = async () => {
     setSaveToast(null);
@@ -360,6 +423,7 @@ export default function AdminDashboard() {
         requestAnimationFrame(() => resolve());
       });
       saveCmsToStorage(draft);
+      setSavedBaseline(cloneCmsPayload(draft));
       notifyCmsUpdated();
       reload();
       saveToastIdRef.current += 1;
@@ -397,6 +461,47 @@ export default function AdminDashboard() {
       clearTimeout(remove);
     };
   }, [saveToast?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- toast id only; not `exiting`
+
+  useEffect(() => {
+    if (!pendingScrollSectionId) return;
+    const id = pendingScrollSectionId;
+    let cancelled = false;
+    const run = () => {
+      if (cancelled) return;
+      document
+        .getElementById(`cms-section-${id}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setPendingScrollSectionId(null);
+    };
+    const idFrame = requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(idFrame);
+    };
+  }, [pendingScrollSectionId]);
+
+  useEffect(() => {
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [isDirty]);
+
+  useEffect(() => {
+    if (leavePrompt) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+    return;
+  }, [leavePrompt]);
 
   const handleSectionDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -446,7 +551,9 @@ export default function AdminDashboard() {
   };
 
   const addSection = () => {
-    setDraft((d) => ({ ...d, sections: [...d.sections, emptySection()] }));
+    const section = emptySection();
+    setDraft((d) => ({ ...d, sections: [...d.sections, section] }));
+    setPendingScrollSectionId(section.id);
   };
 
   const updateCardInSection = (
@@ -497,6 +604,44 @@ export default function AdminDashboard() {
 
   return (
     <>
+      {leavePrompt ? (
+        <div
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-[1px]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cms-unsaved-title"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+            <h2
+              id="cms-unsaved-title"
+              className="text-lg font-bold text-slate-900"
+            >
+              Thay đổi chưa được lưu
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Bạn có chỉnh sửa chưa nhấn Lưu. Nếu tiếp tục, các thay đổi sẽ bị
+              mất.
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setLeavePrompt(null)}
+                className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+              >
+                Ở lại
+              </button>
+              <button
+                type="button"
+                onClick={confirmLeaveWithoutSaving}
+                className="rounded-xl bg-[#dc2626] px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
+              >
+                Tiếp tục
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {saveToast ? (
         <div
           role="status"
@@ -520,7 +665,7 @@ export default function AdminDashboard() {
           <nav className="mt-4 flex flex-col gap-1">
             <button
               type="button"
-              onClick={() => setTab("sections")}
+              onClick={() => goToTab("sections")}
               className={`rounded-lg px-3 py-2 text-left text-sm font-medium ${
                 tab === "sections"
                   ? "bg-[#2563eb]/10 text-[#2563eb]"
@@ -531,7 +676,7 @@ export default function AdminDashboard() {
             </button>
             <button
               type="button"
-              onClick={() => setTab("settings")}
+              onClick={() => goToTab("settings")}
               className={`rounded-lg px-3 py-2 text-left text-sm font-medium ${
                 tab === "settings"
                   ? "bg-[#2563eb]/10 text-[#2563eb]"
@@ -542,7 +687,7 @@ export default function AdminDashboard() {
             </button>
             <button
               type="button"
-              onClick={() => setTab("seo")}
+              onClick={() => goToTab("seo")}
               className={`rounded-lg px-3 py-2 text-left text-sm font-medium ${
                 tab === "seo"
                   ? "bg-[#2563eb]/10 text-[#2563eb]"
@@ -555,13 +700,19 @@ export default function AdminDashboard() {
           <div className="mt-auto pt-8">
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => requestNavigate({ type: "logout" })}
               className="w-full rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
             >
               Đăng xuất
             </button>
             <Link
               href="/"
+              onClick={(e) => {
+                if (isDirty) {
+                  e.preventDefault();
+                  requestNavigate({ type: "href", href: "/" });
+                }
+              }}
               className="mt-2 block text-center text-sm text-[#2563eb] hover:underline"
             >
               Xem trang chủ
@@ -584,13 +735,19 @@ export default function AdminDashboard() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/"
+                onClick={(e) => {
+                  if (isDirty) {
+                    e.preventDefault();
+                    requestNavigate({ type: "href", href: "/" });
+                  }
+                }}
                 className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
               >
                 Trang chủ
               </Link>
               <button
                 type="button"
-                onClick={handleLogout}
+                onClick={() => requestNavigate({ type: "logout" })}
                 className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
               >
                 Đăng xuất
@@ -609,7 +766,7 @@ export default function AdminDashboard() {
           <div className="flex gap-2 border-b border-slate-200 pb-4 lg:hidden">
             <button
               type="button"
-              onClick={() => setTab("sections")}
+              onClick={() => goToTab("sections")}
               className={`rounded-lg px-3 py-2 text-sm font-medium ${
                 tab === "sections" ? "bg-[#2563eb] text-white" : "bg-white"
               }`}
@@ -618,7 +775,7 @@ export default function AdminDashboard() {
             </button>
             <button
               type="button"
-              onClick={() => setTab("settings")}
+              onClick={() => goToTab("settings")}
               className={`rounded-lg px-3 py-2 text-sm font-medium ${
                 tab === "settings" ? "bg-[#2563eb] text-white" : "bg-white"
               }`}
@@ -627,7 +784,7 @@ export default function AdminDashboard() {
             </button>
             <button
               type="button"
-              onClick={() => setTab("seo")}
+              onClick={() => goToTab("seo")}
               className={`rounded-lg px-3 py-2 text-sm font-medium ${
                 tab === "seo" ? "bg-[#2563eb] text-white" : "bg-white"
               }`}
@@ -639,56 +796,54 @@ export default function AdminDashboard() {
           {tab === "settings" ? (
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-base font-semibold text-slate-900">
-                Cài đặt chung
+                Liên hệ hiển thị trên trang chủ
               </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Dùng cho nút gọi trên banner, nút nổi Zalo/Điện thoại và link
+                &quot;Đăng ký ngay&quot; trên thẻ gói.
+              </p>
               <div className="mt-4 max-w-lg space-y-4">
                 <label className="block">
                   <span className="text-sm font-medium text-slate-700">
-                    Tên thương hiệu (header)
+                    Phone Number
                   </span>
                   <input
                     type="text"
-                    value={draft.site.name}
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="VD: 0900 000 000"
+                    value={draft.site.phoneNumber}
                     onChange={(e) =>
                       setDraft((d) => ({
                         ...d,
-                        site: { ...d.site, name: e.target.value },
+                        site: { ...d.site, phoneNumber: e.target.value },
                       }))
                     }
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
                   />
+                  <span className="mt-1 block text-xs text-slate-500">
+                    Hiển thị và dùng cho liên kết gọi (tel: chỉ giữ chữ số).
+                  </span>
                 </label>
                 <label className="block">
                   <span className="text-sm font-medium text-slate-700">
-                    Tiêu đề hero
+                    Zalo
                   </span>
                   <input
-                    type="text"
-                    value={draft.site.heroTitle}
+                    type="url"
+                    placeholder="https://zalo.me/0900000000"
+                    value={draft.site.zalo}
                     onChange={(e) =>
                       setDraft((d) => ({
                         ...d,
-                        site: { ...d.site, heroTitle: e.target.value },
+                        site: { ...d.site, zalo: e.target.value },
                       }))
                     }
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
                   />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium text-slate-700">
-                    Phụ đề hero
+                  <span className="mt-1 block text-xs text-slate-500">
+                    URL đầy đủ tới chat Zalo (hoặc deep link của bạn).
                   </span>
-                  <input
-                    type="text"
-                    value={draft.site.heroSubtitle}
-                    onChange={(e) =>
-                      setDraft((d) => ({
-                        ...d,
-                        site: { ...d.site, heroSubtitle: e.target.value },
-                      }))
-                    }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
-                  />
                 </label>
               </div>
             </div>
@@ -781,7 +936,11 @@ export default function AdminDashboard() {
                   strategy={verticalListSortingStrategy}
                 >
                   {draft.sections.map((section, index) => (
-                    <div key={section.id}>
+                    <div
+                      key={section.id}
+                      id={`cms-section-${section.id}`}
+                      className="scroll-mt-28"
+                    >
                       <SortableSectionBlock
                         section={section}
                         onChangeSection={(s) => updateSection(index, s)}
@@ -805,6 +964,17 @@ export default function AdminDashboard() {
                   Chưa có mục nào. Nhấn &quot;Thêm mục&quot; để bắt đầu.
                 </p>
               ) : null}
+
+              <div className="mt-10 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 pt-6">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="rounded-lg bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSaving ? "Đang lưu..." : "Lưu"}
+                </button>
+              </div>
             </div>
           )}
         </div>

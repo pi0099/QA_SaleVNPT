@@ -87,16 +87,17 @@ function parsePayload(raw: unknown): CmsPayload | null {
   const siteRaw = o.site;
   const site: SiteSettings =
     siteRaw && typeof siteRaw === "object"
-      ? {
-          name: String((siteRaw as Record<string, unknown>).name ?? defaultSite.name),
-          heroTitle: String(
-            (siteRaw as Record<string, unknown>).heroTitle ?? defaultSite.heroTitle,
-          ),
-          heroSubtitle: String(
-            (siteRaw as Record<string, unknown>).heroSubtitle ??
-              defaultSite.heroSubtitle,
-          ),
-        }
+      ? (() => {
+          const r = siteRaw as Record<string, unknown>;
+          if ("phoneNumber" in r || "zalo" in r) {
+            return {
+              phoneNumber: String(r.phoneNumber ?? defaultSite.phoneNumber),
+              zalo: String(r.zalo ?? defaultSite.zalo),
+            };
+          }
+          /* Legacy site.name / hero* — không còn dùng trên UI; giữ mặc định liên hệ */
+          return { ...defaultSite };
+        })()
       : { ...defaultSite };
 
   const seoRaw = o.seo;

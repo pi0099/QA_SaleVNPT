@@ -7,11 +7,13 @@ import type { PackageSection } from "@/lib/data";
 
 type AnimatedPricingSectionProps = {
   section: PackageSection;
+  zaloBaseUrl: string;
   bgClassName: string;
 };
 
 export default function AnimatedPricingSection({
   section,
+  zaloBaseUrl,
   bgClassName,
 }: AnimatedPricingSectionProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -56,7 +58,11 @@ export default function AnimatedPricingSection({
                 transitionDelay: `${120 + cardIndex * 120}ms`,
               }}
             >
-              <PricingCard card={card} recommended={card.isPopular} />
+              <PricingCard
+                card={card}
+                recommended={card.isPopular}
+                zaloBaseUrl={zaloBaseUrl}
+              />
             </li>
           ))}
         </ul>

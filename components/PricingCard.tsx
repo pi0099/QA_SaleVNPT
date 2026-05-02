@@ -3,6 +3,7 @@ import { getZaloRegisterUrl, type PackageCard as PackageCardType } from "@/lib/d
 type PricingCardProps = {
   card: PackageCardType;
   recommended?: boolean;
+  zaloBaseUrl: string;
 };
 
 const headerClass: Record<PackageCardType["variant"], string> = {
@@ -20,8 +21,12 @@ const speedAccentClass: Record<PackageCardType["variant"], string> = {
   orange: "text-[#b45309]",
 };
 
-export default function PricingCard({ card, recommended = false }: PricingCardProps) {
-  const registerHref = getZaloRegisterUrl(card.title);
+export default function PricingCard({
+  card,
+  recommended = false,
+  zaloBaseUrl,
+}: PricingCardProps) {
+  const registerHref = getZaloRegisterUrl(card.title, zaloBaseUrl);
   const features = card.features.filter((line) => line.trim().length > 0).slice(0, 5);
 
   return (

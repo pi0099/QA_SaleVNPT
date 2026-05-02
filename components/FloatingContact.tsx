@@ -1,4 +1,7 @@
-import { contact } from "@/lib/data";
+"use client";
+
+import { useCms } from "@/components/cms/CmsProvider";
+import { contactFromSite } from "@/lib/data";
 
 function ZaloIcon({ className }: { className?: string }) {
   return (
@@ -38,6 +41,9 @@ function PhoneIcon({ className }: { className?: string }) {
 }
 
 export default function FloatingContact() {
+  const { cms } = useCms();
+  const contact = contactFromSite(cms.site);
+
   return (
     <div
       className="fixed bottom-6 right-4 z-50 flex flex-col items-center gap-3 sm:bottom-8 sm:right-6"

@@ -16,13 +16,27 @@ export type PackageSection = {
   cards: PackageCard[];
 };
 
+/** Cài đặt trang chủ: số điện thoại hiển thị + liên kết Zalo (CMS Settings) */
 export const site = {
-  name: "VNPT / FPT Telecom",
-  heroTitle: "Lắp WiFi tốc độ cao",
-  heroSubtitle: "Giá rẻ - Lắp nhanh 24h",
+  phoneNumber: "0900 000 000",
+  zalo: "https://zalo.me/0900000000",
 };
 
 export type SiteSettings = typeof site;
+
+export function phoneNumberToTelHref(phoneNumber: string): string {
+  const digits = phoneNumber.replace(/\D/g, "");
+  if (!digits) return "tel:";
+  return `tel:${digits}`;
+}
+
+export function contactFromSite(s: SiteSettings) {
+  return {
+    zalo: s.zalo.trim(),
+    phone: phoneNumberToTelHref(s.phoneNumber),
+    phoneDisplay: s.phoneNumber.trim(),
+  };
+}
 
 /** Default SEO — used in layout metadata and when CMS has no SEO saved */
 export const defaultSeo = {
@@ -172,16 +186,16 @@ export const defaultSections: PackageSection[] = [
 /** @deprecated use defaultSections */
 export const sections = defaultSections;
 
-export function getZaloRegisterUrl(cardTitle: string): string {
+export function getZaloRegisterUrl(cardTitle: string, zaloBaseUrl: string): string {
+  const base = (zaloBaseUrl || site.zalo).trim();
+  if (!base) return "#";
+  const sep = base.includes("?") ? "&" : "?";
   const text = `Toi muon dang ky goi ${cardTitle}`;
-  return `https://zalo.me/0900000000?text=${encodeURIComponent(text)}`;
+  return `${base}${sep}text=${encodeURIComponent(text)}`;
 }
 
-export const contact = {
-  zalo: "https://zalo.me/0900000000",
-  phone: "tel:0900000000",
-  phoneDisplay: "0900 000 000",
-};
+/** Giá trị mặc định (khi chưa có CMS) */
+export const contact = contactFromSite(site);
 
 export const adminStats = [
   { label: "Đơn hôm nay", value: "24" },

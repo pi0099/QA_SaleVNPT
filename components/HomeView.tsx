@@ -3,7 +3,7 @@
 import HotPromotionBanner from "@/components/HotPromotionBanner";
 import AnimatedPricingSection from "@/components/AnimatedPricingSection";
 import { useCms } from "@/components/cms/CmsProvider";
-import { contact } from "@/lib/data";
+import { contactFromSite } from "@/lib/data";
 
 function DisclaimerNotice({ className = "" }: { className?: string }) {
   return (
@@ -47,6 +47,7 @@ function DisclaimerNotice({ className = "" }: { className?: string }) {
 export default function HomeView() {
   const { cms } = useCms();
   const { sections } = cms;
+  const contact = contactFromSite(cms.site);
 
   return (
     <>
@@ -166,6 +167,7 @@ export default function HomeView() {
         <AnimatedPricingSection
           key={section.id}
           section={section}
+          zaloBaseUrl={cms.site.zalo}
           bgClassName={index % 2 === 0 ? "bg-slate-50" : "bg-white"}
         />
       ))}
