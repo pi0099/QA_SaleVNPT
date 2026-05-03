@@ -11,13 +11,25 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ketnoimanghcm.vn";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: defaultSeo.title,
   description: defaultSeo.description,
   keywords: defaultSeo.keywords
     .split(",")
     .map((k) => k.trim())
     .filter(Boolean),
+  /** Google Search cần favicon PNG đủ lớn (≥48px), ưu tiên /icon.png trước favicon.ico */
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
+  },
 };
 
 export default function RootLayout({
