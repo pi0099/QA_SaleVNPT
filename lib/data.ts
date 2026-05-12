@@ -1,7 +1,10 @@
 export type PackageCard = {
   id: string;
   title: string;
+  /** Giá nội thành (hoặc giá duy nhất nếu không có `priceOuterCity`) */
   price: string;
+  /** Giá ngoại thành — khi nhập, thẻ hiển thị chuyển vùng Nội/Ngoại thành */
+  priceOuterCity?: string;
   /** Download / Upload line shown on the card */
   speed: string;
   features: string[];
@@ -13,6 +16,8 @@ export type PackageCard = {
 export type PackageSection = {
   id: string;
   title: string;
+  /** CMS: dưới tiêu đề mục + carousel đầu trang (chỉ khi có nội dung) */
+  slogan?: string;
   cards: PackageCard[];
 };
 
@@ -64,52 +69,373 @@ export const defaultSeo = {
 
 export type SeoSettings = typeof defaultSeo;
 
-/** Default sections — used when localStorage is empty */
+const bangGiaChungPromotion =
+  "Giá gói đã gồm VAT · Phí hòa mạng 300.000đ/lần (đã gồm VAT) · *Gói ~1Gbps: tốc độ 500Mbps đến 1Gbps";
+
+/** Default sections — used when localStorage is empty (bảng giá Nội / Ngoại thành theo VNPT) */
 export const defaultSections: PackageSection[] = [
   {
-    id: "wifi",
-    title: "Gói WiFi",
+    id: "internet-gia-dinh",
+    title: "Gói Internet gia đình",
     cards: [
       {
-        id: "wifi-giga",
-        title: "GIGA",
-        price: "171.000",
-        speed: "300 Mbps / 300 Mbps",
+        id: "inet-home-1",
+        title: "HOME 1",
+        price: "235.000",
+        priceOuterCity: "190.000",
+        speed: "300 Mbps",
         features: [
-          "Trang bị Modem băng tần kép – Wi-Fi 6 AX1800/AX3000",
-          "Thủ tục đăng ký đơn giản",
-          "Lắp đặt nhanh trong 24h",
+          "Tích hợp: Family Safe / GreenNet",
+          "+1 Mesh 5/6: 265.000 đ/th (nội thành), 220.000 đ/th (ngoại thành)",
         ],
-        promotion: "Ưu đãi tặng thêm tháng cước!",
+        promotion: bangGiaChungPromotion,
         variant: "blue",
         isPopular: false,
       },
       {
-        id: "wifi-sky",
-        title: "SKY",
-        price: "185.000",
-        speed: "~1000 Mbps / 300 Mbps",
+        id: "inet-home-2",
+        title: "HOME 2",
+        price: "280.000",
+        priceOuterCity: "240.000",
+        speed: "500 Mbps",
         features: [
-          "Trang bị Modem băng tần kép – Wi-Fi 6 AX1800/AX3000",
-          "Thủ tục đăng ký đơn giản",
-          "Lắp đặt nhanh trong 24h",
+          "Tích hợp: Family Safe / GreenNet",
+          "+1 Mesh 5/6: 310.000 đ/th (nội thành), 270.000 đ/th (ngoại thành)",
         ],
-        promotion: "Ưu đãi tặng thêm tháng cước!",
+        promotion: bangGiaChungPromotion,
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "inet-home-3",
+        title: "HOME 3",
+        price: "320.000",
+        priceOuterCity: "280.000",
+        speed: "1 Gbps",
+        features: [
+          "Tích hợp: Family Safe / GreenNet",
+          "+1 Mesh 5/6: 350.000 đ/th (nội thành), 310.000 đ/th (ngoại thành)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "inet-hometv-1",
+        title: "HOMETV 1",
+        price: "255.000",
+        priceOuterCity: "210.000",
+        speed: "300 Mbps",
+        features: [
+          "MyTV (App), Family Safe / GreenNet",
+          "+1 Mesh 5/6: 285.000 đ/th (nội thành), 240.000 đ/th (ngoại thành)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "inet-hometv-2",
+        title: "HOMETV 2",
+        price: "300.000",
+        priceOuterCity: "260.000",
+        speed: "500 Mbps",
+        features: [
+          "MyTV (App), Family Safe / GreenNet",
+          "+1 Mesh 5/6: 330.000 đ/th (nội thành), 290.000 đ/th (ngoại thành)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
+        isPopular: true,
+      },
+      {
+        id: "inet-hometv-3",
+        title: "HOMETV 3",
+        price: "370.000",
+        priceOuterCity: "330.000",
+        speed: "~1 Gbps*",
+        features: [
+          "MyTV (App), Family Safe / GreenNet",
+          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "inet-hometv-vip-1",
+        title: "HOMETV VIP 1",
+        price: "285.000",
+        priceOuterCity: "240.000",
+        speed: "300 Mbps",
+        features: [
+          "MyTV VIP (App), Family Safe / GreenNet",
+          "+1 Mesh 5/6: 315.000 đ/th (nội thành), 270.000 đ/th (ngoại thành)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "inet-hometv-vip-2",
+        title: "HOMETV VIP 2",
+        price: "330.000",
+        priceOuterCity: "290.000",
+        speed: "500 Mbps",
+        features: [
+          "MyTV VIP (App), Family Safe / GreenNet",
+          "+1 Mesh 5/6: 360.000 đ/th (nội thành), 320.000 đ/th (ngoại thành)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "inet-hometv-vip-3",
+        title: "HOMETV VIP 3",
+        price: "400.000",
+        priceOuterCity: "360.000",
+        speed: "~1 Gbps*",
+        features: [
+          "MyTV VIP (App), Family Safe / GreenNet",
+          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "inet-home-cam-1",
+        title: "HOME CAM 1",
+        price: "290.000",
+        priceOuterCity: "250.000",
+        speed: "300 Mbps",
+        features: [
+          "01 Camera Indoor + lưu Cloud 7 ngày",
+          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "inet-home-cam-2",
+        title: "HOME CAM 2",
+        price: "350.000",
+        priceOuterCity: "310.000",
+        speed: "500 Mbps",
+        features: [
+          "01 Camera Indoor + lưu Cloud 7 ngày",
+          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "inet-home-cam-3",
+        title: "HOME CAM 3",
+        price: "390.000",
+        priceOuterCity: "350.000",
+        speed: "~1 Gbps*",
+        features: [
+          "01 Camera Indoor + lưu Cloud 7 ngày",
+          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "orange",
+        isPopular: false,
+      },
+    ],
+  },
+  {
+    id: "internet-di-dong",
+    title: "Gói Internet + Di động",
+    cards: [
+      {
+        id: "combo-home-sanh-2",
+        title: "HOME SÀNH 2",
+        price: "249.000",
+        speed: "300 Mbps",
+        features: [
+          "Truyền hình / Mesh: không kèm thiết bị Mesh",
+          "Ưu đãi chủ nhóm: 3GB/ngày, 1.500p nội mạng + 89p ngoại mạng/tháng",
+          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 6 thành viên)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "combo-home-sanh-4",
+        title: "HOME SÀNH 4",
+        price: "359.000",
+        speed: "500 Mbps",
+        features: [
+          "01 Wifi Mesh 5/6",
+          "Ưu đãi chủ nhóm: 3GB/ngày, 1.500p nội mạng + 89p ngoại mạng/tháng",
+          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 6 thành viên)",
+        ],
+        promotion: bangGiaChungPromotion,
         variant: "orange",
         isPopular: true,
       },
       {
-        id: "wifi-meta",
-        title: "META",
-        price: "270.000",
-        speed: "~1000 Mbps / ~1000 Mbps",
+        id: "combo-home-dinh",
+        title: "HOME ĐỈNH",
+        price: "369.000",
+        speed: "500 Mbps",
         features: [
-          "Trang bị Modem băng tần kép – Wi-Fi 6 AX1800/AX3000",
-          "Thủ tục đăng ký đơn giản",
-          "Lắp đặt nhanh trong 24h",
+          "MyTV (App)",
+          "Ưu đãi chủ nhóm: 2GB/ngày, 1.000p nội mạng + 50p ngoại mạng/tháng",
+          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 4 thành viên)",
         ],
-        promotion: "Ưu đãi tặng thêm tháng cước!",
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "combo-home-dinh-3",
+        title: "HOME ĐỈNH 3",
+        price: "399.000",
+        speed: "~1 Gbps*",
+        features: [
+          "MyTV (App), 01 Wifi Mesh 5/6",
+          "Ưu đãi chủ nhóm: 2GB/ngày, 1.000p nội mạng + 50p ngoại mạng/tháng",
+          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 4 thành viên)",
+        ],
+        promotion: bangGiaChungPromotion,
         variant: "orange",
+        isPopular: false,
+      },
+    ],
+  },
+  {
+    id: "goi-5g-data",
+    title: "Gói 5G Data",
+    cards: [
+      {
+        id: "5g-yolo100m",
+        title: "YOLO100M",
+        price: "100.000",
+        speed: "1GB/ngày",
+        features: [
+          "Miễn phí data ứng dụng: Facebook, TikTok, YouTube",
+          "Xem MyTV không tính dung lượng",
+        ],
+        promotion: "Chu kỳ 30 ngày",
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "5g-yolo125z",
+        title: "YOLO125Z",
+        price: "125.000",
+        speed: "11GB/ngày",
+        features: [
+          "11GB/ngày trong vùng HCM, 2GB/ngày ngoài vùng",
+          "Miễn phí MyTV và VTV Cab",
+        ],
+        promotion: "Chu kỳ 30 ngày",
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "5g-soda125",
+        title: "SODA125",
+        price: "125.000",
+        speed: "8GB/ngày",
+        features: [
+          "Miễn phí data: TikTok, YouTube",
+          "Xem MyTV và học Cambridge không tính dung lượng",
+        ],
+        promotion: "Chu kỳ 30 ngày",
+        variant: "blue",
+        isPopular: true,
+      },
+      {
+        id: "5g-5g150",
+        title: "5G150",
+        price: "150.000",
+        speed: "7GB/ngày",
+        features: [
+          "Miễn phí data: Facebook, TikTok, YouTube",
+          "Xem MyTV không tính dung lượng",
+        ],
+        promotion: "Chu kỳ 30 ngày",
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "5g-u900",
+        title: "U900",
+        price: "900.000",
+        speed: "500GB/tháng",
+        features: [
+          "Tổng 500GB data tốc độ cao cho cả chu kỳ",
+          "Phù hợp dùng dài hạn, không cần nạp tháng",
+        ],
+        promotion: "Chu kỳ 180 ngày",
+        variant: "blue",
+        isPopular: false,
+      },
+      {
+        id: "5g-u1500",
+        title: "U1500",
+        price: "1.500.000",
+        speed: "500GB/tháng",
+        features: [
+          "Tổng 500GB data tốc độ cao cho cả chu kỳ",
+          "Trọn 1 năm sử dụng, tiết kiệm tối đa",
+        ],
+        promotion: "Chu kỳ 360 ngày",
+        variant: "orange",
+        isPopular: false,
+      },
+    ],
+  },
+  {
+    id: "goi-5g-combo",
+    title: "Gói 5G Combo",
+    cards: [
+      {
+        id: "5g-vd120m",
+        title: "VD120M",
+        price: "120.000",
+        speed: "1GB/ngày",
+        features: [
+          "1.500 phút nội mạng (cuộc gọi dưới 10 phút), 30 phút ngoại mạng",
+          "Miễn phí data: Facebook, TikTok, YouTube, MyTV",
+        ],
+        promotion: "Chu kỳ 30 ngày",
+        variant: "blue",
+        isPopular: true,
+      },
+      {
+        id: "5g-d159v",
+        title: "D159V",
+        price: "155.000",
+        speed: "8GB/ngày",
+        features: [
+          "1.500 phút nội mạng, 150 phút ngoại mạng, 200 SMS nội mạng",
+          "Miễn phí học Cambridge và xem MyTV",
+        ],
+        promotion: "Chu kỳ 30 ngày",
+        variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "5g-vip199",
+        title: "VIP199",
+        price: "199.000",
+        speed: "8GB/ngày",
+        features: [
+          "2.000 phút nội mạng, 250 phút ngoại mạng",
+          "Miễn phí: Facebook, TikTok, YouTube, MyTV, Cambridge, Zalo, WhatsApp, Instagram",
+          "Chia sẻ data 2 thuê bao, hỗ trợ VoLTE/VoWiFi",
+        ],
+        promotion: "Chu kỳ 30 ngày",
+        variant: "blue",
         isPopular: false,
       },
     ],
@@ -201,11 +527,20 @@ export const defaultSections: PackageSection[] = [
 /** @deprecated use defaultSections */
 export const sections = defaultSections;
 
-export function getZaloRegisterUrl(cardTitle: string, zaloBaseUrl: string): string {
+export function getZaloRegisterUrl(
+  cardTitle: string,
+  zaloBaseUrl: string,
+  options?: { priceZone?: "inner" | "outer" },
+): string {
   const base = zaloBaseUrl.trim();
   if (!base) return "";
   const sep = base.includes("?") ? "&" : "?";
-  const text = `Toi muon dang ky goi ${cardTitle}`;
+  let text = `Toi muon dang ky goi ${cardTitle}`;
+  if (options?.priceZone === "inner") {
+    text += " (khu vuc noi thanh)";
+  } else if (options?.priceZone === "outer") {
+    text += " (khu vuc ngoai thanh)";
+  }
   return `${base}${sep}text=${encodeURIComponent(text)}`;
 }
 

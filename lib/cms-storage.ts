@@ -40,10 +40,17 @@ function normalizeCard(raw: Record<string, unknown>, index: number): PackageCard
     typeof raw.id === "string" && raw.id.length > 0
       ? raw.id
       : `card-${index}-${legacySpeed.slice(0, 6)}`;
+  const outerRaw = raw.priceOuterCity;
+  const priceOuterCity =
+    typeof outerRaw === "string" && outerRaw.trim().length > 0
+      ? String(outerRaw).trim()
+      : undefined;
+
   return {
     id,
     title: String(raw.title ?? ""),
     price: String(raw.price ?? ""),
+    priceOuterCity,
     speed: legacySpeed,
     features: Array.isArray(raw.features)
       ? raw.features.map((f) => String(f))
@@ -70,13 +77,20 @@ function normalizeSection(raw: Record<string, unknown>, index: number): PackageS
       ? raw.id
       : `section-${index}`;
   const cardsRaw = Array.isArray(raw.cards) ? raw.cards : [];
-  return {
+  const sloganRaw = raw.slogan;
+  const sloganTrimmed =
+    typeof sloganRaw === "string" ? sloganRaw.trim() : "";
+  const section: PackageSection = {
     id,
     title: String(raw.title ?? ""),
     cards: ensureSinglePopular(
       cardsRaw.map((c, i) => normalizeCard(c as Record<string, unknown>, i)),
     ),
   };
+  if (sloganTrimmed.length > 0) {
+    section.slogan = sloganTrimmed;
+  }
+  return section;
 }
 
 function parsePayload(raw: unknown): CmsPayload | null {

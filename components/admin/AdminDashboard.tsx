@@ -154,6 +154,22 @@ function SortableSectionBlock({
               }
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 shadow-sm outline-none ring-blue-500 focus:ring-2"
             />
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600">
+              Slogan (hiển thị dưới tiêu đề + banner)
+            </label>
+            <textarea
+              value={section.slogan ?? ""}
+              onChange={(e) =>
+                onChangeSection({
+                  ...section,
+                  slogan:
+                    e.target.value === "" ? undefined : e.target.value,
+                })
+              }
+              rows={2}
+              placeholder="Để trống nếu không dùng"
+              className="w-full resize-y rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm outline-none ring-blue-500 focus:ring-2"
+            />
             <p className="text-xs text-gray-500">ID định vị: #{section.id}</p>
           </div>
           <button
@@ -273,6 +289,21 @@ function SortableCardEditor({
             type="text"
             value={card.price}
             onChange={(e) => onChange({ price: e.target.value })}
+            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2563eb]"
+          />
+        </label>
+        <label>
+          <span className="text-xs font-medium text-slate-600">
+            Giá ngoại thành (tuỳ chọn)
+          </span>
+          <input
+            type="text"
+            value={card.priceOuterCity ?? ""}
+            onChange={(e) => {
+              const v = e.target.value.trim();
+              onChange({ priceOuterCity: v.length > 0 ? v : undefined });
+            }}
+            placeholder="Để trống nếu chỉ một mức giá"
             className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2563eb]"
           />
         </label>

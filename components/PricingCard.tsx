@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { getZaloRegisterUrl, type PackageCard as PackageCardType } from "@/lib/data";
 
 type PricingCardProps = {
@@ -26,7 +29,25 @@ export default function PricingCard({
   recommended = false,
   zaloBaseUrl,
 }: PricingCardProps) {
-  const registerHref = getZaloRegisterUrl(card.title, zaloBaseUrl);
+  const outer = (card.priceOuterCity ?? "").trim();
+  const hasDualPricing = outer.length > 0;
+  const [priceZone, setPriceZone] = useState<"inner" | "outer">("inner");
+
+  const displayPrice = hasDualPricing
+    ? priceZone === "inner"
+      ? card.price
+      : outer
+    : card.price;
+
+  const registerHref = useMemo(
+    () =>
+      getZaloRegisterUrl(
+        card.title,
+        zaloBaseUrl,
+        hasDualPricing ? { priceZone } : undefined,
+      ),
+    [card.title, zaloBaseUrl, hasDualPricing, priceZone],
+  );
   const showRegister = registerHref.length > 0;
   const features = card.features.filter((line) => line.trim().length > 0).slice(0, 5);
 
@@ -54,9 +75,41 @@ export default function PricingCard({
       </div>
 
       <div className="flex flex-1 flex-col px-6 pb-6 pt-1">
+        {hasDualPricing ? (
+          <div className="mb-3 flex justify-center">
+            <div
+              className="inline-flex rounded-full border border-slate-200 bg-slate-100/90 p-0.5 text-xs font-semibold shadow-inner"
+              role="group"
+              aria-label="Khu vực áp dụng giá"
+            >
+              <button
+                type="button"
+                onClick={() => setPriceZone("inner")}
+                className={`rounded-full px-3 py-1.5 transition-colors ${
+                  priceZone === "inner"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Nội thành
+              </button>
+              <button
+                type="button"
+                onClick={() => setPriceZone("outer")}
+                className={`rounded-full px-3 py-1.5 transition-colors ${
+                  priceZone === "outer"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Ngoại thành
+              </button>
+            </div>
+          </div>
+        ) : null}
         <p className="text-center text-slate-900">
           <span className="text-4xl font-extrabold leading-none md:text-[2.5rem]">
-            {card.price}
+            {displayPrice}
           </span>
           <span className="ml-1 text-base font-semibold">đ</span>
           <span className="ml-2 text-sm font-medium text-slate-600">/tháng</span>

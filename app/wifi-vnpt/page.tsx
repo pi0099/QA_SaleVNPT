@@ -4,7 +4,7 @@ import { useLayoutEffect } from "react";
 
 export default function WifiVnptLandingPage() {
   useLayoutEffect(() => {
-    window.location.replace("/#wifi");
+    window.location.replace("/#internet-gia-dinh");
   }, []);
 
   return (
@@ -12,7 +12,7 @@ export default function WifiVnptLandingPage() {
       <p className="text-sm font-medium">Đang chuyển đến gói WiFi VNPT…</p>
       <p className="text-xs text-slate-500">
         Nếu không tự chuyển,{" "}
-        <a href="/#wifi" className="font-semibold text-[#2563eb] underline">
+        <a href="/#internet-gia-dinh" className="font-semibold text-[#2563eb] underline">
           bấm vào đây
         </a>
         .

@@ -273,6 +273,16 @@ body {
   .pricing-cta-interactive:hover {
     transform: translateY(-1px);
   }
+
+  /* Strip uses horizontal scroll; overflow-y becomes `auto`, so strong hover motion
+     clips the top. Gentler motion here only (PricingCard is only used in this strip). */
+  .pricing-cards-strip .pricing-card-interactive:hover {
+    transform: translateY(-3px) scale(1.02);
+  }
+
+  .pricing-cards-strip .pricing-card-interactive.pricing-card-recommended:hover {
+    transform: translateY(-3px) scale(1.06);
+  }
 }
 
 /* Header tagline — tech gradient + calm motion */
@@ -340,6 +350,25 @@ body {
   user-select: none;
 }
 
+/* Pricing strip: pill + chevron hint (~1s visible / 3s cycle), non-interactive overlay */
+@keyframes pricing-strip-scroll-hint {
+  0%,
+  66.66% {
+    opacity: 0;
+  }
+  69%,
+  90% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.pricing-strip-scroll-hint {
+  animation: pricing-strip-scroll-hint 3s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-main-cta,
   .trust-strip-in,
@@ -365,5 +394,11 @@ body {
 
   .header-tagline-segment::after {
     transition: none !important;
+  }
+
+  .pricing-strip-scroll-hint {
+    animation: none !important;
+    /* Static affordance: full animation removal hides the hint entirely */
+    opacity: 0.4 !important;
   }
 }
