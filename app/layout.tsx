@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Providers } from "@/app/providers";
 import { defaultSeo } from "@/lib/data";
@@ -35,6 +36,7 @@ export default function RootLayout({
         <Providers>
           <Header />
           <main>{children}</main>
+          <Footer />
           <FloatingContact />
         </Providers>
       </body>
