@@ -73,6 +73,12 @@ export default function Header() {
           className="flex w-full flex-wrap justify-end gap-2 sm:w-auto sm:gap-3"
           aria-label="Mục chính"
         >
+          <Link
+            href="/tin-tuc-cong-nghe"
+            className="inline-flex min-h-[44px] max-w-[10rem] items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-[#2563eb] hover:text-[#2563eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563eb] sm:max-w-none"
+          >
+            <span className="truncate">Tin Tức Công Nghệ</span>
+          </Link>
           {sections.map((section) => (
             <a
               key={section.id}

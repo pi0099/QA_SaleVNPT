@@ -31,7 +31,9 @@ export default function PricingCard({
 }: PricingCardProps) {
   const outer = (card.priceOuterCity ?? "").trim();
   const hasDualPricing = outer.length > 0;
-  const [priceZone, setPriceZone] = useState<"inner" | "outer">("inner");
+  const [priceZone, setPriceZone] = useState<"inner" | "outer">(
+    hasDualPricing ? "outer" : "inner",
+  );
 
   const displayPrice = hasDualPricing
     ? priceZone === "inner"
