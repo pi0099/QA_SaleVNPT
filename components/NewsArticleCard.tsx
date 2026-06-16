@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   formatNewsDate,
@@ -53,6 +54,24 @@ export default function NewsArticleCard({ article }: NewsArticleCardProps) {
               <p className="text-xs text-slate-500">
                 Nguồn tham khảo: {article.source}
               </p>
+            ) : null}
+            {article.relatedLinks?.length ? (
+              <div className="rounded-xl border border-blue-100 bg-blue-50 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+                  Gợi ý liên quan
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {article.relatedLinks.map((link) => (
+                    <Link
+                      key={`${article.id}-${link.href}`}
+                      href={link.href}
+                      className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#2563eb] shadow-sm ring-1 ring-blue-100 transition-colors hover:bg-blue-600 hover:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ) : null}
           </div>
         ) : null}

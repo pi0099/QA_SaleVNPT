@@ -910,66 +910,107 @@ export default function AdminDashboard() {
               </div>
             </div>
           ) : tab === "seo" ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-slate-900">
-                SEO Settings
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Tiêu đề và mô tả hiển thị trên kết quả tìm kiếm Google (và các
-                meta tương ứng trên trang chủ).
-              </p>
-              <div className="mt-4 max-w-lg space-y-4">
-                <label className="block">
-                  <span className="text-sm font-medium text-slate-700">
-                    Title
-                  </span>
-                  <input
-                    type="text"
-                    value={draft.seo.title}
-                    onChange={(e) =>
-                      setDraft((d) => ({
-                        ...d,
-                        seo: { ...d.seo, title: e.target.value },
-                      }))
-                    }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
-                    placeholder="Tiêu đề trang (meta title / Google)"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium text-slate-700">
-                    Description
-                  </span>
-                  <textarea
-                    value={draft.seo.description}
-                    onChange={(e) =>
-                      setDraft((d) => ({
-                        ...d,
-                        seo: { ...d.seo, description: e.target.value },
-                      }))
-                    }
-                    rows={5}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2563eb]"
-                    placeholder="Mô tả ngắn (meta description)"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-medium text-slate-700">
-                    Keywords
-                  </span>
-                  <input
-                    type="text"
-                    value={draft.seo.keywords}
-                    onChange={(e) =>
-                      setDraft((d) => ({
-                        ...d,
-                        seo: { ...d.seo, keywords: e.target.value },
-                      }))
-                    }
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
-                    placeholder="VD: WiFi, internet, VNPT (phân cách bằng dấu phẩy)"
-                  />
-                </label>
+            <div className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-3">
+                {[
+                  {
+                    href: "/admin/seo/keywords",
+                    title: "Keyword / Tag & SEO Config",
+                    desc: "Quản lý keyword, tag, Search Console, Analytics, robots, canonical và schema.",
+                  },
+                  {
+                    href: "/admin/seo/traffic",
+                    title: "Lượt truy cập trang",
+                    desc: "Xem pageview, top pages, referrer và log truy cập được ghi local.",
+                  },
+                  {
+                    href: "/admin/seo/google-ads",
+                    title: "Google Ads",
+                    desc: "Cấu hình conversion, remarketing, campaign, budget và hiệu quả quảng cáo.",
+                  },
+                ].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={(e) => {
+                      if (isDirty) {
+                        e.preventDefault();
+                        requestNavigate({ type: "href", href: item.href });
+                      }
+                    }}
+                    className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#2563eb] hover:shadow-md"
+                  >
+                    <h2 className="text-base font-bold text-slate-900">
+                      {item.title}
+                    </h2>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                      {item.desc}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-base font-semibold text-slate-900">
+                  Meta SEO nhanh
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Tiêu đề và mô tả hiển thị trên kết quả tìm kiếm Google (và
+                  các meta tương ứng trên trang chủ).
+                </p>
+                <div className="mt-4 max-w-lg space-y-4">
+                  <label className="block">
+                    <span className="text-sm font-medium text-slate-700">
+                      Title
+                    </span>
+                    <input
+                      type="text"
+                      value={draft.seo.title}
+                      onChange={(e) =>
+                        setDraft((d) => ({
+                          ...d,
+                          seo: { ...d.seo, title: e.target.value },
+                        }))
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
+                      placeholder="Tiêu đề trang (meta title / Google)"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-slate-700">
+                      Description
+                    </span>
+                    <textarea
+                      value={draft.seo.description}
+                      onChange={(e) =>
+                        setDraft((d) => ({
+                          ...d,
+                          seo: { ...d.seo, description: e.target.value },
+                        }))
+                      }
+                      rows={5}
+                      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#2563eb]"
+                      placeholder="Mô tả ngắn (meta description)"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-medium text-slate-700">
+                      Keywords
+                    </span>
+                    <input
+                      type="text"
+                      value={draft.seo.keywords}
+                      onChange={(e) =>
+                        setDraft((d) => ({
+                          ...d,
+                          seo: { ...d.seo, keywords: e.target.value },
+                        }))
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-[#2563eb]"
+                      placeholder="VD: WiFi, internet, VNPT (phân cách bằng dấu phẩy)"
+                    />
+                  </label>
+                </div>
               </div>
             </div>
           ) : (

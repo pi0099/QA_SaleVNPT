@@ -5,7 +5,7 @@ export default function Footer() {
         <p>
           Designed &amp; Developed by{" "}
           <a
-            href="https://quyentech.vn"
+            href="https://quyentech.com"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-slate-700 underline decoration-slate-300 underline-offset-2 transition-colors hover:text-sky-700 hover:decoration-sky-400/60"

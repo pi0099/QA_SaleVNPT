@@ -14,9 +14,26 @@ type FilterOption = "all" | TechNewsCategory;
 
 const filterOptions: { value: FilterOption; label: string; icon?: string }[] = [
   { value: "all", label: "Tất cả" },
-  { value: "5g-6g", label: techNewsCategoryLabels["5g-6g"], icon: techNewsCategoryIcons["5g-6g"] },
-  { value: "wifi", label: techNewsCategoryLabels.wifi, icon: techNewsCategoryIcons.wifi },
-  { value: "sim", label: techNewsCategoryLabels.sim, icon: techNewsCategoryIcons.sim },
+  {
+    value: "troubleshooting",
+    label: techNewsCategoryLabels.troubleshooting,
+    icon: techNewsCategoryIcons.troubleshooting,
+  },
+  {
+    value: "5g-6g",
+    label: techNewsCategoryLabels["5g-6g"],
+    icon: techNewsCategoryIcons["5g-6g"],
+  },
+  {
+    value: "wifi",
+    label: techNewsCategoryLabels.wifi,
+    icon: techNewsCategoryIcons.wifi,
+  },
+  {
+    value: "sim",
+    label: techNewsCategoryLabels.sim,
+    icon: techNewsCategoryIcons.sim,
+  },
   {
     value: "satellite",
     label: techNewsCategoryLabels.satellite,
@@ -45,8 +62,8 @@ export default function TechNewsView() {
             </h1>
             <p className="mt-4 text-lg leading-relaxed text-slate-600">
               Theo dõi xu hướng viễn thông toàn cầu: mạng di động 5G/6G, WiFi,
-              SIM thông minh và internet vệ tinh — những công nghệ đang thay đổi
-              cách chúng ta kết nối.
+              SIM thông minh, internet vệ tinh và các cách xử lý sự cố kết nối
+              thường gặp.
             </p>
           </div>
         </div>
@@ -54,7 +71,7 @@ export default function TechNewsView() {
 
       <Section
         title="Bài viết nổi bật"
-        subtitle={`${techNewsArticles.length} bài viết về công nghệ viễn thông mới nhất`}
+        subtitle={`${techNewsArticles.length} bài viết về công nghệ viễn thông và hướng dẫn khắc phục sự cố`}
         contentClassName="!mt-8"
       >
         <div
