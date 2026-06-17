@@ -1,3 +1,5 @@
+import { buildPageKeywordSuggestions } from "@/lib/seo-keyword-suggestions";
+
 export const SEO_ADMIN_STORAGE_KEY = "vnpt_sale_seo_admin_v1";
 export const TRAFFIC_STORAGE_KEY = "vnpt_sale_traffic_v1";
 
@@ -84,28 +86,7 @@ export function createSeoAdminId(prefix: string): string {
 
 export function getDefaultSeoAdminPayload(): SeoAdminPayload {
   return {
-    keywords: [
-      {
-        id: "kw-wifi-vnpt-hcm",
-        keyword: "lắp wifi VNPT TPHCM",
-        tags: ["wifi", "vnpt", "hcm", "lap-dat"],
-        intent: "transactional",
-        priority: "high",
-        targetUrl: "/",
-        status: "active",
-        notes: "Keyword chính cho landing page đăng ký WiFi.",
-      },
-      {
-        id: "kw-sim-5g-vnpt",
-        keyword: "sim 5g VNPT",
-        tags: ["sim", "5g", "data"],
-        intent: "commercial",
-        priority: "medium",
-        targetUrl: "/sim-5g",
-        status: "active",
-        notes: "Dùng cho nội dung SIM 5G và campaign Google Search.",
-      },
-    ],
+    keywords: buildPageKeywordSuggestions(),
     google: {
       googleSearchConsoleUrl: "",
       googleAnalyticsId: "",
