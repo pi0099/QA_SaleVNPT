@@ -85,11 +85,30 @@ export default function AnimatedPricingSection({
     };
 
     const onWheel = (e: WheelEvent) => {
+      const isVerticalIntent =
+        !e.shiftKey && Math.abs(e.deltaY) >= Math.abs(e.deltaX);
+
+      if (isVerticalIntent) {
+        e.preventDefault();
+        window.scrollBy({
+          top: e.deltaY,
+          left: 0,
+          behavior: "auto",
+        });
+        return;
+      }
+
       const { scrollLeft, scrollWidth, clientWidth } = el;
       const overflow = scrollWidth > clientWidth + SCROLL_EDGE_EPS;
       if (!overflow) return;
 
-      const delta = e.deltaY + e.deltaX;
+      const horizontalDelta =
+        Math.abs(e.deltaX) > Math.abs(e.deltaY)
+          ? e.deltaX
+          : e.shiftKey
+            ? e.deltaY
+            : 0;
+      const delta = horizontalDelta;
       if (delta === 0) return;
 
       const maxScrollLeft = scrollWidth - clientWidth;
@@ -234,7 +253,7 @@ export default function AnimatedPricingSection({
             ) : null}
               <ul
                 ref={scrollRef}
-                className={`pricing-cards-strip flex touch-pan-x gap-5 overflow-x-auto overflow-y-hidden overscroll-x-contain pt-12 pb-8 [-webkit-overflow-scrolling:touch] scroll-smooth scroll-pl-4 scroll-pr-4 snap-x snap-mandatory sm:gap-6 md:pt-16 md:pb-10 ${
+                className={`pricing-cards-strip flex [touch-action:pan-x_pan-y] gap-5 overflow-x-auto overflow-y-hidden overscroll-x-contain pt-12 pb-8 [-webkit-overflow-scrolling:touch] scroll-smooth scroll-pl-4 scroll-pr-4 snap-x snap-mandatory sm:gap-6 md:pt-16 md:pb-10 ${
                   hasOverflow
                     ? isStripDragging
                       ? "cursor-grabbing select-none"

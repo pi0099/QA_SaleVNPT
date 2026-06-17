@@ -1,22 +1,15 @@
-"use client";
+import type { Metadata } from "next";
+import ProductLanding from "@/components/ProductLanding";
 
-import { useLayoutEffect } from "react";
+export const metadata: Metadata = {
+  title: "Lap WiFi VNPT online tai TP.HCM | Tu van goi phu hop",
+  description:
+    "Dang ky WiFi VNPT online tai TP.HCM. Tu van goi Internet, WiFi Mesh, truyen hinh va lich lap dat nhanh theo khu vuc.",
+  alternates: {
+    canonical: "/wifi-vnpt",
+  },
+};
 
 export default function WifiVnptLandingPage() {
-  useLayoutEffect(() => {
-    window.location.replace("/#internet-gia-dinh");
-  }, []);
-
-  return (
-    <main className="flex min-h-[50vh] flex-col items-center justify-center gap-2 px-4 text-center text-slate-600">
-      <p className="text-sm font-medium">Đang chuyển đến gói WiFi VNPT…</p>
-      <p className="text-xs text-slate-500">
-        Nếu không tự chuyển,{" "}
-        <a href="/#internet-gia-dinh" className="font-semibold text-[#2563eb] underline">
-          bấm vào đây
-        </a>
-        .
-      </p>
-    </main>
-  );
+  return <ProductLanding serviceSlug="wifi-vnpt" />;
 }

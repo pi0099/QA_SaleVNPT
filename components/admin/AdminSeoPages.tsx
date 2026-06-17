@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import { localAreas, localServices } from "@/lib/local-seo";
 import {
   createSeoAdminId,
   getDefaultSeoAdminPayload,
@@ -41,6 +42,92 @@ function formatVnd(value: number): string {
 
 function percent(value: number): string {
   return `${(Number.isFinite(value) ? value : 0).toFixed(2)}%`;
+}
+
+function normalizeKeywordKey(item: Pick<SeoKeywordItem, "keyword" | "targetUrl">) {
+  return `${item.targetUrl.trim().toLowerCase()}::${item.keyword
+    .trim()
+    .toLowerCase()}`;
+}
+
+function buildPageKeywordSuggestions(): SeoKeywordItem[] {
+  const staticPages: SeoKeywordItem[] = [
+    {
+      id: "kw-page-home",
+      keyword: "đăng ký WiFi VNPT online",
+      tags: ["wifi", "vnpt", "dang-ky-online", "hcm"],
+      intent: "transactional",
+      priority: "high",
+      targetUrl: "/",
+      status: "active",
+      notes: "Keyword chính cho homepage bán online.",
+    },
+    {
+      id: "kw-page-wifi-vnpt",
+      keyword: "lắp WiFi VNPT TP.HCM",
+      tags: ["wifi", "vnpt", "internet", "hcm"],
+      intent: "transactional",
+      priority: "high",
+      targetUrl: "/wifi-vnpt",
+      status: "active",
+      notes: "Landing page sản phẩm cho ads và SEO.",
+    },
+    {
+      id: "kw-page-sim-5g",
+      keyword: "đăng ký SIM 5G VNPT online",
+      tags: ["sim", "5g", "data", "vnpt"],
+      intent: "transactional",
+      priority: "high",
+      targetUrl: "/sim-5g",
+      status: "active",
+      notes: "Landing page SIM/data cho ads và SEO.",
+    },
+    {
+      id: "kw-page-camera-vnpt",
+      keyword: "lắp Camera VNPT online",
+      tags: ["camera", "vnpt", "cloud", "hcm"],
+      intent: "transactional",
+      priority: "high",
+      targetUrl: "/camera-vnpt",
+      status: "active",
+      notes: "Landing page camera cho ads và SEO.",
+    },
+    {
+      id: "kw-page-faq",
+      keyword: "câu hỏi thường gặp lắp WiFi VNPT",
+      tags: ["faq", "wifi", "vnpt", "ho-tro"],
+      intent: "informational",
+      priority: "medium",
+      targetUrl: "/faq",
+      status: "active",
+      notes: "Trang hỗ trợ tăng trust và FAQ schema.",
+    },
+    {
+      id: "kw-page-tech-news",
+      keyword: "tin tức công nghệ viễn thông",
+      tags: ["tin-tuc", "cong-nghe", "vien-thong", "5g"],
+      intent: "informational",
+      priority: "low",
+      targetUrl: "/tin-tuc-cong-nghe",
+      status: "active",
+      notes: "Trang nội dung hỗ trợ topical authority.",
+    },
+  ];
+
+  const localPages = localServices.flatMap((service) =>
+    localAreas.map((area) => ({
+      id: `kw-page-${service.slug}-${area.slug}`,
+      keyword: `${service.primaryKeyword} ${area.name}`,
+      tags: [service.slug, area.slug, "hcm", "local-seo"],
+      intent: "local" as const,
+      priority: "medium" as const,
+      targetUrl: `/${service.slug}/${area.slug}`,
+      status: "active" as const,
+      notes: `Keyword local SEO cho ${service.shortLabel} tại ${area.name}.`,
+    })),
+  );
+
+  return [...staticPages, ...localPages];
 }
 
 function useSeoAdminDraft() {
@@ -213,6 +300,7 @@ function KeywordEditor({
 
 export function SeoKeywordsAdminPage() {
   const { draft, setDraft, save, savedAt } = useSeoAdminDraft();
+  const [generatedCount, setGeneratedCount] = useState<number | null>(null);
 
   const addKeyword = () => {
     const item: SeoKeywordItem = {
@@ -226,6 +314,25 @@ export function SeoKeywordsAdminPage() {
       notes: "",
     };
     setDraft((current) => ({ ...current, keywords: [item, ...current.keywords] }));
+    setGeneratedCount(null);
+  };
+
+  const generatePageKeywords = () => {
+    const suggestions = buildPageKeywordSuggestions();
+    setDraft((current) => {
+      const existing = new Set(current.keywords.map(normalizeKeywordKey));
+      const additions = suggestions.filter((item) => {
+        const key = normalizeKeywordKey(item);
+        if (existing.has(key)) return false;
+        existing.add(key);
+        return true;
+      });
+      setGeneratedCount(additions.length);
+      return {
+        ...current,
+        keywords: [...additions, ...current.keywords],
+      };
+    });
   };
 
   const updateKeyword = (id: string, next: SeoKeywordItem) => {
@@ -258,14 +365,30 @@ export function SeoKeywordsAdminPage() {
                 Dùng để gom nhóm nội dung, lên landing page và target Google Ads.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={addKeyword}
-              className="rounded-lg border border-dashed border-[#2563eb] bg-[#2563eb]/5 px-4 py-2 text-sm font-semibold text-[#2563eb] hover:bg-[#2563eb]/10"
-            >
-              + Thêm keyword
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={generatePageKeywords}
+                className="rounded-lg bg-[#2563eb] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                Generate theo trang
+              </button>
+              <button
+                type="button"
+                onClick={addKeyword}
+                className="rounded-lg border border-dashed border-[#2563eb] bg-[#2563eb]/5 px-4 py-2 text-sm font-semibold text-[#2563eb] hover:bg-[#2563eb]/10"
+              >
+                + Thêm keyword
+              </button>
+            </div>
           </div>
+          {generatedCount !== null ? (
+            <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+              {generatedCount > 0
+                ? `Đã thêm ${generatedCount} keyword/tag mới theo các trang hiện có.`
+                : "Không có keyword mới để thêm. Các trang hiện có đã có keyword/tag."}
+            </div>
+          ) : null}
         </div>
 
         {draft.keywords.map((item) => (
@@ -281,6 +404,15 @@ export function SeoKeywordsAdminPage() {
           <h2 className="text-base font-bold text-slate-900">
             Google / Technical SEO
           </h2>
+          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
+            <p className="font-semibold">Luu y truoc khi chay ads</p>
+            <p className="mt-1">
+              Cac truong trong admin hien luu tren trinh duyet. Tracking san
+              pham can duoc cau hinh bang bien moi truong production:
+              NEXT_PUBLIC_GA_ID, NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_META_PIXEL_ID
+              va NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_SEND_TO.
+            </p>
+          </div>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <label>
               <span className={labelClass}>Google Search Console URL</span>

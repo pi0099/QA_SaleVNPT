@@ -1,34 +1,33 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCms } from "@/components/cms/CmsProvider";
 
 export default function Header() {
   const { cms } = useCms();
   const { sections } = cms;
+  const navLinkClass =
+    "inline-flex min-h-[44px] max-w-[10rem] items-center justify-center rounded-full border border-sky-100 bg-white/75 px-4 text-sm font-semibold text-slate-700 shadow-sm shadow-sky-900/5 backdrop-blur transition-colors hover:border-[#2563eb]/60 hover:bg-blue-50/80 hover:text-[#2563eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563eb] sm:max-w-none";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-sky-100/80 bg-gradient-to-r from-white/95 via-sky-50/95 to-blue-50/95 shadow-[0_14px_36px_-30px_rgba(37,99,235,0.55)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
         <Link
           href="/"
           className="flex min-w-0 items-center gap-3 sm:gap-4"
         >
-          <img
-            src="/logo-support.png"
+          <Image
+            src="/logo-support.svg"
             alt="Logo hỗ trợ đăng ký dịch vụ viễn thông"
             className="h-12 w-auto shrink-0 sm:h-14"
             width={512}
             height={512}
             loading="eager"
-            onError={(e) => {
-              const target = e.currentTarget;
-              if (target.src.endsWith("/logo.png")) return;
-              target.src = "/logo.png";
-            }}
+            priority
           />
           <span
-            className="min-w-0 border-l border-slate-200 pl-3 sm:pl-4"
+            className="min-w-0 border-l border-sky-100 pl-3 sm:pl-4"
             aria-label="WiFi, SIM, Camera"
           >
             <span className="flex flex-wrap items-baseline gap-x-0.5 font-semibold leading-snug tracking-tight text-[13px] sm:text-sm md:text-[15px] lg:text-base">
@@ -75,13 +74,13 @@ export default function Header() {
         >
           <Link
             href="/tin-tuc-cong-nghe"
-            className="inline-flex min-h-[44px] max-w-[10rem] items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-[#2563eb] hover:text-[#2563eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563eb] sm:max-w-none"
+            className={navLinkClass}
           >
             <span className="truncate">Tin Tức Công Nghệ</span>
           </Link>
           <Link
             href="/faq"
-            className="inline-flex min-h-[44px] max-w-[10rem] items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-[#2563eb] hover:text-[#2563eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563eb] sm:max-w-none"
+            className={navLinkClass}
           >
             <span className="truncate">FAQ</span>
           </Link>
@@ -89,14 +88,14 @@ export default function Header() {
             <a
               key={section.id}
               href={`/#${section.id}`}
-              className="inline-flex min-h-[44px] max-w-[10rem] items-center justify-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:border-[#2563eb] hover:text-[#2563eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563eb] sm:max-w-none"
+              className={navLinkClass}
             >
               <span className="truncate">{section.title}</span>
             </a>
           ))}
         </nav>
       </div>
-      <div className="trust-strip-in border-t border-sky-100/80 bg-gradient-to-r from-[#eef5ff] via-[#f6faff] to-white shadow-[inset_0_-1px_0_0_rgba(148,163,184,0.2)]">
+      <div className="trust-strip-in border-t border-sky-100/80 bg-gradient-to-r from-blue-50/95 via-cyan-50/90 to-white/95 shadow-[inset_0_-1px_0_0_rgba(14,165,233,0.12)]">
         <div className="mx-auto flex min-h-[46px] max-w-6xl items-center gap-2.5 px-3 py-2 sm:px-6">
           <span
             aria-hidden="true"

@@ -4,6 +4,7 @@ import HotPromotionBanner from "@/components/HotPromotionBanner";
 import AnimatedPricingSection from "@/components/AnimatedPricingSection";
 import { useCms } from "@/components/cms/CmsProvider";
 import { contactFromSite, siteHasPhone } from "@/lib/data";
+import { trackLeadEvent } from "@/lib/tracking";
 
 function DisclaimerNotice({ className = "" }: { className?: string }) {
   return (
@@ -52,12 +53,12 @@ export default function HomeView() {
   return (
     <>
       <HotPromotionBanner />
-      <div className="border-b border-slate-200 bg-gradient-to-b from-white via-[#f0f6ff] to-slate-50">
+      <div className="landing-hero-shell border-b border-sky-100/80">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-14">
           <section
             className="home-hero-banner relative overflow-hidden rounded-3xl bg-[#071a44] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] ring-1 ring-white/10"
             style={{
-              backgroundImage: "url('/home-hero-banner.png')",
+              backgroundImage: "url('/home-hero-banner.svg')",
             }}
           >
             <div className="home-hero-overlay pointer-events-none absolute inset-0" />
@@ -92,6 +93,12 @@ export default function HomeView() {
                   {siteHasPhone(cms.site) ? (
                     <a
                       href={contact.phone}
+                      onClick={() =>
+                        trackLeadEvent("phone_click", {
+                          label: contact.phoneDisplay || "Hero phone",
+                          destination: contact.phone,
+                        })
+                      }
                       className="hero-main-cta inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-full px-7 py-3.5 text-base font-bold text-white shadow-lg sm:w-auto"
                     >
                       <svg
@@ -170,11 +177,11 @@ export default function HomeView() {
           key={section.id}
           section={section}
           zaloBaseUrl={cms.site.zalo}
-          bgClassName={index % 2 === 0 ? "bg-slate-50" : "bg-white"}
+          bgClassName={index % 2 === 0 ? "pricing-section-bg" : "pricing-section-bg-alt"}
         />
       ))}
 
-      <div className="border-t border-slate-200 bg-white">
+      <div className="disclaimer-band border-t border-sky-100/80">
         <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
           <DisclaimerNotice />
         </div>

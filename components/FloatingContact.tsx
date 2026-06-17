@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCms } from "@/components/cms/CmsProvider";
 import {
   contactFromSite,
@@ -7,6 +8,7 @@ import {
   siteHasPhone,
   siteHasZalo,
 } from "@/lib/data";
+import { trackLeadEvent } from "@/lib/tracking";
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -47,11 +49,17 @@ export default function FloatingContact() {
           href={contact.messenger}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() =>
+            trackLeadEvent("messenger_click", {
+              label: "Floating Messenger",
+              destination: contact.messenger,
+            })
+          }
           className="flex h-14 w-14 shrink-0 overflow-hidden rounded-full shadow-lg ring-2 ring-white/90 transition-transform hover:scale-105 hover:ring-[#0084ff]/40 active:scale-95"
           aria-label="Chat Messenger"
         >
-          <img
-            src="/messenger-icon.png"
+          <Image
+            src="/messenger-icon.svg"
             alt=""
             width={56}
             height={56}
@@ -67,11 +75,17 @@ export default function FloatingContact() {
           href={contact.zalo}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() =>
+            trackLeadEvent("zalo_click", {
+              label: "Floating Zalo",
+              destination: contact.zalo,
+            })
+          }
           className="flex h-14 w-14 shrink-0 overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/90 transition-transform hover:scale-105 hover:ring-[#0068FF]/35 active:scale-95"
           aria-label="Chat Zalo"
         >
-          <img
-            src="/zalo-icon.png"
+          <Image
+            src="/zalo-icon.svg"
             alt=""
             width={56}
             height={56}
@@ -85,6 +99,12 @@ export default function FloatingContact() {
       {showPhone ? (
         <a
           href={contact.phone}
+          onClick={() =>
+            trackLeadEvent("phone_click", {
+              label: contact.phoneDisplay || "Floating phone",
+              destination: contact.phone,
+            })
+          }
           className="flex h-14 w-14 items-center justify-center rounded-full bg-[#dc2626] text-white shadow-lg ring-2 ring-white/80 transition-transform hover:scale-105 active:scale-95"
           aria-label={`Gọi ${contact.phoneDisplay || "hotline"}`}
         >

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { getZaloRegisterUrl, type PackageCard as PackageCardType } from "@/lib/data";
+import { trackLeadEvent } from "@/lib/tracking";
 
 type PricingCardProps = {
   card: PackageCardType;
@@ -157,6 +158,12 @@ export default function PricingCard({
             href={registerHref}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              trackLeadEvent("package_register_click", {
+                label: card.title,
+                destination: registerHref,
+              })
+            }
             className={`pricing-cta-interactive mt-5 inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-base font-bold text-white shadow-sm ring-offset-2 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 active:opacity-95 ${buttonClass[card.variant]}`}
           >
             Đăng ký ngay
