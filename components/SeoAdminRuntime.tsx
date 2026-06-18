@@ -24,6 +24,10 @@ function injectInlineScript(id: string, content: string) {
   document.head.appendChild(script);
 }
 
+function buildGoogleAdsSendTo(conversionId: string, conversionLabel: string) {
+  return conversionLabel ? `${conversionId}/${conversionLabel}` : conversionId;
+}
+
 export default function SeoAdminRuntime() {
   const pathname = usePathname();
 
@@ -37,6 +41,8 @@ export default function SeoAdminRuntime() {
     const gtmId = config.google.googleTagManagerId.trim();
     const gaId = config.google.googleAnalyticsId.trim();
     const conversionId = config.ads.conversionId.trim();
+    const conversionLabel = config.ads.conversionLabel.trim();
+    const metaPixelId = config.meta.pixelId.trim();
 
     if (gtmId) {
       injectInlineScript(
@@ -57,6 +63,10 @@ export default function SeoAdminRuntime() {
     }
 
     if (config.ads.enabled && conversionId) {
+      window.__googleAdsSendTo = buildGoogleAdsSendTo(
+        conversionId,
+        conversionLabel,
+      );
       injectScript(
         "seo-admin-ads-gtag-js",
         `https://www.googletagmanager.com/gtag/js?id=${conversionId}`,
@@ -64,6 +74,13 @@ export default function SeoAdminRuntime() {
       injectInlineScript(
         "seo-admin-ads-init",
         `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${conversionId}');`,
+      );
+    }
+
+    if (config.meta.enabled && metaPixelId) {
+      injectInlineScript(
+        "seo-admin-meta-pixel-init",
+        `!function(f,b,e,v,n,t,s){if(f.fbq){fbq('init','${metaPixelId}');${config.meta.trackPageView ? "fbq('track','PageView');" : ""}return;}n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${metaPixelId}');${config.meta.trackPageView ? "fbq('track','PageView');" : ""}`,
       );
     }
   }, []);

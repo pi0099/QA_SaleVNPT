@@ -925,8 +925,8 @@ export default function AdminDashboard() {
                   },
                   {
                     href: "/admin/seo/google-ads",
-                    title: "Google Ads",
-                    desc: "Cấu hình conversion, remarketing, campaign, budget và hiệu quả quảng cáo.",
+                    title: "Ads Tracking",
+                    desc: "Cấu hình Google conversion, Meta Pixel, remarketing, campaign, budget và hiệu quả quảng cáo.",
                   },
                 ].map((item) => (
                   <Link

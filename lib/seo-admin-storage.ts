@@ -30,7 +30,13 @@ export type SeoGoogleConfig = {
 export type GoogleAdCampaign = {
   id: string;
   name: string;
-  channel: "search" | "display" | "youtube" | "performance-max";
+  channel:
+    | "search"
+    | "display"
+    | "youtube"
+    | "performance-max"
+    | "facebook"
+    | "instagram";
   status: "draft" | "active" | "paused";
   dailyBudget: number;
   monthlyBudget: number;
@@ -59,10 +65,18 @@ export type GoogleAdsSettings = {
   campaigns: GoogleAdCampaign[];
 };
 
+export type MetaAdsSettings = {
+  enabled: boolean;
+  pixelId: string;
+  trackPageView: boolean;
+  notes: string;
+};
+
 export type SeoAdminPayload = {
   keywords: SeoKeywordItem[];
   google: SeoGoogleConfig;
   ads: GoogleAdsSettings;
+  meta: MetaAdsSettings;
 };
 
 export type TrafficEvent = {
@@ -120,15 +134,22 @@ export function getDefaultSeoAdminPayload(): SeoAdminPayload {
           targetKeywords: ["lắp wifi vnpt", "internet vnpt tphcm"],
           negativeKeywords: ["tuyển dụng", "miễn phí 100%"],
           conversionAction: "Lead Zalo / Phone",
-          finalUrl: "/",
+          finalUrl: "/wifi-vnpt",
           impressions: 0,
           clicks: 0,
           conversions: 0,
           cost: 0,
           revenue: 0,
-          notes: "Nhập số liệu từ Google Ads để theo dõi hiệu quả.",
+          notes: "Nhập số liệu từ Google/Meta Ads để theo dõi hiệu quả.",
         },
       ],
+    },
+    meta: {
+      enabled: false,
+      pixelId: "",
+      trackPageView: true,
+      notes:
+        "Meta Pixel sẽ nhận PageView, Lead và Contact khi khách bấm Zalo, Messenger, gọi điện hoặc đăng ký gói.",
     },
   };
 }
@@ -149,6 +170,10 @@ function parseSeoAdminPayload(raw: unknown): SeoAdminPayload | null {
   const adsRaw =
     o.ads && typeof o.ads === "object"
       ? (o.ads as Record<string, unknown>)
+      : {};
+  const metaRaw =
+    o.meta && typeof o.meta === "object"
+      ? (o.meta as Record<string, unknown>)
       : {};
 
   return {
@@ -227,7 +252,9 @@ function parseSeoAdminPayload(raw: unknown): SeoAdminPayload | null {
               channel:
                 channel === "display" ||
                 channel === "youtube" ||
-                channel === "performance-max"
+                channel === "performance-max" ||
+                channel === "facebook" ||
+                channel === "instagram"
                   ? channel
                   : "search",
               status:
@@ -248,6 +275,13 @@ function parseSeoAdminPayload(raw: unknown): SeoAdminPayload | null {
             };
           })
         : defaults.ads.campaigns,
+    },
+    meta: {
+      ...defaults.meta,
+      enabled: metaRaw.enabled === true,
+      pixelId: String(metaRaw.pixelId ?? ""),
+      trackPageView: metaRaw.trackPageView !== false,
+      notes: String(metaRaw.notes ?? defaults.meta.notes),
     },
   };
 }

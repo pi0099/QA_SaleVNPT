@@ -705,6 +705,8 @@ function CampaignEditor({
             <option value="display">Display</option>
             <option value="youtube">YouTube</option>
             <option value="performance-max">Performance Max</option>
+            <option value="facebook">Facebook</option>
+            <option value="instagram">Instagram</option>
           </select>
         </label>
         <label>
@@ -836,6 +838,106 @@ function CampaignEditor({
   );
 }
 
+function CampaignPerformanceChart({
+  campaigns,
+}: {
+  campaigns: GoogleAdCampaign[];
+}) {
+  const visibleCampaigns = campaigns.filter(
+    (campaign) =>
+      campaign.name.trim() ||
+      campaign.cost > 0 ||
+      campaign.clicks > 0 ||
+      campaign.conversions > 0,
+  );
+  const maxConversions = Math.max(
+    1,
+    ...visibleCampaigns.map((campaign) => campaign.conversions),
+  );
+  const maxCost = Math.max(1, ...visibleCampaigns.map((campaign) => campaign.cost));
+
+  if (!visibleCampaigns.length) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-500">
+        Chưa có dữ liệu để vẽ chart. Sau khi nhập clicks, conversions và cost
+        cho từng campaign, biểu đồ sẽ giúp so sánh nhanh campaign nào đang hiệu
+        quả.
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-base font-bold text-slate-900">
+            Campaign performance
+          </h2>
+          <p className="text-sm text-slate-500">
+            So sánh conversions và chi phí theo từng campaign.
+          </p>
+        </div>
+        <p className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+          Manual data
+        </p>
+      </div>
+      <div className="mt-5 space-y-4">
+        {visibleCampaigns.map((campaign) => {
+          const conversionWidth = Math.max(
+            4,
+            (campaign.conversions / maxConversions) * 100,
+          );
+          const costWidth = Math.max(4, (campaign.cost / maxCost) * 100);
+          const cpa = campaign.conversions ? campaign.cost / campaign.conversions : 0;
+
+          return (
+            <div key={campaign.id} className="space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {campaign.name || "Campaign chưa đặt tên"}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {campaign.channel} · CPA {formatVnd(cpa)}
+                  </p>
+                </div>
+                <p className="text-sm font-semibold text-slate-700">
+                  {campaign.conversions.toLocaleString("vi-VN")} lead ·{" "}
+                  {formatVnd(campaign.cost)}
+                </p>
+              </div>
+              <div className="grid gap-1.5">
+                <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-[#2563eb]"
+                    style={{ width: `${conversionWidth}%` }}
+                  />
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-amber-400"
+                    style={{ width: `${costWidth}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-3 text-xs font-medium text-slate-500">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-[#2563eb]" />
+          Conversions
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-amber-400" />
+          Cost
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function GoogleAdsAdminPage() {
   const { draft, setDraft, save, savedAt } = useSeoAdminDraft();
   const totals = useMemo(() => {
@@ -869,7 +971,7 @@ export function GoogleAdsAdminPage() {
       targetKeywords: [],
       negativeKeywords: [],
       conversionAction: "",
-      finalUrl: "/",
+      finalUrl: "/wifi-vnpt",
       impressions: 0,
       clicks: 0,
       conversions: 0,
@@ -905,12 +1007,30 @@ export function GoogleAdsAdminPage() {
 
   return (
     <AdminShell
-      title="Google Ads"
-      subtitle="Cấu hình tracking, budget, campaign và nhập số liệu hiệu quả quảng cáo."
+      title="Ads Tracking"
+      subtitle="Cấu hình Google Ads, Meta Pixel, budget, campaign và nhập số liệu hiệu quả quảng cáo."
     >
       <div className="space-y-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 xl:grid-cols-2">
+          <section className="rounded-2xl border border-blue-100 bg-gradient-to-br from-white via-blue-50/40 to-white p-5 shadow-sm">
+            <div className="mb-5 flex flex-wrap items-start justify-between gap-3 border-b border-blue-100 pb-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
+                  Google Account
+                </p>
+                <h2 className="mt-1 text-base font-bold text-slate-900">
+                  Google Ads conversion
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Dùng cho conversion từ click gọi điện, Zalo, Messenger và đăng
+                  ký gói.
+                </p>
+              </div>
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                Google
+              </span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
             <label className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
               <input
                 type="checkbox"
@@ -1027,7 +1147,90 @@ export function GoogleAdsAdminPage() {
                 className={inputClass}
               />
             </label>
-          </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-white via-indigo-50/40 to-white p-5 shadow-sm">
+            <div className="mb-5 flex flex-wrap items-start justify-between gap-3 border-b border-indigo-100 pb-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">
+                  Facebook Ads
+                </p>
+                <h2 className="mt-1 text-base font-bold text-slate-900">
+                  Meta Pixel
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Dùng cho Facebook Ads, Instagram Ads và remarketing tệp khách
+                  đã vào site.
+                </p>
+              </div>
+              <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700">
+                Meta
+              </span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
+              <input
+                type="checkbox"
+                checked={draft.meta.enabled}
+                onChange={(e) =>
+                  setDraft((d) => ({
+                    ...d,
+                    meta: { ...d.meta, enabled: e.target.checked },
+                  }))
+                }
+                className="h-4 w-4 rounded border-slate-300 text-[#2563eb]"
+              />
+              <span className="text-sm font-semibold text-slate-800">
+                Bật Meta Pixel trên site
+              </span>
+            </label>
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
+              <input
+                type="checkbox"
+                checked={draft.meta.trackPageView}
+                onChange={(e) =>
+                  setDraft((d) => ({
+                    ...d,
+                    meta: { ...d.meta, trackPageView: e.target.checked },
+                  }))
+                }
+                className="h-4 w-4 rounded border-slate-300 text-[#2563eb]"
+              />
+              <span className="text-sm font-semibold text-slate-800">
+                Track PageView cho remarketing
+              </span>
+            </label>
+            <label>
+              <span className={labelClass}>Meta Pixel ID</span>
+              <input
+                value={draft.meta.pixelId}
+                onChange={(e) =>
+                  setDraft((d) => ({
+                    ...d,
+                    meta: { ...d.meta, pixelId: e.target.value },
+                  }))
+                }
+                className={inputClass}
+                placeholder="123456789012345"
+              />
+            </label>
+            <label>
+              <span className={labelClass}>Ghi chú Meta Ads</span>
+              <input
+                value={draft.meta.notes}
+                onChange={(e) =>
+                  setDraft((d) => ({
+                    ...d,
+                    meta: { ...d.meta, notes: e.target.value },
+                  }))
+                }
+                className={inputClass}
+                placeholder="VD: Pixel chính cho Facebook/Instagram remarketing"
+              />
+            </label>
+            </div>
+          </section>
         </div>
 
         <div className="grid gap-4 md:grid-cols-5">
@@ -1063,11 +1266,13 @@ export function GoogleAdsAdminPage() {
           </div>
         </div>
 
+        <CampaignPerformanceChart campaigns={draft.ads.campaigns} />
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-bold text-slate-900">Campaigns</h2>
             <p className="text-sm text-slate-500">
-              Set budget, target, keyword và nhập số liệu từ Google Ads.
+              Set budget, target, keyword và nhập số liệu từ Google/Meta Ads.
             </p>
           </div>
           <button

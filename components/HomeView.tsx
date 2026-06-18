@@ -121,6 +121,12 @@ export default function HomeView() {
                   {sections[0] ? (
                     <a
                       href={`#${sections[0].id}`}
+                      onClick={() =>
+                        trackLeadEvent("landing_cta_click", {
+                          label: "Hero package list",
+                          destination: `#${sections[0].id}`,
+                        })
+                      }
                       className="inline-flex min-h-[52px] w-full items-center justify-center rounded-full border border-white/35 bg-white/[0.07] px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors duration-200 hover:border-white/55 hover:bg-white/[0.14] sm:w-auto"
                     >
                       Xem các gói cước

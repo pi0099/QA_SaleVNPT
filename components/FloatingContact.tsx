@@ -85,11 +85,11 @@ export default function FloatingContact() {
           aria-label="Chat Zalo"
         >
           <Image
-            src="/zalo-icon.svg"
+            src="/zalo-icon.png"
             alt=""
             width={56}
             height={56}
-            className="h-full w-full object-cover"
+            className="floating-contact-shake h-full w-full object-cover"
             loading="lazy"
             decoding="async"
             aria-hidden
@@ -108,7 +108,9 @@ export default function FloatingContact() {
           className="flex h-14 w-14 items-center justify-center rounded-full bg-[#dc2626] text-white shadow-lg ring-2 ring-white/80 transition-transform hover:scale-105 active:scale-95"
           aria-label={`Gọi ${contact.phoneDisplay || "hotline"}`}
         >
-          <PhoneIcon className="h-7 w-7" />
+          <span className="floating-contact-shake inline-flex">
+            <PhoneIcon className="h-7 w-7" />
+          </span>
         </a>
       ) : null}
     </div>

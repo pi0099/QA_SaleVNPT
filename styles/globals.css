@@ -62,6 +62,35 @@ body {
   animation: cms-save-toast-out 0.28s ease-in forwards;
 }
 
+@keyframes floating-contact-shake {
+  0%,
+  62%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  66% {
+    transform: rotate(-8deg) scale(1.04);
+  }
+  70% {
+    transform: rotate(8deg) scale(1.04);
+  }
+  74% {
+    transform: rotate(-6deg) scale(1.03);
+  }
+  78% {
+    transform: rotate(6deg) scale(1.03);
+  }
+  82% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.floating-contact-shake {
+  animation: floating-contact-shake 2.4s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
 @keyframes promo-glow-pulse {
   0%,
   100% {
@@ -118,7 +147,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .promo-glow,
   .promo-cta,
-  .promo-marquee {
+  .promo-marquee,
+  .floating-contact-shake {
     animation: none !important;
   }
 }

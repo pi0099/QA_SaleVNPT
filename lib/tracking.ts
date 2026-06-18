@@ -17,14 +17,20 @@ declare global {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
     fbq?: (...args: unknown[]) => void;
+    __googleAdsSendTo?: string;
   }
 }
-
-const googleAdsSendTo = process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_SEND_TO;
 
 function toMetaEvent(action: LeadAction) {
   if (action === "phone_click" || action === "messenger_click") return "Contact";
   return "Lead";
+}
+
+function getGoogleAdsSendTo() {
+  return (
+    process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_SEND_TO ||
+    window.__googleAdsSendTo
+  );
 }
 
 export function trackLeadEvent(action: LeadAction, payload: LeadEventPayload = {}) {
@@ -45,6 +51,8 @@ export function trackLeadEvent(action: LeadAction, payload: LeadEventPayload = {
   });
 
   window.gtag?.("event", action, eventPayload);
+
+  const googleAdsSendTo = getGoogleAdsSendTo();
 
   if (googleAdsSendTo) {
     window.gtag?.("event", "conversion", {

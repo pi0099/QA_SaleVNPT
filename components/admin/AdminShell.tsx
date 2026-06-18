@@ -14,7 +14,7 @@ const navSections = [
     items: [
       { href: "/admin/seo/keywords", label: "Keyword / Tag" },
       { href: "/admin/seo/traffic", label: "Lượt truy cập trang" },
-      { href: "/admin/seo/google-ads", label: "Google Ads" },
+      { href: "/admin/seo/google-ads", label: "Ads Tracking" },
     ],
   },
 ];
