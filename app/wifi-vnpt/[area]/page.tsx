@@ -8,6 +8,7 @@ import {
   getLocalLandingPaths,
   getLocalService,
 } from "@/lib/local-seo";
+import { buildPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return getLocalLandingPaths("wifi-vnpt").map((item) => ({
@@ -24,13 +25,11 @@ export function generateMetadata({
   const area = getLocalArea(params.area);
   if (!service || !area) return {};
 
-  return {
+  return buildPageMetadata({
     title: buildLocalLandingTitle(service, area),
     description: buildLocalLandingDescription(service, area),
-    alternates: {
-      canonical: `/wifi-vnpt/${area.slug}`,
-    },
-  };
+    path: `/wifi-vnpt/${area.slug}`,
+  });
 }
 
 export default function WifiVnptAreaPage({

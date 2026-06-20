@@ -9,6 +9,8 @@ import {
   getLocalService,
 } from "@/lib/local-seo";
 
+import { buildPageMetadata } from "@/lib/seo";
+
 export function generateStaticParams() {
   return getLocalLandingPaths("sim-5g").map((item) => ({
     area: item.area,
@@ -24,13 +26,11 @@ export function generateMetadata({
   const area = getLocalArea(params.area);
   if (!service || !area) return {};
 
-  return {
+  return buildPageMetadata({
     title: buildLocalLandingTitle(service, area),
     description: buildLocalLandingDescription(service, area),
-    alternates: {
-      canonical: `/sim-5g/${area.slug}`,
-    },
-  };
+    path: `/sim-5g/${area.slug}`,
+  });
 }
 
 export default function Sim5gAreaPage({

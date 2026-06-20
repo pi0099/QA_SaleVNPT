@@ -3,18 +3,16 @@ import Link from "next/link";
 import Section from "@/components/Section";
 import { buildFaqJsonLd, faqItems } from "@/lib/faq";
 import { localAreas, localServices } from "@/lib/local-seo";
+import { buildPageMetadata, getSiteUrl } from "@/lib/seo";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ketnoimanghcm.vn";
+const siteUrl = getSiteUrl();
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "FAQ lắp WiFi VNPT, SIM 5G, Camera | Hỏi đáp nhanh",
   description:
     "Giải đáp các câu hỏi thường gặp khi đăng ký WiFi VNPT, phí hòa mạng, thời gian lắp đặt, SIM 5G và gói camera.",
-  alternates: {
-    canonical: "/faq",
-  },
-};
+  path: "/faq",
+});
 
 export default function FaqPage() {
   return (

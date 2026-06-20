@@ -1,8 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getLocalLandingPaths } from "@/lib/local-seo";
-
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ketnoimanghcm.vn";
+import { getSiteUrl } from "@/lib/seo";
 
 const routes = [
   { path: "/", priority: 1, changeFrequency: "weekly" },
@@ -15,7 +13,7 @@ const routes = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  const base = siteUrl.replace(/\/$/, "");
+  const base = getSiteUrl();
 
   const staticRoutes = routes.map((route) => ({
     url: `${base}${route.path}`,

@@ -19,7 +19,10 @@ export default function NewsArticleCard({ article }: NewsArticleCardProps) {
   const categoryIcon = techNewsCategoryIcons[article.category];
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-[18px] border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <article
+      id={article.slug}
+      className="flex h-full flex-col overflow-hidden rounded-[18px] border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md scroll-mt-28"
+    >
       <div className="flex flex-1 flex-col p-6">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">

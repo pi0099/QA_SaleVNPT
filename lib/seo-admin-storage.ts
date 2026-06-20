@@ -107,7 +107,7 @@ export function getDefaultSeoAdminPayload(): SeoAdminPayload {
       googleTagManagerId: "",
       robotsPolicy: "index-follow",
       customRobots: "",
-      canonicalBaseUrl: "https://ketnoimanghcm.vn",
+      canonicalBaseUrl: "https://www.ketnoimanghcm.vn",
       ogImageUrl: "",
       schemaBusinessName: "Kết Nối Mạng HCM",
       schemaPhone: "0900 000 000",

@@ -9,8 +9,7 @@ import {
   type LocalServiceSlug,
 } from "@/lib/local-seo";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ketnoimanghcm.vn";
+import { getSiteUrl } from "@/lib/seo";
 
 export default function LocalServiceLanding({
   serviceSlug,
@@ -24,6 +23,7 @@ export default function LocalServiceLanding({
 
   if (!service || !area) return null;
 
+  const siteUrl = getSiteUrl();
   const relatedServices = localServices.filter((item) => item.slug !== service.slug);
   const nearbyAreas = area.nearby
     .map((slug) => localAreas.find((item) => item.slug === slug))

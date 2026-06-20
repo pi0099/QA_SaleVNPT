@@ -9,6 +9,8 @@ import {
   getLocalService,
 } from "@/lib/local-seo";
 
+import { buildPageMetadata } from "@/lib/seo";
+
 export function generateStaticParams() {
   return getLocalLandingPaths("camera-vnpt").map((item) => ({
     area: item.area,
@@ -24,13 +26,11 @@ export function generateMetadata({
   const area = getLocalArea(params.area);
   if (!service || !area) return {};
 
-  return {
+  return buildPageMetadata({
     title: buildLocalLandingTitle(service, area),
     description: buildLocalLandingDescription(service, area),
-    alternates: {
-      canonical: `/camera-vnpt/${area.slug}`,
-    },
-  };
+    path: `/camera-vnpt/${area.slug}`,
+  });
 }
 
 export default function CameraVnptAreaPage({

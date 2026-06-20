@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Providers } from "@/app/providers";
 import { defaultSeo } from "@/lib/data";
+import { getSiteUrl } from "@/lib/seo";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -13,8 +14,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ketnoimanghcm.vn";
+const siteUrl = getSiteUrl();
 const googleSiteVerification =
   process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
@@ -29,9 +29,6 @@ export const metadata: Metadata = {
     .split(",")
     .map((k) => k.trim())
     .filter(Boolean),
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     locale: "vi_VN",

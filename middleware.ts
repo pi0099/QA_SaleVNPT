@@ -8,7 +8,15 @@ import { ADMIN_SESSION_COOKIE } from "@/lib/admin-auth";
  * cookie presence check avoids “login succeeds then bounce back to login”.
  */
 export function middleware(req: NextRequest) {
+  const host = req.headers.get("host") ?? "";
   const { pathname, search } = req.nextUrl;
+
+  // Redirect apex → www (matches Vercel domain redirect, avoids duplicate URLs).
+  if (host === "ketnoimanghcm.vn") {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.host = `www.${host}`;
+    return NextResponse.redirect(redirectUrl, 308);
+  }
 
   if (pathname === "/admin/login") {
     return NextResponse.next();
@@ -36,5 +44,7 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+  ],
 };

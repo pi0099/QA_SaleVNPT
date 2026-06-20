@@ -1,10 +1,8 @@
 import type { MetadataRoute } from "next";
-
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ketnoimanghcm.vn";
+import { getSiteUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  const base = siteUrl.replace(/\/$/, "");
+  const base = getSiteUrl();
 
   return {
     rules: {
