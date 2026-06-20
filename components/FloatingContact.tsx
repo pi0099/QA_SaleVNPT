@@ -81,15 +81,15 @@ export default function FloatingContact() {
               destination: contact.zalo,
             })
           }
-          className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5 shadow-lg ring-2 ring-white/90 transition-transform hover:scale-105 hover:ring-[#0068FF]/35 active:scale-95"
+          className="flex h-14 w-14 shrink-0 overflow-hidden rounded-2xl shadow-lg ring-2 ring-white/90 transition-transform hover:scale-105 hover:ring-[#0068FF]/35 active:scale-95"
           aria-label="Chat Zalo"
         >
           <Image
-            src="/zalo-icon.png"
+            src="/zalo-icon.svg"
             alt=""
             width={56}
             height={56}
-            className="floating-contact-shake h-full w-full object-contain"
+            className="floating-contact-shake h-full w-full object-cover"
             loading="lazy"
             decoding="async"
             aria-hidden

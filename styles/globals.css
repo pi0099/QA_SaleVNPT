@@ -176,7 +176,6 @@ body {
 .pricing-card-reveal {
   opacity: 0;
   transform: translateY(30px);
-  will-change: transform, opacity;
   transition:
     opacity 520ms ease-out,
     transform 520ms ease-out;
@@ -186,6 +185,53 @@ body {
 .pricing-card-reveal-visible {
   opacity: 1;
   transform: translateY(0);
+  will-change: auto;
+}
+
+.pricing-cards-strip {
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.65) transparent;
+}
+
+.pricing-cards-strip::-webkit-scrollbar {
+  height: 6px;
+}
+
+.pricing-cards-strip::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.65);
+}
+
+.pricing-cards-strip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pricing-cards-strip-dragging {
+  scroll-snap-type: none !important;
+  cursor: grabbing;
+}
+
+.pricing-cards-strip-dragging .pricing-card-interactive,
+.pricing-cards-strip-dragging .pricing-card-interactive:hover {
+  transform: none !important;
+  transition: none !important;
+}
+
+@media (min-width: 768px) {
+  .pricing-cards-strip {
+    scroll-snap-type: x proximity;
+  }
+}
+
+@media (max-width: 767px) {
+  .pricing-cards-strip {
+    scroll-snap-type: x mandatory;
+  }
 }
 
 .landing-hero-shell {
@@ -359,14 +405,21 @@ body {
     transform: translateY(-1px);
   }
 
-  /* Strip uses horizontal scroll; overflow-y becomes `auto`, so strong hover motion
-     clips the top. Gentler motion here only (PricingCard is only used in this strip). */
+  /* Strip: avoid transform on hover — it repaints during scroll and feels sluggish */
   .pricing-cards-strip .pricing-card-interactive:hover {
-    transform: translateY(-3px) scale(1.02);
+    transform: none;
+    border-color: #2563eb;
+    box-shadow: 0 16px 36px -24px rgba(15, 23, 42, 0.35);
   }
 
   .pricing-cards-strip .pricing-card-interactive.pricing-card-recommended:hover {
-    transform: translateY(-3px) scale(1.06);
+    transform: none;
+    border-color: #f97316;
+    box-shadow: 0 16px 38px -22px rgba(249, 115, 22, 0.55);
+  }
+
+  .pricing-cards-strip .pricing-card-interactive:hover .pricing-feature-icon {
+    transform: none;
   }
 }
 

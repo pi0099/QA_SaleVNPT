@@ -1,4 +1,3 @@
-import { localAreas, localServices } from "@/lib/local-seo";
 import type { SeoKeywordItem } from "@/lib/seo-admin-storage";
 
 export function normalizeKeywordKey(
@@ -37,7 +36,7 @@ export function buildPageKeywordSuggestions(): SeoKeywordItem[] {
       tags: ["sim", "5g", "data", "vnpt"],
       intent: "transactional",
       priority: "high",
-      targetUrl: "/sim-5g",
+      targetUrl: "/sim-5g-vnpt",
       status: "active",
       notes: "Landing page SIM/data cho ads và SEO.",
     },
@@ -67,24 +66,24 @@ export function buildPageKeywordSuggestions(): SeoKeywordItem[] {
       tags: ["tin-tuc", "cong-nghe", "vien-thong", "5g"],
       intent: "informational",
       priority: "low",
-      targetUrl: "/tin-tuc-cong-nghe",
+      targetUrl: "/news",
       status: "active",
       notes: "Trang nội dung hỗ trợ topical authority.",
     },
   ];
 
-  const localPages = localServices.flatMap((service) =>
-    localAreas.map((area) => ({
-      id: `kw-page-${service.slug}-${area.slug}`,
-      keyword: `${service.primaryKeyword} ${area.name}`,
-      tags: [service.slug, area.slug, "hcm", "local-seo"],
-      intent: "local" as const,
-      priority: "medium" as const,
-      targetUrl: `/${service.slug}/${area.slug}`,
-      status: "active" as const,
-      notes: `Keyword local SEO cho ${service.shortLabel} tại ${area.name}.`,
-    })),
-  );
+  const localPages: SeoKeywordItem[] = [
+    {
+      id: "kw-page-wifi-quan-12",
+      keyword: "lắp WiFi VNPT Quận 12",
+      tags: ["wifi", "quan-12", "hcm", "local-seo"],
+      intent: "local",
+      priority: "high",
+      targetUrl: "/wifi-vnpt-quan-12",
+      status: "active",
+      notes: "Local page chính — Quận 12.",
+    },
+  ];
 
   return [...staticPages, ...localPages];
 }

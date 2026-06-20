@@ -60,23 +60,24 @@ export function contactFromSite(s: SiteSettings) {
 
 /** Default SEO — used in layout metadata and when CMS has no SEO saved */
 export const defaultSeo = {
-  title: "Đăng ký WiFi VNPT – Tư vấn miễn phí, lắp đặt nhanh 24h",
+  title: "Tư vấn đăng ký WiFi, SIM 5G, Camera VNPT tại TP.HCM",
   description:
-    "Hỗ trợ đăng ký các gói WiFi VNPT, SIM 4G và camera. Tư vấn miễn phí, lắp đặt nhanh chóng, tận nơi.",
+    "Nhân viên VNPT hỗ trợ tư vấn gói cước, kiểm tra hạ tầng và đăng ký lắp đặt tận nơi khu vực Quận 12 và nội thành TP.HCM.",
   keywords:
-    "dang ky WiFi VNPT, ho tro dang ky VNPT, tu van WiFi VNPT, SIM 4G, camera VNPT",
+    "tu van WiFi VNPT, lap WiFi Quan 12, SIM 5G VNPT, camera VNPT, dang ky VNPT TP.HCM",
 };
 
 export type SeoSettings = typeof defaultSeo;
 
 const bangGiaChungPromotion =
-  "Giá gói đã gồm VAT · Phí hòa mạng 300.000đ/lần (đã gồm VAT) · *Gói ~1Gbps: tốc độ 500Mbps đến 1Gbps";
+  "Giá gói đã gồm VAT · Phí hòa mạng 300.000đ/lần (đã gồm VAT) · *Gói ~1Gbps (nội thành): 500Mbps–1Gbps · *500ULM (ngoại thành): tốc độ tối thiểu 500Mbps, tối đa 1Gbps · Miễn phí 3 tháng trải nghiệm HOMEMUSIC, HOMESTUDY, HOMEBOOKS, vuihoc.vn, Home Game";
 
-/** Default sections — used when localStorage is empty (bảng giá Nội / Ngoại thành theo VNPT) */
+/** Default sections — bảng giá Nội thành & Ngoại thành TP.HCM theo VNPT (cập nhật từ flyer) */
 export const defaultSections: PackageSection[] = [
   {
     id: "internet-gia-dinh",
     title: "Gói Internet gia đình",
+    slogan: "Gói Nội thành & Ngoại thành TP. Hồ Chí Minh · Chọn vùng trên thẻ giá",
     cards: [
       {
         id: "inet-home-1",
@@ -86,7 +87,7 @@ export const defaultSections: PackageSection[] = [
         speed: "300 Mbps",
         features: [
           "Tích hợp: Family Safe / GreenNet",
-          "+1 Mesh 5/6: 265.000 đ/th (nội thành), 220.000 đ/th (ngoại thành)",
+          "+1 Mesh 6: 255k (NT) / 215k (NGT) · +2 Mesh 6: 260k (NT) / 220k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "blue",
@@ -95,12 +96,13 @@ export const defaultSections: PackageSection[] = [
       {
         id: "inet-home-2",
         title: "HOME 2",
-        price: "280.000",
-        priceOuterCity: "240.000",
+        price: "260.000",
+        priceOuterCity: "235.000",
         speed: "500 Mbps",
         features: [
           "Tích hợp: Family Safe / GreenNet",
-          "+1 Mesh 5/6: 310.000 đ/th (nội thành), 270.000 đ/th (ngoại thành)",
+          "Ngoại thành: 500ULM* (500Mbps–1Gbps)",
+          "+1 Mesh 6: 265k (NT) / 240k (NGT) · +2 Mesh 6: 280k (NT) / 245k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "orange",
@@ -110,11 +112,11 @@ export const defaultSections: PackageSection[] = [
         id: "inet-home-3",
         title: "HOME 3",
         price: "320.000",
-        priceOuterCity: "280.000",
+        priceOuterCity: "290.000",
         speed: "1 Gbps",
         features: [
           "Tích hợp: Family Safe / GreenNet",
-          "+1 Mesh 5/6: 350.000 đ/th (nội thành), 310.000 đ/th (ngoại thành)",
+          "+1 Mesh 6: 340k (NT) / 310k (NGT) · +2 Mesh 6: 355k (NT) / 335k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "blue",
@@ -124,11 +126,11 @@ export const defaultSections: PackageSection[] = [
         id: "inet-hometv-1",
         title: "HOMETV 1",
         price: "255.000",
-        priceOuterCity: "210.000",
+        priceOuterCity: "215.000",
         speed: "300 Mbps",
         features: [
           "MyTV (App), Family Safe / GreenNet",
-          "+1 Mesh 5/6: 285.000 đ/th (nội thành), 240.000 đ/th (ngoại thành)",
+          "+1 Mesh 6: 270k (NT) / 230k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "orange",
@@ -137,12 +139,13 @@ export const defaultSections: PackageSection[] = [
       {
         id: "inet-hometv-2",
         title: "HOMETV 2",
-        price: "300.000",
-        priceOuterCity: "260.000",
+        price: "265.000",
+        priceOuterCity: "240.000",
         speed: "500 Mbps",
         features: [
           "MyTV (App), Family Safe / GreenNet",
-          "+1 Mesh 5/6: 330.000 đ/th (nội thành), 290.000 đ/th (ngoại thành)",
+          "Ngoại thành: 500ULM* (500Mbps–1Gbps)",
+          "+1 Mesh 6: 280k (NT) / 250k (NGT) · +2 Mesh 6: 300k (NT) / 265k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "blue",
@@ -151,12 +154,13 @@ export const defaultSections: PackageSection[] = [
       {
         id: "inet-hometv-3",
         title: "HOMETV 3",
-        price: "370.000",
-        priceOuterCity: "330.000",
+        price: "340.000",
+        priceOuterCity: "310.000",
         speed: "~1 Gbps*",
         features: [
           "MyTV (App), Family Safe / GreenNet",
-          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+          "Ngoại thành: 1 Gbps",
+          "+1 Mesh 6: 365k (NT) / 330k (NGT) · +2 Mesh 6: 375k (NT) / 355k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "orange",
@@ -170,24 +174,10 @@ export const defaultSections: PackageSection[] = [
         speed: "300 Mbps",
         features: [
           "MyTV VIP (App), Family Safe / GreenNet",
-          "+1 Mesh 5/6: 315.000 đ/th (nội thành), 270.000 đ/th (ngoại thành)",
+          "+1 Mesh 6: 315k (NT) / 270k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "blue",
-        isPopular: false,
-      },
-      {
-        id: "inet-hometv-vip-2",
-        title: "HOMETV VIP 2",
-        price: "330.000",
-        priceOuterCity: "290.000",
-        speed: "500 Mbps",
-        features: [
-          "MyTV VIP (App), Family Safe / GreenNet",
-          "+1 Mesh 5/6: 360.000 đ/th (nội thành), 320.000 đ/th (ngoại thành)",
-        ],
-        promotion: bangGiaChungPromotion,
-        variant: "orange",
         isPopular: false,
       },
       {
@@ -195,55 +185,60 @@ export const defaultSections: PackageSection[] = [
         title: "HOMETV VIP 3",
         price: "400.000",
         priceOuterCity: "360.000",
-        speed: "~1 Gbps*",
+        speed: "500 Mbps",
         features: [
           "MyTV VIP (App), Family Safe / GreenNet",
-          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+          "Ngoại thành: 500ULM* · Gói +1 Mesh 6: 400k (NT) / 360k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
-        variant: "blue",
+        variant: "orange",
         isPopular: false,
       },
       {
         id: "inet-home-cam-1",
         title: "HOME CAM 1",
-        price: "290.000",
-        priceOuterCity: "250.000",
+        price: "255.000",
+        priceOuterCity: "215.000",
         speed: "300 Mbps",
         features: [
-          "01 Camera Indoor + lưu Cloud 7 ngày",
-          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
-        ],
-        promotion: bangGiaChungPromotion,
-        variant: "orange",
-        isPopular: false,
-      },
-      {
-        id: "inet-home-cam-2",
-        title: "HOME CAM 2",
-        price: "350.000",
-        priceOuterCity: "310.000",
-        speed: "500 Mbps",
-        features: [
-          "01 Camera Indoor + lưu Cloud 7 ngày",
-          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+          "01 Camera Indoor + Cloud 7 ngày (NT) / 3 ngày (NGT)",
+          "Family Safe / GreenNet (ngoại thành)",
+          "+1 Mesh 6: 270k (NT) / 230k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "blue",
         isPopular: false,
       },
       {
-        id: "inet-home-cam-3",
-        title: "HOME CAM 3",
-        price: "390.000",
-        priceOuterCity: "350.000",
-        speed: "~1 Gbps*",
+        id: "inet-home-cam-2",
+        title: "HOME CAM 2",
+        price: "265.000",
+        priceOuterCity: "240.000",
+        speed: "500 Mbps",
         features: [
-          "01 Camera Indoor + lưu Cloud 7 ngày",
-          "Gói kèm 01 Wifi Mesh 5/6 (bảng chỉ cột Mesh)",
+          "01 Camera Indoor + Cloud 7 ngày (NT) / 3 ngày (NGT)",
+          "Family Safe / GreenNet (ngoại thành)",
+          "Ngoại thành: 500ULM* (500Mbps–1Gbps)",
+          "+1 Mesh 6: 280k (NT) / 250k (NGT) · +2 Mesh 6: 300k (NT) / 265k (NGT)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "orange",
+        isPopular: false,
+      },
+      {
+        id: "inet-home-cam-3",
+        title: "HOME CAM 3",
+        price: "340.000",
+        priceOuterCity: "310.000",
+        speed: "~1 Gbps*",
+        features: [
+          "01 Camera Indoor + Cloud 7 ngày (NT) / 3 ngày (NGT)",
+          "Family Safe / GreenNet (ngoại thành)",
+          "Ngoại thành: 1 Gbps",
+          "+1 Mesh 6: 365k (NT) / 330k (NGT) · +2 Mesh 6: 375k (NT) / 355k (NGT)",
+        ],
+        promotion: bangGiaChungPromotion,
+        variant: "blue",
         isPopular: false,
       },
     ],
@@ -251,6 +246,7 @@ export const defaultSections: PackageSection[] = [
   {
     id: "internet-di-dong",
     title: "Gói Internet + Di động",
+    slogan: "Gói Nội thành TP. Hồ Chí Minh",
     cards: [
       {
         id: "combo-home-sanh-2",
@@ -258,26 +254,12 @@ export const defaultSections: PackageSection[] = [
         price: "249.000",
         speed: "300 Mbps",
         features: [
-          "Truyền hình / Mesh: không kèm thiết bị Mesh",
-          "Ưu đãi chủ nhóm: 3GB/ngày, 1.500p nội mạng + 89p ngoại mạng/tháng",
-          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 6 thành viên)",
+          "Không kèm MyTV / Mesh",
+          "Chủ nhóm: 3GB/ngày, 1.500p nội mạng + 89p ngoại mạng/tháng",
+          "Nhóm: Miễn phí thoại nội nhóm (tối đa 6 thành viên)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "blue",
-        isPopular: false,
-      },
-      {
-        id: "combo-home-sanh-4",
-        title: "HOME SÀNH 4",
-        price: "359.000",
-        speed: "500 Mbps",
-        features: [
-          "01 Wifi Mesh 5/6",
-          "Ưu đãi chủ nhóm: 3GB/ngày, 1.500p nội mạng + 89p ngoại mạng/tháng",
-          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 6 thành viên)",
-        ],
-        promotion: bangGiaChungPromotion,
-        variant: "orange",
         isPopular: true,
       },
       {
@@ -287,22 +269,8 @@ export const defaultSections: PackageSection[] = [
         speed: "500 Mbps",
         features: [
           "MyTV (App)",
-          "Ưu đãi chủ nhóm: 2GB/ngày, 1.000p nội mạng + 50p ngoại mạng/tháng",
-          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 4 thành viên)",
-        ],
-        promotion: bangGiaChungPromotion,
-        variant: "blue",
-        isPopular: false,
-      },
-      {
-        id: "combo-home-dinh-3",
-        title: "HOME ĐỈNH 3",
-        price: "399.000",
-        speed: "~1 Gbps*",
-        features: [
-          "MyTV (App), 01 Wifi Mesh 5/6",
-          "Ưu đãi chủ nhóm: 2GB/ngày, 1.000p nội mạng + 50p ngoại mạng/tháng",
-          "Ưu đãi nhóm: Miễn phí thoại nội nhóm (tối đa 4 thành viên)",
+          "Chủ nhóm: 2GB/ngày, 1.000p nội mạng + 50p ngoại mạng/tháng",
+          "Nhóm: Miễn phí thoại nội nhóm (tối đa 4 thành viên)",
         ],
         promotion: bangGiaChungPromotion,
         variant: "orange",

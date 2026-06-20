@@ -56,7 +56,7 @@ export default function PricingCard({
 
   return (
     <article
-      className={`pricing-card-interactive relative flex h-full w-full flex-col overflow-hidden rounded-[18px] border bg-white shadow-sm transition-all duration-300 ease-out active:opacity-95 ${
+      className={`pricing-card-interactive relative flex h-full w-full flex-col overflow-hidden rounded-[18px] border bg-white shadow-sm active:opacity-95 ${
         recommended
           ? "pricing-card-recommended scale-[1.05] border-[#f97316] shadow-[0_16px_38px_-22px_rgba(249,115,22,0.9)]"
           : "border-slate-200"
@@ -164,7 +164,7 @@ export default function PricingCard({
                 destination: registerHref,
               })
             }
-            className={`pricing-cta-interactive mt-5 inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-base font-bold text-white shadow-sm ring-offset-2 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 active:opacity-95 ${buttonClass[card.variant]}`}
+            className={`pricing-cta-interactive mt-5 inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-base font-bold text-white shadow-sm ring-offset-2 focus-visible:outline-none focus-visible:ring-2 active:opacity-95 ${buttonClass[card.variant]}`}
           >
             Đăng ký ngay
           </a>

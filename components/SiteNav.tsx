@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCms } from "@/components/cms/CmsProvider";
+import { defaultSiteSettings } from "@/lib/content/site-settings";
 
 const navTintClasses = [
   "border-blue-100 bg-blue-50/80 text-blue-800 shadow-blue-900/5 hover:border-blue-300 hover:bg-blue-100/80",
@@ -24,6 +25,25 @@ export default function SiteNav() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-sky-100/80 bg-gradient-to-r from-white/95 via-sky-50/95 to-blue-50/95 shadow-[0_14px_36px_-30px_rgba(37,99,235,0.55)] backdrop-blur-xl">
+      <div className="border-b border-sky-100/70">
+        <div className="mx-auto flex max-w-6xl items-center px-4 py-3 sm:px-6 sm:py-3.5">
+          <Link
+            href="/"
+            className="group inline-flex shrink-0 items-center rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563eb]"
+            aria-label={`${defaultSiteSettings.siteName} — Về trang chủ`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={defaultSiteSettings.logo}
+              alt="Kết Nối Mạng HCM"
+              width={260}
+              height={48}
+              className="h-9 w-auto transition-opacity duration-200 group-hover:opacity-90 sm:h-10"
+            />
+          </Link>
+        </div>
+      </div>
+
       <div className="site-nav-shell border-b border-sky-100/70">
         <nav
           className="site-nav-scroll mx-auto max-w-6xl"
@@ -41,7 +61,7 @@ export default function SiteNav() {
                 {section.title}
               </a>
             ))}
-            <Link href="/tin-tuc-cong-nghe" className={utilityPillClass}>
+            <Link href="/news" className={utilityPillClass}>
               Tin Tức Công Nghệ
             </Link>
             <Link href="/faq" className={utilityPillClass}>

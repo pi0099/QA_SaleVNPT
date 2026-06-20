@@ -6,6 +6,10 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Providers } from "@/app/providers";
 import { defaultSeo } from "@/lib/data";
+import {
+  buildLocalBusinessJsonLd,
+  buildOrganizationJsonLd,
+} from "@/lib/content/schema";
 import { getSiteUrl } from "@/lib/seo";
 import "@/styles/globals.css";
 
@@ -45,6 +49,15 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: defaultSeo.title,
+    description: defaultSeo.description,
+    images: ["/opengraph-image"],
+  },
+  alternates: {
+    canonical: "/",
+  },
   verification: googleSiteVerification
     ? {
         google: googleSiteVerification,
@@ -57,9 +70,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const globalJsonLd = [buildOrganizationJsonLd(), buildLocalBusinessJsonLd()];
+
   return (
     <html lang="vi">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(globalJsonLd) }}
+        />
         {gtmId ? (
           <Script id="gtm-init" strategy="afterInteractive">
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');`}

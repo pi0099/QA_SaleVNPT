@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PricingCard from "@/components/PricingCard";
 import Section from "@/components/Section";
 import type { PackageSection } from "@/lib/data";
+import { trackLeadEvent } from "@/lib/tracking";
 
 const SCROLL_EDGE_EPS = 4;
 
@@ -33,15 +35,20 @@ type AnimatedPricingSectionProps = {
   section: PackageSection;
   zaloBaseUrl: string;
   bgClassName: string;
+  seoIntro?: string;
+  servicePath?: string;
 };
 
 export default function AnimatedPricingSection({
   section,
   zaloBaseUrl,
   bgClassName,
+  seoIntro,
+  servicePath,
 }: AnimatedPricingSectionProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLUListElement | null>(null);
+  const hasOverflowRef = useRef(false);
   const [isVisible, setIsVisible] = useState(false);
   const [hasOverflow, setHasOverflow] = useState(false);
   const [isStripDragging, setIsStripDragging] = useState(false);
@@ -55,7 +62,10 @@ export default function AnimatedPricingSection({
     const el = scrollRef.current;
     if (!el) return;
     const { scrollWidth, clientWidth } = el;
-    setHasOverflow(scrollWidth > clientWidth + SCROLL_EDGE_EPS);
+    const next = scrollWidth > clientWidth + SCROLL_EDGE_EPS;
+    if (next === hasOverflowRef.current) return;
+    hasOverflowRef.current = next;
+    setHasOverflow(next);
   }, []);
 
   useEffect(() => {
@@ -66,10 +76,8 @@ export default function AnimatedPricingSection({
       updateOverflow();
     });
     ro.observe(el);
-    el.addEventListener("scroll", updateOverflow, { passive: true });
     return () => {
       ro.disconnect();
-      el.removeEventListener("scroll", updateOverflow);
     };
   }, [updateOverflow, section.cards.length]);
 
@@ -84,47 +92,6 @@ export default function AnimatedPricingSection({
       startScrollLeft: 0,
     };
 
-    const onWheel = (e: WheelEvent) => {
-      const isVerticalIntent =
-        !e.shiftKey && Math.abs(e.deltaY) >= Math.abs(e.deltaX);
-
-      if (isVerticalIntent) {
-        e.preventDefault();
-        window.scrollBy({
-          top: e.deltaY,
-          left: 0,
-          behavior: "auto",
-        });
-        return;
-      }
-
-      const { scrollLeft, scrollWidth, clientWidth } = el;
-      const overflow = scrollWidth > clientWidth + SCROLL_EDGE_EPS;
-      if (!overflow) return;
-
-      const horizontalDelta =
-        Math.abs(e.deltaX) > Math.abs(e.deltaY)
-          ? e.deltaX
-          : e.shiftKey
-            ? e.deltaY
-            : 0;
-      const delta = horizontalDelta;
-      if (delta === 0) return;
-
-      const maxScrollLeft = scrollWidth - clientWidth;
-      const atStart = scrollLeft <= SCROLL_EDGE_EPS;
-      const atEnd = scrollLeft >= maxScrollLeft - SCROLL_EDGE_EPS;
-
-      if (delta < 0 && atStart) return;
-      if (delta > 0 && atEnd) return;
-
-      e.preventDefault();
-      el.scrollLeft = Math.min(
-        maxScrollLeft,
-        Math.max(0, scrollLeft + delta),
-      );
-    };
-
     const onPointerDown = (e: PointerEvent) => {
       if (e.pointerType !== "mouse" || e.button !== 0) return;
       const target = e.target as HTMLElement | null;
@@ -137,6 +104,7 @@ export default function AnimatedPricingSection({
       dragState.pointerId = e.pointerId;
       dragState.startX = e.clientX;
       dragState.startScrollLeft = el.scrollLeft;
+      el.setPointerCapture(e.pointerId);
       setIsStripDragging(true);
     };
 
@@ -149,21 +117,38 @@ export default function AnimatedPricingSection({
       if (!dragState.active || e.pointerId !== dragState.pointerId) return;
       dragState.active = false;
       dragState.pointerId = -1;
+      if (el.hasPointerCapture(e.pointerId)) {
+        el.releasePointerCapture(e.pointerId);
+      }
       setIsStripDragging(false);
     };
 
-    el.addEventListener("wheel", onWheel, { passive: false });
     el.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointermove", onPointerMove);
-    window.addEventListener("pointerup", endDrag);
-    window.addEventListener("pointercancel", endDrag);
+    el.addEventListener("pointermove", onPointerMove);
+    el.addEventListener("pointerup", endDrag);
+    el.addEventListener("pointercancel", endDrag);
+
+    const onWheel = (e: WheelEvent) => {
+      const isVerticalIntent =
+        !e.shiftKey && Math.abs(e.deltaY) >= Math.abs(e.deltaX);
+      if (!isVerticalIntent) return;
+
+      const { scrollWidth, clientWidth } = el;
+      if (scrollWidth <= clientWidth + SCROLL_EDGE_EPS) return;
+
+      // Horizontal strip steals vertical wheel — forward to page at full speed.
+      e.preventDefault();
+      window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
 
     return () => {
-      el.removeEventListener("wheel", onWheel);
       el.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerup", endDrag);
-      window.removeEventListener("pointercancel", endDrag);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", endDrag);
+      el.removeEventListener("pointercancel", endDrag);
+      el.removeEventListener("wheel", onWheel);
       dragState.active = false;
       dragState.pointerId = -1;
     };
@@ -190,6 +175,7 @@ export default function AnimatedPricingSection({
 
   useEffect(() => {
     if (!isVisible || !firstPopularCardId) return;
+    if (window.matchMedia("(min-width: 768px)").matches) return;
     const root = scrollRef.current;
     if (!root) return;
     const target = root.querySelector<HTMLElement>(
@@ -198,11 +184,11 @@ export default function AnimatedPricingSection({
     if (!target) return;
     const t = window.setTimeout(() => {
       target.scrollIntoView({
-        behavior: "smooth",
+        behavior: "auto",
         inline: "center",
         block: "nearest",
       });
-    }, 280);
+    }, 320);
     return () => window.clearTimeout(t);
   }, [isVisible, firstPopularCardId]);
 
@@ -216,6 +202,33 @@ export default function AnimatedPricingSection({
           isVisible ? "pricing-title-reveal-visible" : ""
         }`}
       >
+        {seoIntro ? (
+          <p className="mb-6 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
+            {seoIntro}
+          </p>
+        ) : null}
+        {servicePath ? (
+          <div className="mb-6 flex flex-wrap gap-3">
+            <a
+              href="#lead-form-home"
+              onClick={() =>
+                trackLeadEvent("landing_cta_click", {
+                  label: `Register ${section.id}`,
+                  destination: "#lead-form-home",
+                })
+              }
+              className="inline-flex min-h-[44px] items-center rounded-full bg-[#2563eb] px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700"
+            >
+              Đăng ký tư vấn
+            </a>
+            <Link
+              href={servicePath}
+              className="inline-flex min-h-[44px] items-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 hover:border-[#2563eb] hover:text-[#2563eb]"
+            >
+              Xem chi tiết gói
+            </Link>
+          </div>
+        ) : null}
         <div>
           {hasOverflow ? (
             <p className="mb-2 flex items-center gap-1.5 text-xs text-slate-500 md:mb-3">
@@ -253,10 +266,10 @@ export default function AnimatedPricingSection({
             ) : null}
               <ul
                 ref={scrollRef}
-                className={`pricing-cards-strip flex [touch-action:pan-x_pan-y] gap-5 overflow-x-auto overflow-y-hidden overscroll-x-contain pt-12 pb-8 [-webkit-overflow-scrolling:touch] scroll-smooth scroll-pl-4 scroll-pr-4 snap-x snap-mandatory sm:gap-6 md:pt-16 md:pb-10 ${
+                className={`pricing-cards-strip flex gap-5 overflow-x-auto overflow-y-hidden overscroll-x-contain pt-12 pb-8 scroll-pl-4 scroll-pr-4 snap-x snap-proximity sm:gap-6 md:pt-16 md:pb-10 ${
                   hasOverflow
                     ? isStripDragging
-                      ? "cursor-grabbing select-none"
+                      ? "pricing-cards-strip-dragging cursor-grabbing select-none"
                       : "cursor-grab"
                     : ""
                 }`}

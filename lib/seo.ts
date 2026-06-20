@@ -18,11 +18,19 @@ export function buildPageMetadata({
   description,
   path,
   keywords,
+  openGraphType = "website",
+  openGraphTitle,
+  openGraphDescription,
+  image,
 }: {
   title: string;
   description: string;
   path: string;
   keywords?: string[] | string;
+  openGraphType?: "website" | "article";
+  openGraphTitle?: string;
+  openGraphDescription?: string;
+  image?: string;
 }): Metadata {
   const canonical = canonicalPath(path);
   const keywordList =
@@ -33,6 +41,10 @@ export function buildPageMetadata({
           .filter(Boolean)
       : keywords;
 
+  const ogTitle = openGraphTitle ?? title;
+  const ogDescription = openGraphDescription ?? description;
+  const ogImage = image ?? "/opengraph-image";
+
   return {
     title,
     description,
@@ -41,26 +53,49 @@ export function buildPageMetadata({
       canonical,
     },
     openGraph: {
-      type: "website",
+      type: openGraphType,
       locale: "vi_VN",
       url: canonical,
-      title,
-      description,
+      title: ogTitle,
+      description: ogDescription,
       images: [
         {
-          url: "/opengraph-image",
+          url: ogImage,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: ogTitle,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: ogTitle,
+      description: ogDescription,
+      images: [ogImage],
     },
   };
+}
+
+/** Blog post metadata — article OG type, optional custom OG fields */
+export function buildBlogPostMetadata(post: {
+  seoTitle: string;
+  seoDescription: string;
+  slug: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  featuredImage?: string;
+  tags?: string[];
+}): Metadata {
+  return buildPageMetadata({
+    title: post.seoTitle,
+    description: post.seoDescription,
+    path: `/news/${post.slug}`,
+    keywords: post.tags,
+    openGraphType: "article",
+    openGraphTitle: post.ogTitle ?? post.seoTitle,
+    openGraphDescription: post.ogDescription ?? post.seoDescription,
+    image: post.featuredImage,
+  });
 }
 
 export const adminRobotsMetadata: Metadata = {

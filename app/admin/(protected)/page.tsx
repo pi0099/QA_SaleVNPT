@@ -1,9 +1,9 @@
-import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminDashboardPage from "@/components/admin/cms/AdminDashboardPage";
 
 export const metadata = {
-  title: "CMS — Quản trị",
+  title: "CMS — Dashboard",
 };
 
 export default function AdminPage() {
-  return <AdminDashboard />;
+  return <AdminDashboardPage />;
 }

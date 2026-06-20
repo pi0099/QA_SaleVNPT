@@ -7,7 +7,17 @@ import type { ReactNode } from "react";
 const navSections = [
   {
     title: "CMS",
-    items: [{ href: "/admin", label: "Trang quản trị nội dung" }],
+    items: [
+      { href: "/admin", label: "Dashboard" },
+      { href: "/admin/settings", label: "Site Settings" },
+      { href: "/admin/services", label: "Services" },
+      { href: "/admin/packages", label: "Packages" },
+      { href: "/admin/news", label: "News / Blog" },
+      { href: "/admin/blog-generator", label: "Blog Generator" },
+      { href: "/admin/faq", label: "FAQ" },
+      { href: "/admin/local-seo", label: "Local SEO" },
+      { href: "/admin/leads", label: "Leads" },
+    ],
   },
   {
     title: "SEO Settings",
@@ -45,7 +55,7 @@ export default function AdminShell({
       <div className="mx-auto flex max-w-7xl gap-6 px-4 py-8 lg:px-8">
         <aside className="hidden w-60 shrink-0 flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:flex">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-            Menu
+            VNPT Sales CMS
           </p>
           <nav className="mt-4 space-y-5">
             {navSections.map((section) => (
@@ -98,21 +108,6 @@ export default function AdminShell({
                 <h1 className="text-lg font-bold text-slate-900">{title}</h1>
                 <p className="text-sm text-slate-500">{subtitle}</p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href="/"
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                >
-                  Trang chủ
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                >
-                  Đăng xuất
-                </button>
-              </div>
             </div>
             <nav className="mt-4 space-y-3 border-t border-slate-100 pt-4 lg:hidden">
               {navSections.map((section) => (
@@ -120,21 +115,20 @@ export default function AdminShell({
                   <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">
                     {section.title}
                   </p>
-                  <div className="flex gap-2 overflow-x-auto">
-                    {section.items.map((item) => {
-                      const active = isActiveHref(item.href);
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className={`shrink-0 rounded-lg px-3 py-2 text-sm font-medium ${
-                            active ? "bg-[#2563eb] text-white" : "bg-slate-100"
-                          }`}
-                        >
-                          {item.label}
-                        </Link>
-                      );
-                    })}
+                  <div className="flex flex-wrap gap-2">
+                    {section.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                          isActiveHref(item.href)
+                            ? "bg-[#2563eb] text-white"
+                            : "border border-slate-200 bg-white text-slate-700"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
                   </div>
                 </div>
               ))}
