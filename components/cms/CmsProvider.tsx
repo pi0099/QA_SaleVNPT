@@ -10,7 +10,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  CMS_STORAGE_KEY,
   getDefaultCmsPayload,
   type CmsPayload,
 } from "@/lib/cms-storage";
@@ -26,7 +25,10 @@ const CmsContext = createContext<CmsContextValue | null>(null);
 
 async function fetchPublicCms(): Promise<CmsPayload | null> {
   try {
-    const res = await fetch("/api/content/public", { cache: "no-store" });
+    const res = await fetch("/api/content/public", {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (!res.ok) return null;
     const data = await res.json();
     return {
@@ -61,19 +63,8 @@ export function CmsProvider({ children }: { children: ReactNode }) {
       setLoaded(true);
       return;
     }
-    if (typeof window !== "undefined") {
-      try {
-        const raw = window.localStorage.getItem(CMS_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as CmsPayload;
-          setCms(parsed);
-          return;
-        }
-      } catch {
-        // ignore
-      }
-    }
     setCms(getDefaultCmsPayload());
+    setLoaded(false);
   }, []);
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import {
   buildLocalBusinessJsonLd,
   buildOrganizationJsonLd,
 } from "@/lib/content/schema";
+import { readCmsStore } from "@/lib/cms-store/server";
 import { getSiteUrl } from "@/lib/seo";
 import "@/styles/globals.css";
 
@@ -65,12 +66,18 @@ export const metadata: Metadata = {
     : undefined,
 };
 
-export default function RootLayout({
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const globalJsonLd = [buildOrganizationJsonLd(), buildLocalBusinessJsonLd()];
+  const { siteSettings } = await readCmsStore();
+  const globalJsonLd = [
+    buildOrganizationJsonLd(siteSettings),
+    buildLocalBusinessJsonLd(siteSettings),
+  ];
 
   return (
     <html lang="vi">

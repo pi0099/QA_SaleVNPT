@@ -1,6 +1,6 @@
+import type { ServiceFaq, SiteSettings } from "@/lib/content/types";
 import { getSiteUrl } from "@/lib/seo";
 import type { PackageSection } from "@/lib/data";
-import type { ServiceFaq } from "@/lib/content/types";
 import { defaultSiteSettings } from "@/lib/content/site-settings";
 import {
   getHomepageTierCards,
@@ -9,9 +9,10 @@ import {
 } from "@/lib/packages/helpers";
 import { getServiceAreaTags } from "@/lib/content/service-area-tags";
 
-export function buildOrganizationJsonLd() {
+export function buildOrganizationJsonLd(
+  settings: Pick<SiteSettings, "siteName" | "tagline" | "phone"> = defaultSiteSettings,
+) {
   const siteUrl = getSiteUrl();
-  const settings = defaultSiteSettings;
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -26,9 +27,13 @@ export function buildOrganizationJsonLd() {
   };
 }
 
-export function buildLocalBusinessJsonLd() {
+export function buildLocalBusinessJsonLd(
+  settings: Pick<
+    SiteSettings,
+    "consultantName" | "tagline" | "phone" | "addressText" | "serviceAreaText"
+  > = defaultSiteSettings,
+) {
   const siteUrl = getSiteUrl();
-  const settings = defaultSiteSettings;
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",

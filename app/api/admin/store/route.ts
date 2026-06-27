@@ -4,6 +4,8 @@ import { getAdminSessionFromRequest } from "@/lib/admin-auth";
 import { readCmsStore, writeCmsStore } from "@/lib/cms-store/server";
 import type { CmsStore } from "@/lib/cms-store/types";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin(req: NextRequest) {
   const session = await getAdminSessionFromRequest(req);
   if (!session) return null;
