@@ -1,24 +1,38 @@
 import type { MetadataRoute } from "next";
-import { robotsDisallowPaths } from "@/lib/sitemap-config";
+import {
+  robotsDisallowPaths,
+  sitemapChildUrl,
+  sitemapIds,
+} from "@/lib/sitemap-config";
 import { getSiteUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   const base = getSiteUrl();
+  const disallow = [...robotsDisallowPaths];
 
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: robotsDisallowPaths,
+        disallow,
       },
       {
         userAgent: "Googlebot",
         allow: "/",
-        disallow: robotsDisallowPaths,
+        disallow,
+      },
+      {
+        userAgent: "Bingbot",
+        allow: "/",
+        disallow,
       },
     ],
-    sitemap: `${base}/sitemap.xml`,
+    sitemap: [
+      `${base}/sitemap.xml`,
+      sitemapChildUrl(base, sitemapIds.pages),
+      sitemapChildUrl(base, sitemapIds.news),
+    ],
     host: base,
   };
 }
