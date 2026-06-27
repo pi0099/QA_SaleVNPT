@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { put } from "@vercel/blob";
 import { getAdminSessionFromRequest } from "@/lib/admin-auth";
+import { blobSdkOptions, canUseVercelBlob } from "@/lib/cms-store/blob-auth";
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -31,13 +32,12 @@ export async function POST(req: NextRequest) {
 
     const safeName = file.name.replace(/[^\w.-]+/g, "-").toLowerCase();
     const filename = `${Date.now()}-${safeName}`;
-    const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
 
-    if (token) {
+    if (canUseVercelBlob()) {
       const blob = await put(`banners/${filename}`, file, {
         access: "public",
-        token,
         addRandomSuffix: false,
+        ...blobSdkOptions(),
       });
       return NextResponse.json({ url: blob.url });
     }

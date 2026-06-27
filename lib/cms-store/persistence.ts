@@ -1,22 +1,22 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { list, put } from "@vercel/blob";
+import {
+  blobSdkOptions,
+  canUseVercelBlob,
+} from "@/lib/cms-store/blob-auth";
 import type { CmsStore } from "@/lib/cms-store/types";
 
 const STORE_FILENAME = "cms-store.json";
 const STORE_PATH = path.join(process.cwd(), "data", STORE_FILENAME);
 const BLOB_PATHNAME = "cms/cms-store.json";
 
-function blobToken(): string | undefined {
-  return process.env.BLOB_READ_WRITE_TOKEN?.trim() || undefined;
-}
-
 export function getStorePath() {
   return STORE_PATH;
 }
 
 export function canPersistToBlob(): boolean {
-  return Boolean(blobToken());
+  return canUseVercelBlob();
 }
 
 async function readStoreFromFile(): Promise<CmsStore | null> {
@@ -30,11 +30,10 @@ async function readStoreFromFile(): Promise<CmsStore | null> {
 }
 
 async function readStoreFromBlob(): Promise<CmsStore | null> {
-  const token = blobToken();
-  if (!token) return null;
+  if (!canUseVercelBlob()) return null;
 
   try {
-    const { blobs } = await list({ prefix: "cms/", token });
+    const { blobs } = await list({ prefix: "cms/", ...blobSdkOptions() });
     const hit =
       blobs.find((blob) => blob.pathname === BLOB_PATHNAME) ??
       blobs.find((blob) => blob.pathname.endsWith(STORE_FILENAME));
@@ -61,9 +60,10 @@ async function writeStoreToFile(store: CmsStore): Promise<void> {
 }
 
 async function writeStoreToBlob(store: CmsStore): Promise<void> {
-  const token = blobToken();
-  if (!token) {
-    throw new Error("BLOB_READ_WRITE_TOKEN chưa được cấu hình trên Vercel");
+  if (!canUseVercelBlob()) {
+    throw new Error(
+      "Chưa cấu hình Vercel Blob. Connect store qa-sale-vnpt-blob vào project và redeploy.",
+    );
   }
 
   await put(BLOB_PATHNAME, JSON.stringify(store, null, 2), {
@@ -71,15 +71,14 @@ async function writeStoreToBlob(store: CmsStore): Promise<void> {
     contentType: "application/json",
     addRandomSuffix: false,
     allowOverwrite: true,
-    token,
+    ...blobSdkOptions(),
   });
 }
 
 export async function writePersistedStore(store: CmsStore): Promise<void> {
-  const token = blobToken();
   let fileError: unknown;
 
-  if (token) {
+  if (canUseVercelBlob()) {
     await writeStoreToBlob(store);
     try {
       await writeStoreToFile(store);
@@ -97,7 +96,7 @@ export async function writePersistedStore(store: CmsStore): Promise<void> {
 
   if (fileError) {
     throw new Error(
-      "Không ghi được CMS store. Trên Vercel cần bật Blob Storage và env BLOB_READ_WRITE_TOKEN.",
+      "Không ghi được CMS store. Trên Vercel: connect Blob store vào project (BLOB_STORE_ID) rồi redeploy.",
     );
   }
 }
