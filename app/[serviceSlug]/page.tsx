@@ -22,6 +22,8 @@ export async function generateStaticParams() {
   return slugs.map((serviceSlug) => ({ serviceSlug }));
 }
 
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const service = await fetchServiceBySlug(params.serviceSlug);
   if (!service) return {};

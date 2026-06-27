@@ -12,6 +12,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/sitemap/:id.xml",
+        destination: "/sitemap/:id",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -41,5 +41,5 @@ export const sitemapIds = {
 export type SitemapId = (typeof sitemapIds)[keyof typeof sitemapIds];
 
 export function sitemapChildUrl(base: string, id: SitemapId): string {
-  return `${base}/sitemap/${id}.xml`;
+  return `${base}/sitemap/${id}`;
 }
