@@ -10,6 +10,8 @@ type HeroProductCarouselProps = {
   products: HomepageBannerEntry[];
 };
 
+const HERO_BANNER_BG = "#071a44";
+
 function HeroBannerImage({
   imageUrl,
   alt,
@@ -27,7 +29,7 @@ function HeroBannerImage({
       decoding="async"
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : "auto"}
-      className="absolute inset-0 h-full w-full object-cover object-center"
+      className="home-hero-banner-img"
     />
   );
 }
@@ -84,27 +86,54 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
       aria-label="Banner trang chủ"
     >
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="home-hero-banner relative min-h-[280px] overflow-hidden rounded-3xl bg-[#071a44] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] ring-1 ring-white/10 sm:min-h-[340px] md:min-h-[400px]">
-          {imageUrl ? (
-            <HeroBannerImage
-              key={bannerId}
-              imageUrl={imageUrl}
-              alt={`Banner ${product.title}`}
-              priority={activeIndex === 0}
-            />
-          ) : null}
+        <div className="overflow-hidden rounded-3xl shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/80">
+          <div
+            className="home-hero-banner flex min-h-[200px] items-center justify-center px-3 py-4 sm:min-h-[240px] sm:px-6 sm:py-6"
+            style={{ backgroundColor: HERO_BANNER_BG }}
+          >
+            {imageUrl ? (
+              <HeroBannerImage
+                key={bannerId}
+                imageUrl={imageUrl}
+                alt={`Banner ${product.title}`}
+                priority={activeIndex === 0}
+              />
+            ) : null}
 
-          <div className="home-hero-overlay pointer-events-none absolute inset-0 z-[1]" />
+            {activeIndex === 0 ? (
+              <h1 className="sr-only">{product.title} — gói VNPT nổi bật</h1>
+            ) : (
+              <h2 className="sr-only">{product.title}</h2>
+            )}
+          </div>
 
-          {activeIndex === 0 ? (
-            <h1 className="sr-only">{product.title} — gói VNPT nổi bật</h1>
-          ) : (
-            <h2 className="sr-only">{product.title}</h2>
-          )}
+          <div className="hero-cta-bar flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 bg-gradient-to-r from-slate-50 via-white to-sky-50 px-4 py-3.5 sm:px-6 sm:py-4">
+            <p className="text-sm font-medium text-slate-600">
+              {product.title}
+              <span className="hidden text-slate-400 sm:inline"> · Tư vấn &amp; đăng ký qua Zalo</span>
+            </p>
 
-          <div className="relative z-10 flex min-h-[280px] flex-col justify-end p-5 sm:min-h-[340px] sm:p-8 md:min-h-[400px]">
-            {zaloHref ? (
-              <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              {count > 1 ? (
+                <div className="flex items-center gap-2" aria-label="Chọn slide banner">
+                  {products.map((entry, i) => (
+                    <button
+                      key={entry.bannerId}
+                      type="button"
+                      aria-label={`Xem ${entry.card.title}`}
+                      aria-current={i === activeIndex ? "true" : undefined}
+                      onClick={() => goTo(i)}
+                      className={`h-2 rounded-full transition-all ${
+                        i === activeIndex
+                          ? "w-7 bg-[#2563eb]"
+                          : "w-2 bg-slate-300 hover:bg-slate-400"
+                      }`}
+                    />
+                  ))}
+                </div>
+              ) : null}
+
+              {zaloHref ? (
                 <a
                   href={zaloHref}
                   target="_blank"
@@ -115,31 +144,12 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
                       destination: zaloHref,
                     })
                   }
-                  className="hero-main-cta inline-flex min-h-[52px] items-center justify-center rounded-full px-8 py-3.5 text-base font-bold text-white shadow-lg"
+                  className="hero-main-cta inline-flex min-h-[44px] items-center justify-center rounded-full px-7 py-2.5 text-sm font-bold text-white shadow-md sm:min-h-[48px] sm:px-8 sm:text-base"
                 >
                   Đăng ký
                 </a>
-              </div>
-            ) : null}
-
-            {count > 1 ? (
-              <div className="mt-4 flex items-center gap-2">
-                {products.map((entry, i) => (
-                  <button
-                    key={entry.bannerId}
-                    type="button"
-                    aria-label={`Xem ${entry.card.title}`}
-                    aria-current={i === activeIndex ? "true" : undefined}
-                    onClick={() => goTo(i)}
-                    className={`h-2.5 rounded-full transition-all ${
-                      i === activeIndex
-                        ? "w-8 bg-white"
-                        : "w-2.5 bg-white/40 hover:bg-white/70"
-                    }`}
-                  />
-                ))}
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

@@ -279,20 +279,22 @@ body {
 
 .home-hero-banner {
   background-repeat: no-repeat;
-  background-position: 85% center;
-  background-size: cover;
-  opacity: 1;
+  background-position: center center;
 }
 
-/* Nhẹ — để ảnh banner CMS hiện rõ, chỉ tối nhẹ phía dưới cho nút CTA */
-.home-hero-overlay {
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 58%,
-    rgba(3, 13, 40, 0.35) 82%,
-    rgba(3, 13, 40, 0.55) 100%
-  );
+/* Giữ tỉ lệ gốc — không crop/zoom; căn giữa, khoảng trống do nền banner fill */
+.home-hero-banner-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(520px, 72vh);
+  object-fit: contain;
+  object-position: center center;
+}
+
+.hero-cta-bar {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .home-hero-text-shadow {
@@ -330,17 +332,8 @@ body {
 }
 
 @media (max-width: 767px) {
-  .home-hero-banner {
-    background-position: center center;
-  }
-
-  .home-hero-overlay {
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      transparent 45%,
-      rgba(3, 13, 40, 0.5) 100%
-    );
+  .home-hero-banner-img {
+    max-height: min(360px, 58vh);
   }
 }
 
