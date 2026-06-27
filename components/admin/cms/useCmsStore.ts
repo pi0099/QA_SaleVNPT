@@ -40,13 +40,13 @@ export function useCmsStore() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(next),
         });
+        const data = (await res.json().catch(() => null)) as
+          | { error?: string; store?: CmsStore }
+          | null;
         if (!res.ok) {
-          const data = (await res.json().catch(() => null)) as
-            | { error?: string }
-            | null;
           throw new Error(data?.error ?? "Lưu thất bại");
         }
-        setStore(next);
+        setStore(data?.store ?? next);
         notifyCmsUpdated();
         setToast("Đã lưu thành công");
         setTimeout(() => setToast(null), 3000);

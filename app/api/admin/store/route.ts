@@ -16,7 +16,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const store = await readCmsStore();
-  return NextResponse.json(store);
+  return NextResponse.json(store, {
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
+    },
+  });
 }
 
 export async function PUT(req: NextRequest) {
@@ -30,7 +34,15 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "Invalid store payload" }, { status: 400 });
     }
     await writeCmsStore(body);
-    return NextResponse.json({ ok: true, updatedAt: body.updatedAt });
+    const saved = await readCmsStore();
+    return NextResponse.json(
+      { ok: true, updatedAt: saved.updatedAt, store: saved },
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      },
+    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Failed to save store";

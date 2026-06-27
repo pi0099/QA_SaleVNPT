@@ -19,8 +19,18 @@ export function canUseVercelBlob(): boolean {
   return Boolean(blobReadWriteToken()) || hasBlobOidc();
 }
 
-/** Chỉ truyền `token` khi dùng legacy auth — OIDC dùng env tự động */
-export function blobSdkOptions(): Pick<PutCommandOptions, "token"> {
-  const token = blobReadWriteToken();
-  return token ? { token } : {};
+export function isVercelRuntime(): boolean {
+  return process.env.VERCEL === "1";
 }
+
+/** Chỉ truyền `token` khi dùng legacy auth — OIDC dùng env tự động */
+export function blobSdkOptions(): Pick<PutCommandOptions, "token" | "storeId"> {
+  const token = blobReadWriteToken();
+  if (token) return { token };
+  const storeId = blobStoreId();
+  if (storeId) return { storeId };
+  return {};
+}
+
+/** CMS JSON thay đổi thường xuyên — cache tối thiểu (60s) để tránh đọc bản cũ */
+export const CMS_BLOB_CACHE_MAX_AGE = 60;

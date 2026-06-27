@@ -1,9 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { list, put } from "@vercel/blob";
+import { BlobNotFoundError, get, head, put } from "@vercel/blob";
 import {
   blobSdkOptions,
   canUseVercelBlob,
+  CMS_BLOB_CACHE_MAX_AGE,
+  isVercelRuntime,
 } from "@/lib/cms-store/blob-auth";
 import type { CmsStore } from "@/lib/cms-store/types";
 
@@ -29,28 +31,62 @@ async function readStoreFromFile(): Promise<CmsStore | null> {
   }
 }
 
-async function readStoreFromBlob(): Promise<CmsStore | null> {
-  if (!canUseVercelBlob()) return null;
-
+async function parseStoreJson(text: string): Promise<CmsStore | null> {
   try {
-    const { blobs } = await list({ prefix: "cms/", ...blobSdkOptions() });
-    const hit =
-      blobs.find((blob) => blob.pathname === BLOB_PATHNAME) ??
-      blobs.find((blob) => blob.pathname.endsWith(STORE_FILENAME));
-    if (!hit?.url) return null;
-
-    const res = await fetch(hit.url, { cache: "no-store" });
-    if (!res.ok) return null;
-    const parsed = (await res.json()) as CmsStore;
+    const parsed = JSON.parse(text) as CmsStore;
     return parsed?.version === 1 ? parsed : null;
   } catch {
     return null;
   }
 }
 
+async function readStoreFromBlob(): Promise<CmsStore | null> {
+  if (!canUseVercelBlob()) return null;
+
+  const sdkOptions = blobSdkOptions();
+
+  try {
+    const result = await get(BLOB_PATHNAME, {
+      access: "public",
+      ...sdkOptions,
+    });
+
+    if (result?.statusCode === 200 && result.stream) {
+      const text = await new Response(result.stream).text();
+      const parsed = await parseStoreJson(text);
+      if (parsed) return parsed;
+    }
+  } catch (error) {
+    if (!(error instanceof BlobNotFoundError)) {
+      console.error("[cms-store] blob get failed:", error);
+    }
+  }
+
+  try {
+    const meta = await head(BLOB_PATHNAME, sdkOptions);
+    if (!meta?.url) return null;
+
+    const res = await fetch(`${meta.url}?v=${meta.uploadedAt.getTime()}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return parseStoreJson(await res.text());
+  } catch (error) {
+    if (!(error instanceof BlobNotFoundError)) {
+      console.error("[cms-store] blob head/fetch failed:", error);
+    }
+    return null;
+  }
+}
+
 export async function readPersistedStore(): Promise<CmsStore | null> {
-  const fromBlob = await readStoreFromBlob();
-  if (fromBlob) return fromBlob;
+  if (canUseVercelBlob()) {
+    const fromBlob = await readStoreFromBlob();
+    if (fromBlob) return fromBlob;
+    // Trên Vercel: không fallback file trong repo (luôn là bản cũ từ git)
+    if (isVercelRuntime()) return null;
+  }
+
   return readStoreFromFile();
 }
 
@@ -71,6 +107,7 @@ async function writeStoreToBlob(store: CmsStore): Promise<void> {
     contentType: "application/json",
     addRandomSuffix: false,
     allowOverwrite: true,
+    cacheControlMaxAge: CMS_BLOB_CACHE_MAX_AGE,
     ...blobSdkOptions(),
   });
 }
