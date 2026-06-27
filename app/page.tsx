@@ -6,7 +6,10 @@ import {
   buildHomepageItemListJsonLd,
 } from "@/lib/content/schema";
 import { fetchHomepageBanners, fetchHomepageSections, fetchHomepageSeo } from "@/lib/content";
+import { resolveHomepageBannerEntries } from "@/lib/packages/helpers";
 import { buildPageMetadata } from "@/lib/seo";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchHomepageSeo();
@@ -21,6 +24,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const sections = await fetchHomepageSections();
   const homepageBanners = await fetchHomepageBanners();
+  const initialBannerEntries = resolveHomepageBannerEntries(
+    sections,
+    homepageBanners,
+  );
   const faqItems = faqsData
     .filter((f) => f.isActive)
     .sort((a, b) => a.order - b.order)
@@ -38,7 +45,11 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HomeView initialSections={sections} initialBanners={homepageBanners} />
+      <HomeView
+        initialSections={sections}
+        initialBanners={homepageBanners}
+        initialBannerEntries={initialBannerEntries}
+      />
     </>
   );
 }

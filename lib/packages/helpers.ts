@@ -1,3 +1,4 @@
+import type { HomepageBannerSlide } from "@/lib/cms-store/types";
 import { sectionServiceMap } from "@/lib/content/section-map";
 import type {
   HomepageTier,
@@ -149,7 +150,7 @@ export type HeroProductEntry = HomepageBannerEntry;
 
 export function resolveHomepageBannerEntries(
   sections: PackageSection[],
-  banners: import("@/lib/cms-store/types").HomepageBannerSlide[],
+  banners: HomepageBannerSlide[],
 ): HomepageBannerEntry[] {
   const sorted = [...banners].sort(
     (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999),
@@ -157,9 +158,24 @@ export function resolveHomepageBannerEntries(
 
   return sorted
     .map((banner) => {
-      const section = sections.find((s) => s.id === banner.sectionId);
-      const card = section?.cards.find((c) => c.id === banner.cardId);
-      if (!section || !card || !banner.imageUrl?.trim()) return null;
+      if (!banner.imageUrl?.trim()) return null;
+
+      let section = sections.find((s) => s.id === banner.sectionId);
+      let card = section?.cards.find((c) => c.id === banner.cardId);
+
+      if (!card) {
+        for (const candidate of sections) {
+          const hit = candidate.cards.find((c) => c.id === banner.cardId);
+          if (hit) {
+            section = candidate;
+            card = hit;
+            break;
+          }
+        }
+      }
+
+      if (!section || !card) return null;
+
       return {
         bannerId: banner.id,
         card,
@@ -169,6 +185,15 @@ export function resolveHomepageBannerEntries(
       };
     })
     .filter((entry): entry is HomepageBannerEntry => entry != null);
+}
+
+export function pickHomepageBannerSlides(
+  cmsBanners: HomepageBannerSlide[] | undefined,
+  initialBanners: HomepageBannerSlide[] | undefined,
+): HomepageBannerSlide[] {
+  if (cmsBanners && cmsBanners.length > 0) return cmsBanners;
+  if (initialBanners && initialBanners.length > 0) return initialBanners;
+  return [];
 }
 
 /** @deprecated use resolveHomepageBannerEntries */

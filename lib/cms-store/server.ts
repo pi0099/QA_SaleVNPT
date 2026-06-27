@@ -5,10 +5,17 @@ import {
   writePersistedStore,
 } from "@/lib/cms-store/persistence";
 import { migrateCmsSections } from "@/lib/packages/helpers";
-import type { CmsStore } from "@/lib/cms-store/types";
+import type { CmsStore, HomepageBannerSlide } from "@/lib/cms-store/types";
 import { site as defaultLegacySite } from "@/lib/data";
 
-let memoryStore: CmsStore | null = null;
+function normalizeHomepageBanners(
+  banners: HomepageBannerSlide[] | undefined,
+): HomepageBannerSlide[] {
+  if (Array.isArray(banners) && banners.length > 0) {
+    return banners;
+  }
+  return structuredClone(defaultHomepageBanners);
+}
 
 /** Sync legacy contact fields between siteSettings and legacySite */
 function syncLegacyContact(store: CmsStore): CmsStore {
@@ -17,14 +24,10 @@ function syncLegacyContact(store: CmsStore): CmsStore {
   const messenger =
     store.siteSettings.messengerUrl ?? defaultLegacySite.messenger ?? "";
 
-  const homepageBanners = Array.isArray(store.homepageBanners)
-    ? store.homepageBanners
-    : structuredClone(defaultHomepageBanners);
-
   return {
     ...store,
     sections: migrateCmsSections(store.sections),
-    homepageBanners,
+    homepageBanners: normalizeHomepageBanners(store.homepageBanners),
     legacySite: {
       phoneNumber: phone,
       zalo,
@@ -41,42 +44,37 @@ function syncLegacyContact(store: CmsStore): CmsStore {
 
 export { getStorePath } from "@/lib/cms-store/persistence";
 
+/** Always read fresh from persistence — no cross-request memory cache (serverless-safe). */
 export async function readCmsStore(): Promise<CmsStore> {
-  if (memoryStore) return memoryStore;
-
   const persisted = await readPersistedStore();
   if (persisted) {
-    memoryStore = syncLegacyContact(persisted);
-    return memoryStore;
+    return syncLegacyContact(persisted);
   }
 
   const defaults = buildDefaultCmsStore();
-  memoryStore = defaults;
   try {
     await writeCmsStore(defaults, { skipMemory: true });
   } catch {
     // read-only filesystem (e.g. serverless without blob) — memory only
   }
-  return memoryStore;
+  return defaults;
 }
 
 export async function writeCmsStore(
   store: CmsStore,
   opts?: { skipMemory?: boolean },
 ): Promise<void> {
+  void opts;
   const payload: CmsStore = {
     ...syncLegacyContact(store),
     updatedAt: new Date().toISOString(),
   };
-  if (!opts?.skipMemory) {
-    memoryStore = payload;
-  }
   await writePersistedStore(payload);
 }
 
-/** Clear memory cache after external write */
+/** @deprecated no-op — reads are always fresh from persistence */
 export function invalidateCmsStoreCache() {
-  memoryStore = null;
+  // kept for API compatibility
 }
 
 export async function updateCmsStore(

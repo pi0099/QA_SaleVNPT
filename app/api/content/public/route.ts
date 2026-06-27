@@ -7,28 +7,35 @@ export async function GET() {
   const { legacySite, homepageSeo, sections, siteSettings, homepageBanners } =
     store;
 
-  return NextResponse.json({
-    sections,
-    homepageBanners,
-    site: legacySite,
-    seo: homepageSeo,
-    siteSettings: {
-      siteName: siteSettings.siteName,
-      tagline: siteSettings.tagline,
-      consultantName: siteSettings.consultantName,
-      serviceAreaText: siteSettings.serviceAreaText,
-      disclaimer: siteSettings.disclaimer,
-      logo: siteSettings.logo,
-      headerSlogan: siteSettings.headerSlogan,
-      footerColumns: siteSettings.footerColumns,
-      copyrightText: siteSettings.copyrightText,
-      designByText: siteSettings.designByText,
-      designByUrl: siteSettings.designByUrl,
-      primaryCtaText: siteSettings.primaryCtaText,
-      secondaryCtaText: siteSettings.secondaryCtaText,
+  return NextResponse.json(
+    {
+      sections,
+      homepageBanners,
+      site: legacySite,
+      seo: homepageSeo,
+      siteSettings: {
+        siteName: siteSettings.siteName,
+        tagline: siteSettings.tagline,
+        consultantName: siteSettings.consultantName,
+        serviceAreaText: siteSettings.serviceAreaText,
+        disclaimer: siteSettings.disclaimer,
+        logo: siteSettings.logo,
+        headerSlogan: siteSettings.headerSlogan,
+        footerColumns: siteSettings.footerColumns,
+        copyrightText: siteSettings.copyrightText,
+        designByText: siteSettings.designByText,
+        designByUrl: siteSettings.designByUrl,
+        primaryCtaText: siteSettings.primaryCtaText,
+        secondaryCtaText: siteSettings.secondaryCtaText,
+      },
+      updatedAt: store.updatedAt,
     },
-    updatedAt: store.updatedAt,
-  });
+    {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    },
+  );
 }
 
 export async function HEAD() {

@@ -5,14 +5,20 @@ import HomeProductSection from "@/components/HomeProductSection";
 import HomeFaqSection from "@/components/HomeFaqSection";
 import LeadForm from "@/components/LeadForm";
 import { useCms } from "@/components/cms/CmsProvider";
-import { resolveHomepageBannerEntries } from "@/lib/packages/helpers";
+import type { HomepageBannerEntry } from "@/lib/packages/helpers";
+import {
+  pickHomepageBannerSlides,
+  resolveHomepageBannerEntries,
+} from "@/lib/packages/helpers";
 import type { PackageSection } from "@/lib/data";
 import type { HomepageBannerSlide } from "@/lib/cms-store/types";
+import { useMemo } from "react";
 
 type HomeViewProps = {
-  /** Server-provided sections for initial SEO render */
   initialSections?: PackageSection[];
   initialBanners?: HomepageBannerSlide[];
+  /** Server-resolved banner entries — always in sync with CMS at request time */
+  initialBannerEntries?: HomepageBannerEntry[];
 };
 
 function DisclaimerNotice({ className = "" }: { className?: string }) {
@@ -37,14 +43,32 @@ function DisclaimerNotice({ className = "" }: { className?: string }) {
   );
 }
 
-export default function HomeView({ initialSections, initialBanners }: HomeViewProps) {
+export default function HomeView({
+  initialSections,
+  initialBanners,
+  initialBannerEntries,
+}: HomeViewProps) {
   const { cms } = useCms();
-  const sections = cms.sections.length ? cms.sections : (initialSections ?? []);
-  const banners =
-    cms.homepageBanners?.length
-      ? cms.homepageBanners
-      : (initialBanners ?? []);
-  const bannerEntries = resolveHomepageBannerEntries(sections, banners);
+
+  const sections = useMemo(
+    () => (cms.sections.length > 0 ? cms.sections : (initialSections ?? [])),
+    [cms.sections, initialSections],
+  );
+
+  const bannerEntries = useMemo(() => {
+    const slides = pickHomepageBannerSlides(
+      cms.homepageBanners,
+      initialBanners,
+    );
+    const resolved = resolveHomepageBannerEntries(sections, slides);
+    if (resolved.length > 0) return resolved;
+    return initialBannerEntries ?? [];
+  }, [
+    cms.homepageBanners,
+    initialBanners,
+    initialBannerEntries,
+    sections,
+  ]);
 
   return (
     <>
