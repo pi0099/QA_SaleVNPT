@@ -284,22 +284,15 @@ body {
   opacity: 1;
 }
 
-/* Một lớp phủ: tối dần bên tráy để chữ đọc rõ, nhường chỗ ảnh router bên phải */
+/* Nhẹ — để ảnh banner CMS hiện rõ, chỉ tối nhẹ phía dưới cho nút CTA */
 .home-hero-overlay {
-  background:
-    linear-gradient(
-      105deg,
-      #030d28 0%,
-      rgba(3, 13, 40, 0.92) 28%,
-      rgba(8, 37, 95, 0.55) 52%,
-      rgba(15, 65, 140, 0.18) 72%,
-      transparent 100%
-    ),
-    radial-gradient(
-      120% 80% at 90% 45%,
-      rgba(56, 189, 248, 0.12) 0%,
-      transparent 55%
-    );
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 58%,
+    rgba(3, 13, 40, 0.35) 82%,
+    rgba(3, 13, 40, 0.55) 100%
+  );
 }
 
 .home-hero-text-shadow {
@@ -338,15 +331,15 @@ body {
 
 @media (max-width: 767px) {
   .home-hero-banner {
-    background-position: 70% center;
+    background-position: center center;
   }
 
   .home-hero-overlay {
     background: linear-gradient(
       180deg,
-      rgba(3, 13, 40, 0.94) 0%,
-      rgba(3, 13, 40, 0.82) 42%,
-      rgba(8, 47, 120, 0.45) 100%
+      transparent 0%,
+      transparent 45%,
+      rgba(3, 13, 40, 0.5) 100%
     );
   }
 }

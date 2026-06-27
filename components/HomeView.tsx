@@ -48,7 +48,7 @@ export default function HomeView({
   initialBanners,
   initialBannerEntries,
 }: HomeViewProps) {
-  const { cms } = useCms();
+  const { cms, loaded: cmsLoaded } = useCms();
 
   const sections = useMemo(
     () => (cms.sections.length > 0 ? cms.sections : (initialSections ?? [])),
@@ -56,6 +56,10 @@ export default function HomeView({
   );
 
   const bannerEntries = useMemo(() => {
+    if (!cmsLoaded && initialBannerEntries && initialBannerEntries.length > 0) {
+      return initialBannerEntries;
+    }
+
     const slides = pickHomepageBannerSlides(
       cms.homepageBanners,
       initialBanners,
@@ -64,6 +68,7 @@ export default function HomeView({
     if (resolved.length > 0) return resolved;
     return initialBannerEntries ?? [];
   }, [
+    cmsLoaded,
     cms.homepageBanners,
     initialBanners,
     initialBannerEntries,

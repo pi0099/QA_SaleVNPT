@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
@@ -243,12 +242,11 @@ export default function AdminHomepagePage() {
                       <td className="px-3 py-3">
                         {banner.imageUrl ? (
                           <div className="relative h-16 w-28 overflow-hidden rounded-lg border border-slate-200">
-                            <Image
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
                               src={banner.imageUrl}
                               alt="Xem trước banner"
-                              fill
-                              className="object-cover"
-                              unoptimized
+                              className="h-full w-full object-cover"
                             />
                           </div>
                         ) : (

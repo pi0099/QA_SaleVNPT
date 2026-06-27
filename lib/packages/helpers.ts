@@ -191,8 +191,10 @@ export function pickHomepageBannerSlides(
   cmsBanners: HomepageBannerSlide[] | undefined,
   initialBanners: HomepageBannerSlide[] | undefined,
 ): HomepageBannerSlide[] {
-  if (cmsBanners && cmsBanners.length > 0) return cmsBanners;
-  if (initialBanners && initialBanners.length > 0) return initialBanners;
+  const cms = cmsBanners?.filter((b) => b.imageUrl?.trim()) ?? [];
+  if (cms.length > 0) return cms;
+  const initial = initialBanners?.filter((b) => b.imageUrl?.trim()) ?? [];
+  if (initial.length > 0) return initial;
   return [];
 }
 

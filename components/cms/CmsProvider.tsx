@@ -17,6 +17,8 @@ import {
 
 type CmsContextValue = {
   cms: CmsPayload;
+  /** True after the first successful fetch from /api/content/public */
+  loaded: boolean;
   reload: () => void;
 };
 
@@ -50,11 +52,13 @@ async function fetchPublicCms(): Promise<CmsPayload | null> {
 
 export function CmsProvider({ children }: { children: ReactNode }) {
   const [cms, setCms] = useState<CmsPayload>(() => getDefaultCmsPayload());
+  const [loaded, setLoaded] = useState(false);
 
   const reload = useCallback(async () => {
     const fromApi = await fetchPublicCms();
     if (fromApi) {
       setCms(fromApi);
+      setLoaded(true);
       return;
     }
     if (typeof window !== "undefined") {
@@ -84,7 +88,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("vnpt-cms-update", onCustom);
   }, [reload]);
 
-  const value = useMemo(() => ({ cms, reload }), [cms, reload]);
+  const value = useMemo(() => ({ cms, loaded, reload }), [cms, loaded, reload]);
 
   return (
     <CmsContext.Provider value={value}>{children}</CmsContext.Provider>

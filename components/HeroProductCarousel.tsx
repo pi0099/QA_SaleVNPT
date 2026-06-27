@@ -1,21 +1,39 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useCms } from "@/components/cms/CmsProvider";
-import { contactFromSite, getZaloRegisterUrl, siteHasPhone } from "@/lib/data";
+import { getZaloRegisterUrl, siteHasZalo } from "@/lib/data";
 import type { HomepageBannerEntry } from "@/lib/packages/helpers";
-import { getDisplayPrice } from "@/lib/packages/helpers";
 import { trackLeadEvent } from "@/lib/tracking";
 
 type HeroProductCarouselProps = {
   products: HomepageBannerEntry[];
 };
 
+function HeroBannerImage({
+  imageUrl,
+  alt,
+  priority,
+}: {
+  imageUrl: string;
+  alt: string;
+  priority?: boolean;
+}) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={imageUrl}
+      alt={alt}
+      decoding="async"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+      className="absolute inset-0 h-full w-full object-cover object-center"
+    />
+  );
+}
+
 export default function HeroProductCarousel({ products }: HeroProductCarouselProps) {
   const { cms } = useCms();
-  const contact = contactFromSite(cms.site);
   const [activeIndex, setActiveIndex] = useState(0);
   const count = products.length;
 
@@ -55,135 +73,73 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
     );
   }
 
-  const { card: product, sectionId, href, imageUrl, bannerId } =
-    products[activeIndex];
-  const price = getDisplayPrice(product, "inner");
-  const zaloHref = getZaloRegisterUrl(product.title, cms.site.zalo);
-  const productHref = href && href !== "#" ? href : null;
+  const { card: product, imageUrl, bannerId } = products[activeIndex];
+  const zaloHref = siteHasZalo(cms.site)
+    ? getZaloRegisterUrl(product.title, cms.site.zalo)
+    : "";
 
   return (
     <section
       className="landing-hero-shell border-b border-sky-100/80"
-      aria-label="Sản phẩm chủ lực"
+      aria-label="Banner trang chủ"
     >
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="home-hero-banner relative min-h-[360px] overflow-hidden rounded-3xl bg-[#071a44] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] ring-1 ring-white/10 md:min-h-[400px]">
+        <div className="home-hero-banner relative min-h-[280px] overflow-hidden rounded-3xl bg-[#071a44] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] ring-1 ring-white/10 sm:min-h-[340px] md:min-h-[400px]">
           {imageUrl ? (
-            <Image
+            <HeroBannerImage
               key={bannerId}
-              src={imageUrl}
+              imageUrl={imageUrl}
               alt={`Banner ${product.title}`}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 1152px"
-              className="object-cover object-center"
-              unoptimized={imageUrl.startsWith("http")}
+              priority={activeIndex === 0}
             />
           ) : null}
 
-          {productHref ? (
-            <Link
-              href={productHref}
-              className="absolute inset-0 z-[5] block"
-              aria-label={`Xem chi tiết ${product.title}`}
-            />
-          ) : null}
+          <div className="home-hero-overlay pointer-events-none absolute inset-0 z-[1]" />
 
-          <div className="home-hero-overlay pointer-events-none absolute inset-0 z-[6]" />
+          {activeIndex === 0 ? (
+            <h1 className="sr-only">{product.title} — gói VNPT nổi bật</h1>
+          ) : (
+            <h2 className="sr-only">{product.title}</h2>
+          )}
 
-          <div className="relative z-10 grid min-h-[360px] md:min-h-[400px] md:grid-cols-12">
-            <div className="pointer-events-none flex flex-col justify-center px-6 py-10 sm:px-10 md:col-span-7">
-              {activeIndex === 0 ? (
-                <h1 className="home-hero-text-shadow text-balance text-[1.65rem] font-extrabold leading-[1.2] text-white sm:text-3xl lg:text-4xl">
-                  {product.title} — gói VNPT nổi bật
-                </h1>
-              ) : (
-                <h2 className="home-hero-text-shadow text-balance text-[1.65rem] font-extrabold leading-[1.2] text-white sm:text-3xl lg:text-4xl">
-                  {product.title}
-                </h2>
-              )}
-              <p className="home-hero-text-shadow mt-3 max-w-xl text-base leading-relaxed text-sky-100/95 sm:text-lg">
-                {product.heroSubtitle ??
-                  `${product.speed} · từ ${price}đ/tháng · tư vấn lắp đặt tận nơi TP.HCM`}
-              </p>
-            </div>
-            <div className="flex flex-col justify-end px-6 pb-8 md:col-span-5 md:items-end md:px-10 md:pb-10">
-              <div className="pointer-events-auto relative z-20 rounded-2xl border border-white/15 bg-white/10 p-5 text-white backdrop-blur-sm">
-                <p className="text-xs font-semibold uppercase tracking-wider text-sky-200">
-                  Gói nổi bật
-                </p>
-                <p className="mt-1 text-2xl font-extrabold">{product.title}</p>
-                <p className="mt-2 text-3xl font-extrabold">
-                  {price}
-                  <span className="text-lg font-bold">đ/tháng</span>
-                </p>
-                <p className="mt-1 text-sm text-sky-100/90">{product.speed}</p>
-                {productHref ? (
-                  <Link
-                    href={productHref}
-                    className="relative z-30 mt-4 inline-flex text-sm font-semibold text-sky-100 underline decoration-white/40 underline-offset-4 hover:text-white"
-                  >
-                    Xem trang sản phẩm →
-                  </Link>
-                ) : null}
-              </div>
-              <div className="pointer-events-auto relative z-20 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:justify-end">
-                {zaloHref ? (
-                  <a
-                    href={zaloHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() =>
-                      trackLeadEvent("package_register_click", {
-                        label: product.title,
-                        destination: zaloHref,
-                      })
-                    }
-                    className="hero-main-cta inline-flex min-h-[52px] items-center justify-center rounded-full px-7 py-3.5 text-base font-bold text-white shadow-lg"
-                  >
-                    Đăng ký {product.title}
-                  </a>
-                ) : null}
-                {siteHasPhone(cms.site) ? (
-                  <a
-                    href={contact.phone}
-                    onClick={() =>
-                      trackLeadEvent("phone_click", {
-                        label: "Hero carousel phone",
-                        destination: contact.phone,
-                      })
-                    }
-                    className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/35 bg-white/[0.07] px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/[0.14]"
-                  >
-                    Gọi tư vấn
-                  </a>
-                ) : null}
-                <Link
-                  href={`#${sectionId}`}
-                  className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/20 px-6 py-3.5 text-sm font-semibold text-sky-100 hover:border-white/40"
+          <div className="relative z-10 flex min-h-[280px] flex-col justify-end p-5 sm:min-h-[340px] sm:p-8 md:min-h-[400px]">
+            {zaloHref ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={zaloHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() =>
+                    trackLeadEvent("package_register_click", {
+                      label: product.title,
+                      destination: zaloHref,
+                    })
+                  }
+                  className="hero-main-cta inline-flex min-h-[52px] items-center justify-center rounded-full px-8 py-3.5 text-base font-bold text-white shadow-lg"
                 >
-                  Xem bảng giá
-                </Link>
+                  Đăng ký
+                </a>
               </div>
-              {count > 1 ? (
-                <div className="pointer-events-auto relative z-20 mt-4 flex items-center gap-2 md:justify-end">
-                  {products.map((entry, i) => (
-                    <button
-                      key={entry.bannerId}
-                      type="button"
-                      aria-label={`Xem ${entry.card.title}`}
-                      aria-current={i === activeIndex ? "true" : undefined}
-                      onClick={() => goTo(i)}
-                      className={`h-2.5 rounded-full transition-all ${
-                        i === activeIndex
-                          ? "w-8 bg-white"
-                          : "w-2.5 bg-white/40 hover:bg-white/70"
-                      }`}
-                    />
-                  ))}
-                </div>
-              ) : null}
-            </div>
+            ) : null}
+
+            {count > 1 ? (
+              <div className="mt-4 flex items-center gap-2">
+                {products.map((entry, i) => (
+                  <button
+                    key={entry.bannerId}
+                    type="button"
+                    aria-label={`Xem ${entry.card.title}`}
+                    aria-current={i === activeIndex ? "true" : undefined}
+                    onClick={() => goTo(i)}
+                    className={`h-2.5 rounded-full transition-all ${
+                      i === activeIndex
+                        ? "w-8 bg-white"
+                        : "w-2.5 bg-white/40 hover:bg-white/70"
+                    }`}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
