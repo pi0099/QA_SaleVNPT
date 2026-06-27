@@ -20,7 +20,12 @@ import { docxBatch01Drafts } from "@/data/blog-drafts/batch-01";
 import { services } from "@/data/services";
 import { postCategoryLabels } from "@/lib/content/blog-images";
 import type { PostCategory } from "@/lib/content/types";
-import type { CmsStore, ExtendedSiteSettings, PostCategoryDef } from "@/lib/cms-store/types";
+import type {
+  CmsStore,
+  ExtendedSiteSettings,
+  PostCategoryDef,
+} from "@/lib/cms-store/types";
+import { defaultHomepageBanners } from "@/lib/cms-store/banner-defaults";
 
 function buildExtendedSiteSettings(): ExtendedSiteSettings {
   return {
@@ -84,6 +89,7 @@ export function buildDefaultCmsStore(): CmsStore {
     legacySite: { ...defaultLegacySite },
     homepageSeo: { ...defaultSeo },
     sections: structuredClone(enrichedDefaultSections),
+    homepageBanners: structuredClone(defaultHomepageBanners),
     services: buildServicesWithLocal(),
     posts: [
       ...structuredClone(posts),

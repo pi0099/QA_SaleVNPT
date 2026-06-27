@@ -16,7 +16,11 @@ import {
 import { useCmsStore } from "@/components/admin/cms/useCmsStore";
 import { createCardId } from "@/lib/cms-storage";
 import type { HomepageTier, PackageCard, PackageSection } from "@/lib/data";
-import { HOMEPAGE_TIER_ORDER, TIER_LABELS } from "@/lib/packages/helpers";
+import {
+  HOMEPAGE_TIER_ORDER,
+  TIER_LABELS,
+  setSectionHomepageTier,
+} from "@/lib/packages/helpers";
 
 export default function AdminPackagesPage() {
   const { store, loading, error, toast, saving, save, patch } = useCmsStore();
@@ -27,7 +31,7 @@ export default function AdminPackagesPage() {
 
   if (loading || !store) {
     return (
-      <AdminShell title="Gói cước" subtitle="Quản lý gói cước và banner trang chủ">
+      <AdminShell title="Gói cước" subtitle="Quản lý gói cước">
         {loading ? <AdminLoading /> : <AdminError message={error} />}
       </AdminShell>
     );
@@ -83,15 +87,22 @@ export default function AdminPackagesPage() {
     const copy = {
       ...card,
       id: createCardId(),
-      title: `${card.title} (copy)`,
+      title: `${card.title} (bản sao)`,
       homepageTier: undefined,
-      isHero: false,
     };
     updateSections((sections) =>
       sections.map((s) =>
         s.id === sectionId ? { ...s, cards: [...s.cards, copy] } : s,
       ),
     );
+  }
+
+  function getTierCardId(tier: HomepageTier): string {
+    return section?.cards.find((c) => c.homepageTier === tier)?.id ?? "";
+  }
+
+  function handleTierChange(tier: HomepageTier, cardId: string) {
+    updateSection((s) => setSectionHomepageTier(s, tier, cardId));
   }
 
   const tierWarnings = section
@@ -101,7 +112,7 @@ export default function AdminPackagesPage() {
     : [];
 
   return (
-    <AdminShell title="Gói cước" subtitle="Gói cước trang chủ (3 tier) & banner hero">
+    <AdminShell title="Gói cước" subtitle="Quản lý gói cước theo từng nhóm sản phẩm">
       <AdminToast message={toast} />
       <AdminError message={error} />
 
@@ -126,7 +137,7 @@ export default function AdminPackagesPage() {
         <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
           <div className="space-y-4">
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <p className="mb-3 text-sm font-bold text-slate-800">Cài đặt section</p>
+              <p className="mb-3 text-sm font-bold text-slate-800">Cài đặt nhóm gói</p>
               <div className="grid gap-3 md:grid-cols-2">
                 <AdminField label="Chế độ giá">
                   <select
@@ -143,7 +154,7 @@ export default function AdminPackagesPage() {
                     <option value="single">Giá đồng nhất (ẩn tab)</option>
                   </select>
                 </AdminField>
-                <AdminField label="Service slug (Xem thêm)">
+                <AdminField label="Slug trang sản phẩm">
                   <input
                     className={inputClass}
                     value={section.serviceSlug ?? ""}
@@ -157,7 +168,7 @@ export default function AdminPackagesPage() {
                   />
                 </AdminField>
               </div>
-              <AdminField label="Intro SEO trang chủ">
+              <AdminField label="Mô tả SEO trên trang chủ">
                 <textarea
                   className={textareaClass}
                   rows={3}
@@ -170,10 +181,36 @@ export default function AdminPackagesPage() {
                   }
                 />
               </AdminField>
+            </div>
+
+            <div className="rounded-xl border border-sky-200 bg-sky-50 p-4 shadow-sm">
+              <p className="text-sm font-bold text-slate-900">
+                Gói hiển thị trên Trang chủ
+              </p>
+              <p className="mt-1 text-xs text-slate-600">
+                Chọn 3 gói đại diện cho section này trên trang chủ (mỗi tier một gói).
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {HOMEPAGE_TIER_ORDER.map((tier) => (
+                  <AdminField key={tier} label={TIER_LABELS[tier]}>
+                    <select
+                      className={inputClass}
+                      value={getTierCardId(tier)}
+                      onChange={(e) => handleTierChange(tier, e.target.value)}
+                    >
+                      <option value="">— Chưa chọn —</option>
+                      {section.cards.map((card) => (
+                        <option key={card.id} value={card.id}>
+                          {card.title}
+                        </option>
+                      ))}
+                    </select>
+                  </AdminField>
+                ))}
+              </div>
               {tierWarnings.length > 0 ? (
-                <p className="mt-2 text-sm text-amber-700">
-                  Thiếu tier trang chủ:{" "}
-                  {tierWarnings.map((t) => TIER_LABELS[t]).join(", ")}
+                <p className="mt-3 text-sm text-amber-700">
+                  Chưa chọn: {tierWarnings.map((t) => TIER_LABELS[t]).join(", ")}
                 </p>
               ) : null}
             </div>
@@ -183,6 +220,9 @@ export default function AdminPackagesPage() {
                 key={card.id}
                 className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
               >
+                <p className="mb-3 text-sm font-bold text-slate-800">
+                  Chi tiết gói: {card.title}
+                </p>
                 <div className="grid gap-3 md:grid-cols-2">
                   <AdminField label="Tên gói">
                     <input
@@ -192,27 +232,6 @@ export default function AdminPackagesPage() {
                         updateCard(card.id, (c) => ({ ...c, title: e.target.value }))
                       }
                     />
-                  </AdminField>
-                  <AdminField label="Tier trang chủ">
-                    <select
-                      className={inputClass}
-                      value={card.homepageTier ?? ""}
-                      onChange={(e) =>
-                        updateCard(card.id, (c) => ({
-                          ...c,
-                          homepageTier: (e.target.value || undefined) as
-                            | HomepageTier
-                            | undefined,
-                        }))
-                      }
-                    >
-                      <option value="">— Không hiển thị —</option>
-                      {HOMEPAGE_TIER_ORDER.map((tier) => (
-                        <option key={tier} value={tier}>
-                          {TIER_LABELS[tier]}
-                        </option>
-                      ))}
-                    </select>
                   </AdminField>
                   <AdminField label="Giá nội thành">
                     <input
@@ -235,7 +254,7 @@ export default function AdminPackagesPage() {
                       }
                     />
                   </AdminField>
-                  <AdminField label="Speed">
+                  <AdminField label="Tốc độ / Dung lượng">
                     <input
                       className={inputClass}
                       value={card.speed}
@@ -244,7 +263,7 @@ export default function AdminPackagesPage() {
                       }
                     />
                   </AdminField>
-                  <AdminField label="Thứ tự trang SP">
+                  <AdminField label="Thứ tự trên trang sản phẩm">
                     <input
                       type="number"
                       className={inputClass}
@@ -259,8 +278,23 @@ export default function AdminPackagesPage() {
                       }
                     />
                   </AdminField>
+                  <AdminField label="Màu thẻ">
+                    <select
+                      className={inputClass}
+                      value={card.variant}
+                      onChange={(e) =>
+                        updateCard(card.id, (c) => ({
+                          ...c,
+                          variant: e.target.value as "blue" | "orange",
+                        }))
+                      }
+                    >
+                      <option value="blue">Xanh</option>
+                      <option value="orange">Cam</option>
+                    </select>
+                  </AdminField>
                 </div>
-                <AdminField label="Features (mỗi dòng 1 feature)">
+                <AdminField label="Tính năng (mỗi dòng một mục)">
                   <textarea
                     className={textareaClass}
                     rows={3}
@@ -273,97 +307,24 @@ export default function AdminPackagesPage() {
                     }
                   />
                 </AdminField>
-                <AdminField label="Hero subtitle">
+                <AdminField label="Khuyến mãi / Ghi chú">
                   <input
                     className={inputClass}
-                    value={card.heroSubtitle ?? ""}
+                    value={card.promotion}
                     onChange={(e) =>
                       updateCard(card.id, (c) => ({
                         ...c,
-                        heroSubtitle: e.target.value || undefined,
+                        promotion: e.target.value,
                       }))
                     }
                   />
                 </AdminField>
-                <div className="mt-2 flex flex-wrap gap-4 text-sm">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={card.isPopular}
-                      onChange={(e) =>
-                        updateCard(card.id, (c) => ({
-                          ...c,
-                          isPopular: e.target.checked,
-                        }))
-                      }
-                    />
-                    Phổ biến
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={card.isHero ?? false}
-                      onChange={(e) =>
-                        updateCard(card.id, (c) => ({
-                          ...c,
-                          isHero: e.target.checked,
-                        }))
-                      }
-                    />
-                    Hero carousel (banner)
-                  </label>
-                </div>
-                {card.isHero ? (
-                  <>
-                    <AdminField label="Thứ tự banner">
-                      <input
-                        type="number"
-                        className={inputClass}
-                        value={card.heroOrder ?? ""}
-                        onChange={(e) =>
-                          updateCard(card.id, (c) => ({
-                            ...c,
-                            heroOrder: e.target.value
-                              ? Number(e.target.value)
-                              : undefined,
-                          }))
-                        }
-                      />
-                    </AdminField>
-                    <AdminField label="Ảnh banner (URL)">
-                      <input
-                        className={inputClass}
-                        value={card.heroImageUrl ?? ""}
-                        placeholder="/sim-data-u1500-banner.png"
-                        onChange={(e) =>
-                          updateCard(card.id, (c) => ({
-                            ...c,
-                            heroImageUrl: e.target.value || undefined,
-                          }))
-                        }
-                      />
-                    </AdminField>
-                    <AdminField label="Link banner (trang sản phẩm)">
-                      <input
-                        className={inputClass}
-                        value={card.heroLinkHref ?? ""}
-                        placeholder="/sim-u1500-vinaphone"
-                        onChange={(e) =>
-                          updateCard(card.id, (c) => ({
-                            ...c,
-                            heroLinkHref: e.target.value || undefined,
-                          }))
-                        }
-                      />
-                    </AdminField>
-                  </>
-                ) : null}
                 <button
                   type="button"
                   onClick={() => duplicateCard(card)}
                   className="mt-2 text-sm text-[#2563eb]"
                 >
-                  Duplicate
+                  Nhân bản gói
                 </button>
               </div>
             ))}
@@ -372,13 +333,15 @@ export default function AdminPackagesPage() {
               onClick={addCard}
               className="rounded-lg border border-dashed border-slate-300 px-4 py-3 text-sm font-semibold text-slate-600"
             >
-              + Thêm gói trong section này
+              + Thêm gói trong nhóm này
             </button>
           </div>
 
           <div className="space-y-4">
             <div>
-              <p className="mb-3 text-sm font-bold text-slate-700">Preview 3-card grid</p>
+              <p className="mb-3 text-sm font-bold text-slate-700">
+                Xem trước 3 thẻ trang chủ
+              </p>
               <HomeProductSection
                 section={section}
                 zaloBaseUrl={store.legacySite.zalo}
@@ -386,10 +349,9 @@ export default function AdminPackagesPage() {
             </div>
             {section.cards[0] ? (
               <div>
-                <p className="mb-3 text-sm font-bold text-slate-700">Preview card</p>
+                <p className="mb-3 text-sm font-bold text-slate-700">Xem trước thẻ</p>
                 <PricingCard
                   card={section.cards[0]}
-                  recommended={section.cards[0].isPopular}
                   zaloBaseUrl={store.legacySite.zalo}
                   showTierBadge
                 />
@@ -398,7 +360,7 @@ export default function AdminPackagesPage() {
           </div>
         </div>
       ) : (
-        <p className="text-sm text-slate-500">Chọn section gói cước để chỉnh sửa.</p>
+        <p className="text-sm text-slate-500">Chọn nhóm gói cước để chỉnh sửa.</p>
       )}
 
       <SaveBar

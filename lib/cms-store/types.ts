@@ -60,6 +60,18 @@ export type PostCategoryDef = {
   order: number;
 };
 
+/** Một slide banner carousel trang chủ */
+export type HomepageBannerSlide = {
+  id: string;
+  /** ID gói cước — dùng để lấy tên, link trang sản phẩm */
+  cardId: string;
+  /** ID section chứa gói */
+  sectionId: string;
+  /** URL ảnh banner (public hoặc Blob) */
+  imageUrl: string;
+  sortOrder?: number;
+};
+
 /** Full CMS store — single source of truth (file-backed, Supabase-ready). */
 export type CmsStore = {
   version: 1;
@@ -69,6 +81,8 @@ export type CmsStore = {
   legacySite: LegacySite;
   homepageSeo: SeoSettings;
   sections: PackageSection[];
+  /** Banner carousel trang chủ — quản lý tại Admin → Trang chủ & Banner */
+  homepageBanners: HomepageBannerSlide[];
   services: Service[];
   posts: Post[];
   postCategories: PostCategoryDef[];

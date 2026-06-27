@@ -5,12 +5,14 @@ import HomeProductSection from "@/components/HomeProductSection";
 import HomeFaqSection from "@/components/HomeFaqSection";
 import LeadForm from "@/components/LeadForm";
 import { useCms } from "@/components/cms/CmsProvider";
-import { getHeroProductsWithSection } from "@/lib/packages/helpers";
+import { resolveHomepageBannerEntries } from "@/lib/packages/helpers";
 import type { PackageSection } from "@/lib/data";
+import type { HomepageBannerSlide } from "@/lib/cms-store/types";
 
 type HomeViewProps = {
   /** Server-provided sections for initial SEO render */
   initialSections?: PackageSection[];
+  initialBanners?: HomepageBannerSlide[];
 };
 
 function DisclaimerNotice({ className = "" }: { className?: string }) {
@@ -35,14 +37,18 @@ function DisclaimerNotice({ className = "" }: { className?: string }) {
   );
 }
 
-export default function HomeView({ initialSections }: HomeViewProps) {
+export default function HomeView({ initialSections, initialBanners }: HomeViewProps) {
   const { cms } = useCms();
   const sections = cms.sections.length ? cms.sections : (initialSections ?? []);
-  const heroProducts = getHeroProductsWithSection(sections);
+  const banners =
+    cms.homepageBanners?.length
+      ? cms.homepageBanners
+      : (initialBanners ?? []);
+  const bannerEntries = resolveHomepageBannerEntries(sections, banners);
 
   return (
     <>
-      <HeroProductCarousel products={heroProducts} />
+      <HeroProductCarousel products={bannerEntries} />
 
       {sections.map((section, index) => (
         <HomeProductSection

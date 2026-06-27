@@ -15,7 +15,7 @@ export const HOMEPAGE_TIER_ORDER: HomepageTier[] = [
 
 export const TIER_LABELS: Record<HomepageTier, string> = {
   budget: "Rẻ nhất",
-  balanced: "Phù hợp nhất",
+  balanced: "Phổ biến",
   premium: "Xịn nhất",
 };
 
@@ -39,22 +39,43 @@ const DEFAULT_TIER_BY_CARD_ID: Record<string, HomepageTier> = {
   "cam-pro": "premium",
 };
 
-const DEFAULT_HERO_CARD_IDS = [
-  "5g-u1500",
-  "inet-hometv-2",
-  "combo-home-sanh-2",
-  "5g-soda125",
-  "5g-vd120m",
-  "sim-m",
-];
-
-const DEFAULT_HERO_IMAGE_BY_CARD_ID: Record<string, string> = {
-  "5g-u1500": "/sim-data-u1500-banner.png",
-};
-
 const DEFAULT_HERO_LINK_BY_CARD_ID: Record<string, string> = {
   "5g-u1500": "/sim-u1500-vinaphone",
 };
+
+export function setSectionHomepageTier(
+  section: PackageSection,
+  tier: HomepageTier,
+  cardId: string,
+): PackageSection {
+  if (!cardId) {
+    return {
+      ...section,
+      cards: section.cards.map((c) =>
+        c.homepageTier === tier ? { ...c, homepageTier: undefined } : c,
+      ),
+    };
+  }
+  return {
+    ...section,
+    cards: section.cards.map((c) => {
+      if (c.id === cardId) return { ...c, homepageTier: tier };
+      if (c.homepageTier === tier) return { ...c, homepageTier: undefined };
+      return c;
+    }),
+  };
+}
+
+export function listPackagePickerOptions(sections: PackageSection[]) {
+  return sections.flatMap((section) =>
+    section.cards.map((card) => ({
+      cardId: card.id,
+      sectionId: section.id,
+      label: `${section.title} — ${card.title}`,
+      href: getHeroProductHref(card, section),
+    })),
+  );
+}
 
 const DEFAULT_SERVICE_SLUG: Record<string, string> = {
   "internet-gia-dinh": "wifi-vnpt",
@@ -115,54 +136,47 @@ export function getHomepageTierCards(section: PackageSection): PackageCard[] {
   );
 }
 
-export function getHeroProducts(sections: PackageSection[]): PackageCard[] {
-  return sections
-    .flatMap((s) => s.cards)
-    .filter((c) => c.isHero)
-    .sort((a, b) => (a.heroOrder ?? 999) - (b.heroOrder ?? 999));
-}
-
-export type HeroProductEntry = {
+export type HomepageBannerEntry = {
+  bannerId: string;
   card: PackageCard;
   sectionId: string;
   href: string;
+  imageUrl: string;
 };
 
-export function getHeroProductHref(
-  card: PackageCard,
-  section: PackageSection,
-): string {
-  if (card.heroLinkHref?.trim()) return card.heroLinkHref.trim();
-  if (DEFAULT_HERO_LINK_BY_CARD_ID[card.id]) {
-    return DEFAULT_HERO_LINK_BY_CARD_ID[card.id];
-  }
-  const slug = section.serviceSlug ?? DEFAULT_SERVICE_SLUG[section.id];
-  return slug ? `/${slug}` : "#";
+/** @deprecated use resolveHomepageBannerEntries */
+export type HeroProductEntry = HomepageBannerEntry;
+
+export function resolveHomepageBannerEntries(
+  sections: PackageSection[],
+  banners: import("@/lib/cms-store/types").HomepageBannerSlide[],
+): HomepageBannerEntry[] {
+  const sorted = [...banners].sort(
+    (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999),
+  );
+
+  return sorted
+    .map((banner) => {
+      const section = sections.find((s) => s.id === banner.sectionId);
+      const card = section?.cards.find((c) => c.id === banner.cardId);
+      if (!section || !card || !banner.imageUrl?.trim()) return null;
+      return {
+        bannerId: banner.id,
+        card,
+        sectionId: section.id,
+        href: getHeroProductHref(card, section),
+        imageUrl: banner.imageUrl.trim(),
+      };
+    })
+    .filter((entry): entry is HomepageBannerEntry => entry != null);
 }
 
-export function getHeroImageUrl(card: PackageCard): string | undefined {
-  const custom = card.heroImageUrl?.trim();
-  if (custom) return custom;
-  return DEFAULT_HERO_IMAGE_BY_CARD_ID[card.id];
-}
-
+/** @deprecated use resolveHomepageBannerEntries */
 export function getHeroProductsWithSection(
   sections: PackageSection[],
-): HeroProductEntry[] {
-  return sections
-    .flatMap((s) =>
-      s.cards
-        .filter((c) => c.isHero)
-        .map((card) => ({
-          card,
-          sectionId: s.id,
-          href: getHeroProductHref(card, s),
-        })),
-    )
-    .sort(
-      (a, b) =>
-        (a.card.heroOrder ?? 999) - (b.card.heroOrder ?? 999),
-    );
+  banners: import("@/lib/cms-store/types").HomepageBannerSlide[] = [],
+): HomepageBannerEntry[] {
+  return resolveHomepageBannerEntries(sections, banners);
 }
 
 export function parsePriceNumber(price: string): number {
@@ -180,29 +194,28 @@ export function getDisplayPrice(
   return card.price;
 }
 
+export function getHeroProductHref(
+  card: PackageCard,
+  section: PackageSection,
+): string {
+  if (card.heroLinkHref?.trim()) return card.heroLinkHref.trim();
+  if (DEFAULT_HERO_LINK_BY_CARD_ID[card.id]) {
+    return DEFAULT_HERO_LINK_BY_CARD_ID[card.id];
+  }
+  const slug = section.serviceSlug ?? DEFAULT_SERVICE_SLUG[section.id];
+  return slug ? `/${slug}` : "#";
+}
+
 export function enrichPackageCard(
   card: PackageCard,
   index: number,
 ): PackageCard {
   const tier = card.homepageTier ?? DEFAULT_TIER_BY_CARD_ID[card.id];
-  const isHero = card.isHero ?? DEFAULT_HERO_CARD_IDS.includes(card.id);
-  const heroOrder =
-    card.heroOrder ??
-    (isHero
-      ? DEFAULT_HERO_CARD_IDS.indexOf(card.id) + 1 || index + 1
-      : undefined);
-  const heroImageUrl =
-    card.heroImageUrl ?? DEFAULT_HERO_IMAGE_BY_CARD_ID[card.id];
-  const heroLinkHref =
-    card.heroLinkHref ?? DEFAULT_HERO_LINK_BY_CARD_ID[card.id];
 
   return {
     ...card,
     sortOrder: card.sortOrder ?? index,
     ...(tier ? { homepageTier: tier } : {}),
-    ...(isHero ? { isHero: true, heroOrder } : {}),
-    ...(heroImageUrl ? { heroImageUrl } : {}),
-    ...(heroLinkHref ? { heroLinkHref } : {}),
   };
 }
 

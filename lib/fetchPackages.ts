@@ -15,5 +15,14 @@ export async function fetchPackageSections(): Promise<PackageSection[]> {
   return enrichedDefaultSections;
 }
 
+export async function fetchHomepageBanners() {
+  try {
+    const store = await readCmsStore();
+    return store.homepageBanners ?? [];
+  } catch {
+    return [];
+  }
+}
+
 /** @deprecated alias */
 export const fetchHomepageSections = fetchPackageSections;

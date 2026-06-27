@@ -10,6 +10,7 @@ export {
 
 export {
   fetchHomepageSections,
+  fetchHomepageBanners,
   fetchPackageSections,
 } from "@/lib/fetchPackages";
 

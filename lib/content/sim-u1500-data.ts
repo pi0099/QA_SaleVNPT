@@ -13,11 +13,39 @@ export const simU1500SeoKeywords = [
   "sim U1500 VinaPhone",
   "sim data 500GB/tháng",
   "sim data 500GB",
+  "sim data U1500 VinaPhone",
   "sim 4G VinaPhone 1 năm",
   "sim 5G VinaPhone U1500",
   "sim phát wifi 500GB",
   "sim U1500 chính hãng",
   "sim data giá rẻ 91k",
+  "mua sim U1500 VinaPhone",
+  "sim U1500 trọn gói 12 tháng",
+  "sim data VinaPhone TP.HCM",
+  "sim 500GB dùng cả năm",
+  "sim data cho camera IP",
+  "sim data livestream TikTok",
+  "sim VinaPhone modem 4G 5G",
+  "đăng ký sim U1500 online",
+  "sim data không nạp hàng tháng",
+  "sim U1500 360 ngày",
+  "sim data VNPT VinaPhone",
+];
+
+/** Thẻ từ khóa sản phẩm — hiển thị trên trang & local SEO */
+export const simU1500KeywordTags = [
+  "SIM Data 500GB",
+  "U1500 VinaPhone",
+  "Sim data 91k/tháng",
+  "Trọn gói 12 tháng",
+  "Sim phát WiFi 4G/5G",
+  "Sim cho camera IP",
+  "Sim livestream bán hàng",
+  "Sim data TP.HCM",
+  "Sim VinaPhone chính hãng",
+  "Sim không nạp hàng tháng",
+  "Sim 360 ngày",
+  "Sim thay internet cáp quang",
 ];
 
 /** Giá quy đổi trung bình — hiển thị trên landing */

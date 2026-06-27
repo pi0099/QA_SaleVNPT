@@ -61,7 +61,6 @@ export default function HomeProductSection({
           <li key={card.id}>
             <PricingCard
               card={card}
-              recommended={card.isPopular}
               zaloBaseUrl={zaloBaseUrl}
               priceZone={showTabs ? priceZone : undefined}
               hideZoneToggle={showTabs}

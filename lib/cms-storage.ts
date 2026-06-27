@@ -8,7 +8,7 @@ import {
   type SeoSettings,
   type SiteSettings,
 } from "@/lib/data";
-import type { FooterColumn } from "@/lib/cms-store/types";
+import type { FooterColumn, HomepageBannerSlide } from "@/lib/cms-store/types";
 import {
   defaultFooterColumns,
   defaultHeaderSlogan,
@@ -16,6 +16,7 @@ import {
   defaultDesignByText,
   defaultDesignByUrl,
 } from "@/lib/cms-store/footer-defaults";
+import { defaultHomepageBanners } from "@/lib/cms-store/banner-defaults";
 import { defaultSiteSettings } from "@/lib/content/site-settings";
 
 export const CMS_STORAGE_KEY = "vnpt_sale_cms_v1";
@@ -31,6 +32,7 @@ export type CmsBranding = {
 
 export type CmsPayload = {
   sections: PackageSection[];
+  homepageBanners: HomepageBannerSlide[];
   site: SiteSettings;
   seo: SeoSettings;
   branding?: CmsBranding;
@@ -188,6 +190,7 @@ function parsePayload(raw: unknown): CmsPayload | null {
     sections: sectionsRaw.map((s, i) =>
       normalizeSection(s as Record<string, unknown>, i),
     ),
+    homepageBanners: [],
     site,
     seo,
   };
@@ -213,6 +216,7 @@ export function saveCmsToStorage(payload: CmsPayload): void {
 export function getDefaultCmsPayload(): CmsPayload {
   return {
     sections: structuredClone(enrichedDefaultSections),
+    homepageBanners: structuredClone(defaultHomepageBanners),
     site: { ...defaultSite },
     seo: { ...defaultSeo },
     branding: {

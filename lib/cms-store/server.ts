@@ -1,4 +1,5 @@
 import { buildDefaultCmsStore } from "@/lib/cms-store/defaults";
+import { defaultHomepageBanners } from "@/lib/cms-store/banner-defaults";
 import {
   readPersistedStore,
   writePersistedStore,
@@ -16,9 +17,14 @@ function syncLegacyContact(store: CmsStore): CmsStore {
   const messenger =
     store.siteSettings.messengerUrl ?? defaultLegacySite.messenger ?? "";
 
+  const homepageBanners = Array.isArray(store.homepageBanners)
+    ? store.homepageBanners
+    : structuredClone(defaultHomepageBanners);
+
   return {
     ...store,
     sections: migrateCmsSections(store.sections),
+    homepageBanners,
     legacySite: {
       phoneNumber: phone,
       zalo,

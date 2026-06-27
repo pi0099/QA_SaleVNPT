@@ -5,7 +5,7 @@ import {
   buildFaqPageJsonLd,
   buildHomepageItemListJsonLd,
 } from "@/lib/content/schema";
-import { fetchHomepageSections, fetchHomepageSeo } from "@/lib/content";
+import { fetchHomepageBanners, fetchHomepageSections, fetchHomepageSeo } from "@/lib/content";
 import { buildPageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const sections = await fetchHomepageSections();
+  const homepageBanners = await fetchHomepageBanners();
   const faqItems = faqsData
     .filter((f) => f.isActive)
     .sort((a, b) => a.order - b.order)
@@ -37,7 +38,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HomeView initialSections={sections} />
+      <HomeView initialSections={sections} initialBanners={homepageBanners} />
     </>
   );
 }

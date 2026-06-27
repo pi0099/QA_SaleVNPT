@@ -1,4 +1,6 @@
 /** Khu vực phục vụ — dùng trên trang sản phẩm cho local SEO (không tạo trang riêng). */
+import { simU1500KeywordTags } from "@/lib/content/sim-u1500-data";
+
 export const hcmServiceAreaTags = [
   "TP.HCM",
   "Quận 12",
@@ -36,8 +38,10 @@ export const serviceAreaTagsBySlug: Record<string, string[]> = {
     ...hcmServiceAreaTags,
   ],
   "sim-u1500-vinaphone": [
+    ...simU1500KeywordTags,
     "SIM data 500GB TP.HCM",
     "SIM U1500 VinaPhone",
+    "Đăng ký SIM U1500",
     ...hcmServiceAreaTags,
   ],
 };

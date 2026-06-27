@@ -4,10 +4,12 @@ import { readCmsStore } from "@/lib/cms-store/server";
 /** Public homepage CMS payload from file-backed store. */
 export async function GET() {
   const store = await readCmsStore();
-  const { legacySite, homepageSeo, sections, siteSettings } = store;
+  const { legacySite, homepageSeo, sections, siteSettings, homepageBanners } =
+    store;
 
   return NextResponse.json({
     sections,
+    homepageBanners,
     site: legacySite,
     seo: homepageSeo,
     siteSettings: {

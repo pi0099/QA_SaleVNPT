@@ -28,7 +28,10 @@ async function fetchPublicCms(): Promise<CmsPayload | null> {
     if (!res.ok) return null;
     const data = await res.json();
     return {
-      sections: data.sections,
+      sections: data.sections ?? [],
+      homepageBanners: Array.isArray(data.homepageBanners)
+        ? data.homepageBanners
+        : [],
       site: data.site,
       seo: data.seo,
       branding: {

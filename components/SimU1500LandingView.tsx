@@ -16,6 +16,7 @@ import {
   simU1500FiberReplacementUses,
   simU1500Highlights,
   simU1500Intro,
+  simU1500KeywordTags,
   simU1500MonthlyPrice,
   simU1500SuitableFor,
   simU1500UsageNotes,
@@ -91,6 +92,18 @@ export default function SimU1500LandingView() {
         <p className="mt-6 inline-flex rounded-full bg-amber-50 px-4 py-2 text-sm font-bold text-amber-900 ring-1 ring-amber-200">
           Khuyến mãi chỉ {simU1500MonthlyPrice}
         </p>
+        <ul
+          className="mt-6 flex flex-wrap gap-2"
+          aria-label="Từ khóa sản phẩm SIM U1500"
+        >
+          {simU1500KeywordTags.map((tag) => (
+            <li key={tag}>
+              <span className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-900">
+                #{tag.replace(/\s+/g, "")}
+              </span>
+            </li>
+          ))}
+        </ul>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           {zaloHref ? (
             <a

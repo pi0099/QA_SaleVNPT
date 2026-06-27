@@ -4,12 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useCms } from "@/components/cms/CmsProvider";
 import { contactFromSite, getZaloRegisterUrl, siteHasPhone } from "@/lib/data";
-import type { HeroProductEntry } from "@/lib/packages/helpers";
-import { getDisplayPrice, getHeroImageUrl } from "@/lib/packages/helpers";
+import type { HomepageBannerEntry } from "@/lib/packages/helpers";
+import { getDisplayPrice } from "@/lib/packages/helpers";
 import { trackLeadEvent } from "@/lib/tracking";
 
 type HeroProductCarouselProps = {
-  products: HeroProductEntry[];
+  products: HomepageBannerEntry[];
 };
 
 export default function HeroProductCarousel({ products }: HeroProductCarouselProps) {
@@ -54,10 +54,9 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
     );
   }
 
-  const { card: product, sectionId, href } = products[activeIndex];
+  const { card: product, sectionId, href, imageUrl } = products[activeIndex];
   const price = getDisplayPrice(product, "inner");
   const zaloHref = getZaloRegisterUrl(product.title, cms.site.zalo);
-  const heroImage = getHeroImageUrl(product);
 
   return (
     <section
@@ -68,8 +67,8 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
         <div
           className="home-hero-banner relative overflow-hidden rounded-3xl bg-[#071a44] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] ring-1 ring-white/10"
           style={{
-            backgroundImage: heroImage
-              ? `linear-gradient(90deg, rgba(7,26,68,0.92) 0%, rgba(7,26,68,0.55) 45%, rgba(7,26,68,0.35) 100%), url('${heroImage}')`
+            backgroundImage: imageUrl
+              ? `linear-gradient(90deg, rgba(7,26,68,0.92) 0%, rgba(7,26,68,0.55) 45%, rgba(7,26,68,0.35) 100%), url('${imageUrl}')`
               : "url('/home-hero-banner.svg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
