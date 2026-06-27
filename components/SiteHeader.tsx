@@ -40,7 +40,7 @@ export default function SiteHeader() {
               height={40}
               className="h-8 w-auto shrink-0 sm:h-9"
             />
-            <span className="hidden min-w-0 text-sm font-semibold leading-snug text-slate-600 sm:block lg:max-w-xs">
+            <span className="hidden min-w-0 text-sm font-semibold leading-snug text-slate-600 sm:block lg:max-w-md xl:max-w-xl">
               {slogan}
             </span>
           </Link>

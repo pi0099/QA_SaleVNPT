@@ -1,6 +1,10 @@
 import { buildDefaultCmsStore } from "@/lib/cms-store/defaults";
 import { defaultHomepageBanners } from "@/lib/cms-store/banner-defaults";
 import {
+  defaultHeaderSlogan,
+  legacyHeaderSlogan,
+} from "@/lib/cms-store/footer-defaults";
+import {
   readPersistedStore,
   writePersistedStore,
 } from "@/lib/cms-store/persistence";
@@ -24,6 +28,12 @@ function syncLegacyContact(store: CmsStore): CmsStore {
   const messenger =
     store.siteSettings.messengerUrl ?? defaultLegacySite.messenger ?? "";
 
+  const headerSlogan =
+    store.siteSettings.headerSlogan === legacyHeaderSlogan ||
+    !store.siteSettings.headerSlogan?.trim()
+      ? defaultHeaderSlogan
+      : store.siteSettings.headerSlogan;
+
   return {
     ...store,
     sections: migrateCmsSections(store.sections),
@@ -38,6 +48,7 @@ function syncLegacyContact(store: CmsStore): CmsStore {
       phone,
       zaloUrl: zalo,
       messengerUrl: messenger,
+      headerSlogan,
     },
   };
 }

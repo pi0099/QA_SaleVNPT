@@ -29,6 +29,10 @@ export const defaultFooterColumns: FooterColumn[] = [
 ];
 
 export const defaultHeaderSlogan =
+  "HCM - Tư vấn các sản phẩm VNPT cùng các khuyến mãi mới nhất, rẻ nhất, phù hợp nhất với bạn";
+
+/** Previous default — migrate persisted CMS copies on read */
+export const legacyHeaderSlogan =
   "Tư vấn & lắp đặt tận nơi — Quận 12, TP.HCM";
 
 export const defaultCopyrightText =
