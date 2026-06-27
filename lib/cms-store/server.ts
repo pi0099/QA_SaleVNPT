@@ -1,40 +1,36 @@
 import { promises as fs } from "fs";
 import path from "path";
-import {
-  defaultSections,
-  defaultSeo,
-  site as defaultLegacySite,
-} from "@/lib/data";
+import { site as defaultLegacySite } from "@/lib/data";
 import { buildDefaultCmsStore } from "@/lib/cms-store/defaults";
+import { migrateCmsSections } from "@/lib/packages/helpers";
 import type { CmsStore } from "@/lib/cms-store/types";
 
 const STORE_PATH = path.join(process.cwd(), "data", "cms-store.json");
 
 let memoryStore: CmsStore | null = null;
 
-/** Always pin production packages & contact from lib/data.ts */
-function applyProductionDefaults(store: CmsStore): CmsStore {
-  const s = store.siteSettings;
+/** Sync legacy contact fields between siteSettings and legacySite */
+function syncLegacyContact(store: CmsStore): CmsStore {
+  const phone = store.siteSettings.phone || defaultLegacySite.phoneNumber;
+  const zalo = store.siteSettings.zaloUrl || defaultLegacySite.zalo;
+  const messenger =
+    store.siteSettings.messengerUrl ?? defaultLegacySite.messenger ?? "";
+
   return {
     ...store,
-    sections: structuredClone(defaultSections),
-    homepageSeo: { ...defaultSeo },
+    sections: migrateCmsSections(store.sections),
     legacySite: {
-      phoneNumber: defaultLegacySite.phoneNumber,
-      zalo: defaultLegacySite.zalo,
-      messenger: defaultLegacySite.messenger ?? "",
+      phoneNumber: phone,
+      zalo,
+      messenger,
     },
     siteSettings: {
-      ...s,
-      phone: defaultLegacySite.phoneNumber,
-      zaloUrl: defaultLegacySite.zalo,
-      messengerUrl: defaultLegacySite.messenger ?? "",
+      ...store.siteSettings,
+      phone,
+      zaloUrl: zalo,
+      messengerUrl: messenger,
     },
   };
-}
-
-function syncLegacyContact(store: CmsStore): CmsStore {
-  return applyProductionDefaults(store);
 }
 
 export function getStorePath() {

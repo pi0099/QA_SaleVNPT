@@ -32,6 +32,22 @@ export type ExtendedSiteSettings = SiteSettings & {
   facebookPixelId?: string;
   googleAnalyticsId?: string;
   googleSiteVerification?: string;
+  /** Slogan bán hàng cạnh logo header */
+  headerSlogan?: string;
+  copyrightText?: string;
+  designByText?: string;
+  designByUrl?: string;
+  footerColumns?: FooterColumn[];
+};
+
+export type FooterLink = {
+  label: string;
+  href: string;
+};
+
+export type FooterColumn = {
+  title: string;
+  links: FooterLink[];
 };
 
 export type PostCategoryDef = {

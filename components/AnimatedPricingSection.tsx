@@ -47,6 +47,7 @@ export default function AnimatedPricingSection({
   servicePath,
 }: AnimatedPricingSectionProps) {
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const zoneRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLUListElement | null>(null);
   const hasOverflowRef = useRef(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -82,8 +83,9 @@ export default function AnimatedPricingSection({
   }, [updateOverflow, section.cards.length]);
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
+    const strip = scrollRef.current;
+    const zone = zoneRef.current;
+    if (!strip || !zone) return;
 
     const dragState = {
       active: false,
@@ -97,58 +99,58 @@ export default function AnimatedPricingSection({
       const target = e.target as HTMLElement | null;
       if (target?.closest("a,button,input,textarea,select")) return;
 
-      const { scrollWidth, clientWidth } = el;
+      const { scrollWidth, clientWidth } = strip;
       if (scrollWidth <= clientWidth + SCROLL_EDGE_EPS) return;
 
       dragState.active = true;
       dragState.pointerId = e.pointerId;
       dragState.startX = e.clientX;
-      dragState.startScrollLeft = el.scrollLeft;
-      el.setPointerCapture(e.pointerId);
+      dragState.startScrollLeft = strip.scrollLeft;
+      strip.setPointerCapture(e.pointerId);
       setIsStripDragging(true);
     };
 
     const onPointerMove = (e: PointerEvent) => {
       if (!dragState.active || e.pointerId !== dragState.pointerId) return;
-      el.scrollLeft = dragState.startScrollLeft - (e.clientX - dragState.startX);
+      strip.scrollLeft = dragState.startScrollLeft - (e.clientX - dragState.startX);
     };
 
     const endDrag = (e: PointerEvent) => {
       if (!dragState.active || e.pointerId !== dragState.pointerId) return;
       dragState.active = false;
       dragState.pointerId = -1;
-      if (el.hasPointerCapture(e.pointerId)) {
-        el.releasePointerCapture(e.pointerId);
+      if (strip.hasPointerCapture(e.pointerId)) {
+        strip.releasePointerCapture(e.pointerId);
       }
       setIsStripDragging(false);
     };
 
-    el.addEventListener("pointerdown", onPointerDown);
-    el.addEventListener("pointermove", onPointerMove);
-    el.addEventListener("pointerup", endDrag);
-    el.addEventListener("pointercancel", endDrag);
+    strip.addEventListener("pointerdown", onPointerDown);
+    strip.addEventListener("pointermove", onPointerMove);
+    strip.addEventListener("pointerup", endDrag);
+    strip.addEventListener("pointercancel", endDrag);
 
     const onWheel = (e: WheelEvent) => {
       const isVerticalIntent =
         !e.shiftKey && Math.abs(e.deltaY) >= Math.abs(e.deltaX);
       if (!isVerticalIntent) return;
 
-      const { scrollWidth, clientWidth } = el;
+      const { scrollWidth, clientWidth } = strip;
       if (scrollWidth <= clientWidth + SCROLL_EDGE_EPS) return;
 
-      // Horizontal strip steals vertical wheel — forward to page at full speed.
       e.preventDefault();
+      e.stopPropagation();
       window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
     };
 
-    el.addEventListener("wheel", onWheel, { passive: false });
+    zone.addEventListener("wheel", onWheel, { passive: false });
 
     return () => {
-      el.removeEventListener("pointerdown", onPointerDown);
-      el.removeEventListener("pointermove", onPointerMove);
-      el.removeEventListener("pointerup", endDrag);
-      el.removeEventListener("pointercancel", endDrag);
-      el.removeEventListener("wheel", onWheel);
+      strip.removeEventListener("pointerdown", onPointerDown);
+      strip.removeEventListener("pointermove", onPointerMove);
+      strip.removeEventListener("pointerup", endDrag);
+      strip.removeEventListener("pointercancel", endDrag);
+      zone.removeEventListener("wheel", onWheel);
       dragState.active = false;
       dragState.pointerId = -1;
     };
@@ -225,7 +227,7 @@ export default function AnimatedPricingSection({
               href={servicePath}
               className="inline-flex min-h-[44px] items-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 hover:border-[#2563eb] hover:text-[#2563eb]"
             >
-              Xem chi tiết gói
+              Xem chi tiết
             </Link>
           </div>
         ) : null}
@@ -247,7 +249,7 @@ export default function AnimatedPricingSection({
               <span>Vuốt ngang để xem thêm gói cước nhé.</span>
             </p>
           ) : null}
-          <div className="relative min-w-0">
+          <div ref={zoneRef} className="pricing-cards-zone relative min-w-0">
             {hasOverflow ? (
               <>
                 <div
@@ -278,7 +280,7 @@ export default function AnimatedPricingSection({
                 <li
                   key={card.id}
                   data-pricing-card-id={card.id}
-                  className={`pricing-card-reveal flex w-[min(100%,20rem)] shrink-0 snap-center sm:w-[min(100%,22rem)] ${
+                  className={`pricing-card-reveal flex w-[min(100%,21rem)] shrink-0 snap-center sm:w-[min(100%,24rem)] ${
                     isVisible ? "pricing-card-reveal-visible" : ""
                   }`}
                   style={{
@@ -289,6 +291,7 @@ export default function AnimatedPricingSection({
                     card={card}
                     recommended={card.isPopular}
                     zaloBaseUrl={zaloBaseUrl}
+                    serviceDetailHref={servicePath}
                   />
                 </li>
               ))}

@@ -41,5 +41,5 @@ export const defaultServiceLinks: ServiceLink[] = [
   { href: "/internet-di-dong-vnpt", label: "Combo Internet + di động VNPT" },
   { href: "/sim-5g-vnpt", label: "SIM 5G / eSIM VNPT" },
   { href: "/camera-vnpt", label: "Camera an ninh VNPT" },
-  { href: "/wifi-vnpt-quan-12", label: "WiFi VNPT Quận 12" },
+  { href: "/wifi-vnpt#khu-vuc-phuc-vu", label: "WiFi VNPT TP.HCM" },
 ];

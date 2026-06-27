@@ -1,9 +1,13 @@
 import Link from "next/link";
 import ContentHtml from "@/components/ContentHtml";
 import CtaBox from "@/components/CtaBox";
+import FaqAccordion from "@/components/FaqAccordion";
 import LeadForm from "@/components/LeadForm";
-import PricingCard from "@/components/PricingCard";
+import ProductPricingGrid from "@/components/ProductPricingGrid";
 import Section from "@/components/Section";
+import ServiceBreadcrumbs from "@/components/ServiceBreadcrumbs";
+import ServiceAreaScope from "@/components/ServiceAreaScope";
+import { getServicePricingSections } from "@/lib/content/service-sections";
 import type { PackageSection } from "@/lib/data";
 import type { Post, Service } from "@/lib/content/types";
 import { postCategoryLabels } from "@/lib/content/blog-images";
@@ -28,17 +32,27 @@ export default function ServicePageView({
   zaloBaseUrl,
   sections,
 }: ServicePageViewProps) {
-  const section = service.sectionId
-    ? sections.find((s) => s.id === service.sectionId)
-    : undefined;
+  const pricingSections = getServicePricingSections(
+    service.slug,
+    service.sectionId,
+    sections,
+  );
+  const servicePath = `/${service.slug}`;
 
   return (
     <>
+      {/* Header gọn — H1 + mô tả ngắn */}
       <div className="landing-hero-shell border-b border-sky-100/80">
-        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
-          <div className="max-w-3xl">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+          <ServiceBreadcrumbs
+            items={[
+              { name: "Trang chủ", path: "/" },
+              { name: service.title },
+            ]}
+          />
+          <article className="max-w-3xl">
             <p className="mb-3 inline-flex items-center rounded-full border border-[#2563eb]/20 bg-[#2563eb]/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#2563eb]">
-              Tư vấn đăng ký VNPT
+              Tư vấn đăng ký VNPT · TP.HCM
             </p>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
               {service.title}
@@ -46,68 +60,120 @@ export default function ServicePageView({
             <p className="mt-4 text-lg leading-relaxed text-slate-600">
               {service.shortDescription}
             </p>
-            <p className="mt-3 text-sm text-slate-500">
-              Nhân viên VNPT hỗ trợ tư vấn tại Quận 12 và TP.HCM — không phải website chính thức toàn quốc.
-            </p>
-          </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href="#bang-gia"
+                className="inline-flex min-h-[44px] items-center rounded-full bg-[#2563eb] px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700"
+              >
+                Xem bảng giá
+              </a>
+              <a
+                href="#lead-form-service"
+                className="inline-flex min-h-[44px] items-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 hover:border-[#2563eb] hover:text-[#2563eb]"
+              >
+                Đăng ký tư vấn
+              </a>
+            </div>
+          </article>
         </div>
       </div>
 
-      {section && section.cards.length > 0 ? (
-        <Section
-          title="Bảng giá tham khảo"
-          subtitle="Giá có thể thay đổi theo thời điểm. Liên hệ để xác nhận ưu đãi hiện tại."
-          contentClassName="!mt-8"
+      {/* Bảng giá — cards trên cùng */}
+      {pricingSections.length > 0 ? (
+        <div
+          id="bang-gia"
+          className="scroll-mt-36 border-t border-sky-100/80 md:scroll-mt-40"
         >
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {section.cards.slice(0, 6).map((card) => (
-              <li key={card.id}>
-                <PricingCard
-                  card={card}
-                  recommended={card.isPopular}
-                  zaloBaseUrl={zaloBaseUrl}
-                />
-              </li>
-            ))}
-          </ul>
+          {pricingSections.map((section, index) => (
+            <Section
+              key={section.id}
+              title={
+                pricingSections.length > 1
+                  ? section.title
+                  : "Bảng giá & gói cước"
+              }
+              subtitle="Giá tham khảo nội/ngoại thành TP.HCM — liên hệ xác nhận ưu đãi hiện tại."
+              contentClassName="!mt-8"
+              className={
+                index % 2 === 0 ? "pricing-section-bg" : "pricing-section-bg-alt"
+              }
+            >
+              <ProductPricingGrid
+                section={section}
+                zaloBaseUrl={zaloBaseUrl}
+                serviceDetailHref={servicePath}
+              />
+            </Section>
+          ))}
+        </div>
+      ) : null}
+
+      {/* Mô tả chi tiết — phía dưới cards */}
+      {/* Khu vực phục vụ — local SEO tags */}
+      <ServiceAreaScope serviceSlug={service.slug} className="bg-slate-50" />
+
+      <Section
+        title={`${service.title} là gì?`}
+        contentClassName="!mt-8"
+        className="border-t border-sky-100/80 bg-white"
+      >
+        <div className="prose-service max-w-none text-slate-700">
+          <ContentHtml html={service.longContent} />
+        </div>
+      </Section>
+
+      {service.suitableForHtml ? (
+        <Section
+          title="Dịch vụ phù hợp với ai?"
+          contentClassName="!mt-8"
+          className="border-t border-sky-100/80 bg-slate-50"
+        >
+          <div className="prose-service max-w-none text-slate-700">
+            <ContentHtml html={service.suitableForHtml} />
+          </div>
         </Section>
       ) : null}
 
-      <Section title="Thông tin chi tiết" contentClassName="!mt-8">
-        <ContentHtml html={service.longContent} />
+      {service.registrationHtml ? (
+        <Section
+          title="Quy trình đăng ký"
+          subtitle="Các bước tư vấn và lắp đặt thông thường — thời gian có thể thay đổi theo địa chỉ."
+          contentClassName="!mt-8"
+          className="border-t border-sky-100/80 bg-white"
+        >
+          <div className="prose-service max-w-none text-slate-700">
+            <ContentHtml html={service.registrationHtml} />
+          </div>
+        </Section>
+      ) : null}
+
+      <Section
+        id="lead-form-service"
+        title="Đăng ký tư vấn"
+        subtitle="Điền form — tôi liên hệ lại qua điện thoại hoặc Zalo."
+        contentClassName="!mt-8"
+        className="border-t border-sky-100/80 bg-slate-50 scroll-mt-36 md:scroll-mt-40"
+      >
+        <div className="mx-auto max-w-xl">
+          <LeadForm defaultNeed={needMap[service.slug] ?? "Chưa rõ"} />
+        </div>
       </Section>
 
       <Section
+        id="service-faq"
         title="Câu hỏi thường gặp"
         subtitle="Giải đáp nhanh trước khi đăng ký."
         contentClassName="!mt-8"
+        className="border-t border-sky-100/80 bg-white"
       >
-        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-          <div className="space-y-4">
-            {service.faqs.map((item) => (
-              <article
-                key={item.question}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-              >
-                <h2 className="text-base font-bold text-slate-900">
-                  {item.question}
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  {item.answer}
-                </p>
-              </article>
-            ))}
-          </div>
-          <div>
-            <LeadForm defaultNeed={needMap[service.slug] ?? "Chưa rõ"} />
-          </div>
-        </div>
+        <FaqAccordion items={service.faqs} />
       </Section>
 
       {relatedPosts.length > 0 ? (
         <Section
           title="Bài viết liên quan"
           contentClassName="!mt-8"
+          className="border-t border-sky-100/80 bg-slate-50"
         >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {relatedPosts.map((post) => (

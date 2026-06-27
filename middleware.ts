@@ -5,6 +5,7 @@ import { ADMIN_SESSION_COOKIE } from "@/lib/admin-auth";
 const legacyRedirects: Record<string, string> = {
   "/sim-5g": "/sim-5g-vnpt",
   "/tin-tuc-cong-nghe": "/news",
+  "/wifi-vnpt-quan-12": "/wifi-vnpt",
 };
 
 /** Old local area URLs → service page or Quận 12 local page */
@@ -13,7 +14,7 @@ function legacyAreaRedirect(pathname: string): string | null {
   if (!match) return null;
   const [, service, area] = match;
   if (service === "wifi-vnpt" && area === "quan-12") {
-    return "/wifi-vnpt-quan-12";
+    return "/wifi-vnpt";
   }
   if (service === "sim-5g") return "/sim-5g-vnpt";
   if (service === "wifi-vnpt") return "/wifi-vnpt";

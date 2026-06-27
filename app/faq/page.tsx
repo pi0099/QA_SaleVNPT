@@ -85,10 +85,10 @@ export default async function FaqPage() {
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link
-              href="/wifi-vnpt-quan-12"
+              href="/wifi-vnpt#khu-vuc-phuc-vu"
               className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-[#2563eb] hover:text-[#2563eb]"
             >
-              WiFi VNPT Quận 12
+              WiFi VNPT TP.HCM
             </Link>
           </div>
           <p className="mt-4 text-sm text-slate-500">

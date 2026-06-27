@@ -4,6 +4,7 @@ type SectionProps = {
   subtitle?: string;
   titleClassName?: string;
   contentClassName?: string;
+  className?: string;
   children: React.ReactNode;
 };
 
@@ -13,12 +14,13 @@ export default function Section({
   subtitle,
   titleClassName,
   contentClassName,
+  className,
   children,
 }: SectionProps) {
   return (
     <section
       id={id}
-      className="scroll-mt-28 py-14 md:scroll-mt-32 md:py-20"
+      className={`scroll-mt-36 py-14 md:scroll-mt-40 md:py-20 ${className ?? ""}`}
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="max-w-3xl">

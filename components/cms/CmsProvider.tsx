@@ -31,6 +31,14 @@ async function fetchPublicCms(): Promise<CmsPayload | null> {
       sections: data.sections,
       site: data.site,
       seo: data.seo,
+      branding: {
+        headerSlogan: data.siteSettings?.headerSlogan,
+        footerColumns: data.siteSettings?.footerColumns,
+        copyrightText: data.siteSettings?.copyrightText,
+        designByText: data.siteSettings?.designByText,
+        designByUrl: data.siteSettings?.designByUrl,
+        logo: data.siteSettings?.logo,
+      },
     };
   } catch {
     return null;

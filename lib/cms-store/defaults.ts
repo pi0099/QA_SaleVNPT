@@ -1,9 +1,16 @@
 import {
-  defaultSections,
   defaultSeo,
+  enrichedDefaultSections,
   site as defaultLegacySite,
 } from "@/lib/data";
 import { defaultSiteSettings } from "@/lib/content/site-settings";
+import {
+  defaultCopyrightText,
+  defaultDesignByText,
+  defaultDesignByUrl,
+  defaultFooterColumns,
+  defaultHeaderSlogan,
+} from "@/lib/cms-store/footer-defaults";
 import { faqs } from "@/data/faqs";
 import { extraFaqs } from "@/data/faqs-extra";
 import { localAreas } from "@/data/localAreas";
@@ -28,6 +35,11 @@ function buildExtendedSiteSettings(): ExtendedSiteSettings {
     phone: defaultLegacySite.phoneNumber,
     zaloUrl: defaultLegacySite.zalo,
     messengerUrl: defaultLegacySite.messenger ?? "",
+    headerSlogan: defaultHeaderSlogan,
+    copyrightText: defaultCopyrightText,
+    designByText: defaultDesignByText,
+    designByUrl: defaultDesignByUrl,
+    footerColumns: structuredClone(defaultFooterColumns),
   };
 }
 
@@ -44,26 +56,7 @@ function buildPostCategories(): PostCategoryDef[] {
 
 /** 5th service: WiFi Quận 12 local page */
 function buildServicesWithLocal() {
-  const quan12Area = localAreas.find((a) => a.slug === "wifi-vnpt-quan-12");
-  const base = [...services];
-  if (quan12Area && !base.some((s) => s.slug === "wifi-vnpt-quan-12")) {
-    base.push({
-      id: "wifi-vnpt-quan-12",
-      title: "Lắp WiFi VNPT Quận 12",
-      slug: "wifi-vnpt-quan-12",
-      shortDescription: quan12Area.seoDescription,
-      longContent: quan12Area.content,
-      seoTitle: quan12Area.seoTitle,
-      seoDescription: quan12Area.seoDescription,
-      category: "local",
-      isActive: true,
-      order: 5,
-      sectionId: "internet-gia-dinh",
-      faqs: quan12Area.faqs,
-      relatedPostSlugs: quan12Area.relatedPostSlugs,
-    });
-  }
-  return base;
+  return [...services];
 }
 
 function buildFaqs() {
@@ -90,7 +83,7 @@ export function buildDefaultCmsStore(): CmsStore {
     siteSettings,
     legacySite: { ...defaultLegacySite },
     homepageSeo: { ...defaultSeo },
-    sections: structuredClone(defaultSections),
+    sections: structuredClone(enrichedDefaultSections),
     services: buildServicesWithLocal(),
     posts: [
       ...structuredClone(posts),

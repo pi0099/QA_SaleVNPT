@@ -1,6 +1,13 @@
 import { getSiteUrl } from "@/lib/seo";
+import type { PackageSection } from "@/lib/data";
 import type { ServiceFaq } from "@/lib/content/types";
 import { defaultSiteSettings } from "@/lib/content/site-settings";
+import {
+  getHomepageTierCards,
+  getSectionServicePath,
+  parsePriceNumber,
+} from "@/lib/packages/helpers";
+import { getServiceAreaTags } from "@/lib/content/service-area-tags";
 
 export function buildOrganizationJsonLd() {
   const siteUrl = getSiteUrl();
@@ -43,12 +50,15 @@ export function buildServiceJsonLd({
   name,
   description,
   path,
+  serviceSlug,
 }: {
   name: string;
   description: string;
   path: string;
+  serviceSlug?: string;
 }) {
   const siteUrl = getSiteUrl();
+  const areaTags = serviceSlug ? getServiceAreaTags(serviceSlug) : ["TP.HCM"];
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -58,11 +68,20 @@ export function buildServiceJsonLd({
       "@type": "LocalBusiness",
       name: defaultSiteSettings.consultantName,
       telephone: defaultSiteSettings.phone,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "TP.HCM",
+        addressRegion: "TP.HCM",
+        addressCountry: "VN",
+      },
     },
-    areaServed: {
-      "@type": "City",
-      name: "TP.HCM",
-    },
+    areaServed: [
+      { "@type": "City", name: "Thành phố Hồ Chí Minh" },
+      ...areaTags.slice(0, 8).map((tag) => ({
+        "@type": "AdministrativeArea",
+        name: tag,
+      })),
+    ],
     url: `${siteUrl}${path}`,
   };
 }
@@ -140,6 +159,46 @@ export function buildBlogPostingJsonLd({
   };
 }
 
+export function buildProductJsonLd({
+  name,
+  description,
+  path,
+  price,
+  priceCurrency = "VND",
+  image,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  price: string;
+  priceCurrency?: string;
+  image?: string;
+}) {
+  const siteUrl = getSiteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    image: image ? `${siteUrl}${image}` : `${siteUrl}/sim-u1500-hero.png`,
+    brand: {
+      "@type": "Brand",
+      name: "VinaPhone",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${siteUrl}${path}`,
+      priceCurrency,
+      price,
+      availability: "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        name: defaultSiteSettings.siteName,
+      },
+    },
+  };
+}
+
 export function buildBlogListJsonLd(postCount: number) {
   const siteUrl = getSiteUrl();
   return {
@@ -149,5 +208,36 @@ export function buildBlogListJsonLd(postCount: number) {
     url: `${siteUrl}/news`,
     description: "Tin tức WiFi, SIM 5G, Camera và khắc phục sự cố viễn thông.",
     numberOfItems: postCount,
+  };
+}
+
+export function buildHomepageItemListJsonLd(sections: PackageSection[]) {
+  const siteUrl = getSiteUrl();
+
+  const items = sections.flatMap((section) => {
+    const path = getSectionServicePath(section) ?? "/";
+    return getHomepageTierCards(section).map((card, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: `${section.title} — ${card.title}`,
+        description: card.speed,
+        url: `${siteUrl}${path}`,
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "VND",
+          price: parsePriceNumber(card.price),
+          availability: "https://schema.org/InStock",
+        },
+      },
+    }));
+  });
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Gói cước VNPT nổi bật",
+    itemListElement: items,
   };
 }

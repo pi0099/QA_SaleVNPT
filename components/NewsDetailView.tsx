@@ -4,6 +4,7 @@ import CtaBox from "@/components/CtaBox";
 import LeadForm from "@/components/LeadForm";
 import type { Post } from "@/lib/content/types";
 import { postCategoryLabels } from "@/lib/content/blog-images";
+import { categoryServiceLink } from "@/lib/content/post-service-links";
 
 type NewsDetailViewProps = {
   post: Post;
@@ -94,6 +95,23 @@ export default function NewsDetailView({
             ) : null}
 
             <ContentHtml html={contentWithIds} />
+
+            {categoryServiceLink[post.category] ? (
+              <div className="mt-10 rounded-2xl border border-[#2563eb]/20 bg-blue-50/50 p-5">
+                <p className="text-sm font-semibold text-slate-900">
+                  Cần tư vấn đăng ký dịch vụ?
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  Xem trang dịch vụ chính thức trên website tư vấn để biết bảng giá, quy trình và FAQ cập nhật.
+                </p>
+                <Link
+                  href={categoryServiceLink[post.category]!.href}
+                  className="mt-4 inline-flex min-h-[44px] items-center rounded-full bg-[#2563eb] px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-700"
+                >
+                  {categoryServiceLink[post.category]!.label}
+                </Link>
+              </div>
+            ) : null}
 
             {post.faqs && post.faqs.length > 0 && !faqInContent ? (
               <div className="mt-10 space-y-4">

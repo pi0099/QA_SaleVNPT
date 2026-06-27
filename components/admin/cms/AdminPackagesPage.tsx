@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import HomeProductSection from "@/components/HomeProductSection";
 import PricingCard from "@/components/PricingCard";
 import {
   AdminError,
@@ -14,7 +15,8 @@ import {
 } from "@/components/admin/cms/ui";
 import { useCmsStore } from "@/components/admin/cms/useCmsStore";
 import { createCardId } from "@/lib/cms-storage";
-import type { PackageCard, PackageSection } from "@/lib/data";
+import type { HomepageTier, PackageCard, PackageSection } from "@/lib/data";
+import { HOMEPAGE_TIER_ORDER, TIER_LABELS } from "@/lib/packages/helpers";
 
 export default function AdminPackagesPage() {
   const { store, loading, error, toast, saving, save, patch } = useCmsStore();
@@ -34,6 +36,13 @@ export default function AdminPackagesPage() {
   function updateSections(fn: (sections: PackageSection[]) => PackageSection[]) {
     patch((prev) => ({ ...prev, sections: fn(prev.sections) }));
     setDirty(true);
+  }
+
+  function updateSection(fn: (s: PackageSection) => PackageSection) {
+    if (!sectionId) return;
+    updateSections((sections) =>
+      sections.map((s) => (s.id === sectionId ? fn(s) : s)),
+    );
   }
 
   function updateCard(cardId: string, fn: (c: PackageCard) => PackageCard) {
@@ -71,7 +80,13 @@ export default function AdminPackagesPage() {
 
   function duplicateCard(card: PackageCard) {
     if (!sectionId) return;
-    const copy = { ...card, id: createCardId(), title: `${card.title} (copy)` };
+    const copy = {
+      ...card,
+      id: createCardId(),
+      title: `${card.title} (copy)`,
+      homepageTier: undefined,
+      isHero: false,
+    };
     updateSections((sections) =>
       sections.map((s) =>
         s.id === sectionId ? { ...s, cards: [...s.cards, copy] } : s,
@@ -79,8 +94,14 @@ export default function AdminPackagesPage() {
     );
   }
 
+  const tierWarnings = section
+    ? HOMEPAGE_TIER_ORDER.filter(
+        (tier) => !section.cards.some((c) => c.homepageTier === tier),
+      )
+    : [];
+
   return (
-    <AdminShell title="Packages" subtitle="Gói cước trên trang chủ & service pages">
+    <AdminShell title="Packages" subtitle="Gói cước trang chủ (3 tier) & trang sản phẩm">
       <AdminToast message={toast} />
       <AdminError message={error} />
 
@@ -102,8 +123,61 @@ export default function AdminPackagesPage() {
       </div>
 
       {section ? (
-        <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+        <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
           <div className="space-y-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="mb-3 text-sm font-bold text-slate-800">Cài đặt section</p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <AdminField label="Chế độ giá">
+                  <select
+                    className={inputClass}
+                    value={section.pricingMode ?? "dual"}
+                    onChange={(e) =>
+                      updateSection((s) => ({
+                        ...s,
+                        pricingMode: e.target.value as "dual" | "single",
+                      }))
+                    }
+                  >
+                    <option value="dual">Tab Nội/Ngoại thành</option>
+                    <option value="single">Giá đồng nhất (ẩn tab)</option>
+                  </select>
+                </AdminField>
+                <AdminField label="Service slug (Xem thêm)">
+                  <input
+                    className={inputClass}
+                    value={section.serviceSlug ?? ""}
+                    onChange={(e) =>
+                      updateSection((s) => ({
+                        ...s,
+                        serviceSlug: e.target.value || undefined,
+                      }))
+                    }
+                    placeholder="wifi-vnpt"
+                  />
+                </AdminField>
+              </div>
+              <AdminField label="Intro SEO trang chủ">
+                <textarea
+                  className={textareaClass}
+                  rows={3}
+                  value={section.homepageIntro ?? ""}
+                  onChange={(e) =>
+                    updateSection((s) => ({
+                      ...s,
+                      homepageIntro: e.target.value || undefined,
+                    }))
+                  }
+                />
+              </AdminField>
+              {tierWarnings.length > 0 ? (
+                <p className="mt-2 text-sm text-amber-700">
+                  Thiếu tier trang chủ:{" "}
+                  {tierWarnings.map((t) => TIER_LABELS[t]).join(", ")}
+                </p>
+              ) : null}
+            </div>
+
             {section.cards.map((card) => (
               <div
                 key={card.id}
@@ -118,6 +192,27 @@ export default function AdminPackagesPage() {
                         updateCard(card.id, (c) => ({ ...c, title: e.target.value }))
                       }
                     />
+                  </AdminField>
+                  <AdminField label="Tier trang chủ">
+                    <select
+                      className={inputClass}
+                      value={card.homepageTier ?? ""}
+                      onChange={(e) =>
+                        updateCard(card.id, (c) => ({
+                          ...c,
+                          homepageTier: (e.target.value || undefined) as
+                            | HomepageTier
+                            | undefined,
+                        }))
+                      }
+                    >
+                      <option value="">— Không hiển thị —</option>
+                      {HOMEPAGE_TIER_ORDER.map((tier) => (
+                        <option key={tier} value={tier}>
+                          {TIER_LABELS[tier]}
+                        </option>
+                      ))}
+                    </select>
                   </AdminField>
                   <AdminField label="Giá nội thành">
                     <input
@@ -149,6 +244,21 @@ export default function AdminPackagesPage() {
                       }
                     />
                   </AdminField>
+                  <AdminField label="Thứ tự trang SP">
+                    <input
+                      type="number"
+                      className={inputClass}
+                      value={card.sortOrder ?? ""}
+                      onChange={(e) =>
+                        updateCard(card.id, (c) => ({
+                          ...c,
+                          sortOrder: e.target.value
+                            ? Number(e.target.value)
+                            : undefined,
+                        }))
+                      }
+                    />
+                  </AdminField>
                 </div>
                 <AdminField label="Features (mỗi dòng 1 feature)">
                   <textarea
@@ -163,19 +273,63 @@ export default function AdminPackagesPage() {
                     }
                   />
                 </AdminField>
-                <label className="mt-2 flex items-center gap-2 text-sm">
+                <AdminField label="Hero subtitle">
                   <input
-                    type="checkbox"
-                    checked={card.isPopular}
+                    className={inputClass}
+                    value={card.heroSubtitle ?? ""}
                     onChange={(e) =>
                       updateCard(card.id, (c) => ({
                         ...c,
-                        isPopular: e.target.checked,
+                        heroSubtitle: e.target.value || undefined,
                       }))
                     }
                   />
-                  Featured / Popular
-                </label>
+                </AdminField>
+                <div className="mt-2 flex flex-wrap gap-4 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={card.isPopular}
+                      onChange={(e) =>
+                        updateCard(card.id, (c) => ({
+                          ...c,
+                          isPopular: e.target.checked,
+                        }))
+                      }
+                    />
+                    Phổ biến
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={card.isHero ?? false}
+                      onChange={(e) =>
+                        updateCard(card.id, (c) => ({
+                          ...c,
+                          isHero: e.target.checked,
+                        }))
+                      }
+                    />
+                    Hero carousel
+                  </label>
+                </div>
+                {card.isHero ? (
+                  <AdminField label="Hero order">
+                    <input
+                      type="number"
+                      className={inputClass}
+                      value={card.heroOrder ?? ""}
+                      onChange={(e) =>
+                        updateCard(card.id, (c) => ({
+                          ...c,
+                          heroOrder: e.target.value
+                            ? Number(e.target.value)
+                            : undefined,
+                        }))
+                      }
+                    />
+                  </AdminField>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => duplicateCard(card)}
@@ -194,14 +348,24 @@ export default function AdminPackagesPage() {
             </button>
           </div>
 
-          <div>
-            <p className="mb-3 text-sm font-bold text-slate-700">Preview</p>
-            {section.cards[0] ? (
-              <PricingCard
-                card={section.cards[0]}
-                recommended={section.cards[0].isPopular}
+          <div className="space-y-4">
+            <div>
+              <p className="mb-3 text-sm font-bold text-slate-700">Preview 3-card grid</p>
+              <HomeProductSection
+                section={section}
                 zaloBaseUrl={store.legacySite.zalo}
               />
+            </div>
+            {section.cards[0] ? (
+              <div>
+                <p className="mb-3 text-sm font-bold text-slate-700">Preview card</p>
+                <PricingCard
+                  card={section.cards[0]}
+                  recommended={section.cards[0].isPopular}
+                  zaloBaseUrl={store.legacySite.zalo}
+                  showTierBadge
+                />
+              </div>
             ) : null}
           </div>
         </div>

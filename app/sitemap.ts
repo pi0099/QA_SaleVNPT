@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getAllServiceSlugs, getDedicatedLocalSlugs } from "@/lib/content";
 import { getAllPublishedPosts } from "@/lib/blog/mergePosts";
+import {
+  marketingLandingPaths,
+  staticSitemapPaths,
+} from "@/lib/sitemap-config";
 import { getSiteUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -12,37 +16,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getDedicatedLocalSlugs(),
   ]);
 
-  const staticRoutes = [
-    { path: "/", priority: 1, changeFrequency: "weekly" as const },
-    { path: "/news", priority: 0.75, changeFrequency: "daily" as const },
-    { path: "/faq", priority: 0.8, changeFrequency: "monthly" as const },
-  ];
-
-  const staticEntries = staticRoutes.map((route) => ({
+  const staticEntries: MetadataRoute.Sitemap = [
+    ...staticSitemapPaths,
+    ...marketingLandingPaths,
+  ].map((route) => ({
     url: `${base}${route.path}`,
     lastModified: new Date(),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
 
-  const serviceEntries = serviceSlugs.map((slug) => ({
-    url: `${base}/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: slug.includes("quan-12") ? 0.82 : 0.88,
-  }));
+  const seen = new Set(staticEntries.map((e) => e.url));
 
-  const localEntries = localSlugs
+  const serviceEntries: MetadataRoute.Sitemap = serviceSlugs
+    .map((slug) => ({
+      url: `${base}/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: slug.includes("quan-12") ? 0.82 : 0.88,
+    }))
+    .filter((entry) => {
+      if (seen.has(entry.url)) return false;
+      seen.add(entry.url);
+      return true;
+    });
+
+  const localEntries: MetadataRoute.Sitemap = localSlugs
     .filter((slug) => !serviceSlugs.includes(slug))
     .map((slug) => ({
       url: `${base}/${slug}`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.8,
-    }));
+    }))
+    .filter((entry) => {
+      if (seen.has(entry.url)) return false;
+      seen.add(entry.url);
+      return true;
+    });
 
-  /** Published posts only — drafts never included */
-  const newsEntries = publishedPosts.map((post) => ({
+  const newsEntries: MetadataRoute.Sitemap = publishedPosts.map((post) => ({
     url: `${base}/news/${post.slug}`,
     lastModified: new Date(post.updatedAt ?? post.publishedAt),
     changeFrequency: "weekly" as const,

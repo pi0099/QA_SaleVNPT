@@ -15,8 +15,6 @@ import {
 } from "@/lib/content/schema";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
-
 type Props = { params: { serviceSlug: string } };
 
 export async function generateStaticParams() {
@@ -31,6 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: service.seoTitle,
     description: service.seoDescription,
     path: `/${service.slug}`,
+    openGraphTitle: service.seoTitle,
+    openGraphDescription: service.seoDescription,
   });
 }
 
@@ -50,6 +50,7 @@ export default async function ServicePage({ params }: Props) {
       name: service.title,
       description: service.shortDescription,
       path,
+      serviceSlug: service.slug,
     }),
     buildFaqPageJsonLd(service.faqs),
     buildBreadcrumbJsonLd([

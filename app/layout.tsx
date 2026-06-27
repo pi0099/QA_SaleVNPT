@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
-import SiteNav from "@/components/SiteNav";
+import SiteHeader from "@/components/SiteHeader";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Providers } from "@/app/providers";
@@ -113,7 +113,7 @@ export default function RootLayout({
           </>
         ) : null}
         <Providers>
-          <SiteNav />
+          <SiteHeader />
           <main>{children}</main>
           <Footer />
           <FloatingContact />

@@ -40,6 +40,10 @@ export type Service = {
   relatedPostSlugs: string[];
   /** CMS section id on homepage for pricing cards */
   sectionId?: string;
+  /** HTML block: who should use this service */
+  suitableForHtml?: string;
+  /** HTML block: registration / install steps */
+  registrationHtml?: string;
 };
 
 export type Package = {
@@ -108,6 +112,8 @@ export type LocalArea = {
   hasDedicatedPage: boolean;
   faqs: ServiceFaq[];
   relatedPostSlugs: string[];
+  suitableForHtml?: string;
+  registrationHtml?: string;
 };
 
 export type FetchPostsParams = {

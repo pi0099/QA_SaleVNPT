@@ -1,9 +1,18 @@
-import { packageSections } from "@/data/packages";
+import { readCmsStore } from "@/lib/cms-store/server";
+import { enrichedDefaultSections } from "@/lib/data";
 import type { PackageSection } from "@/lib/data";
 
-/** Production homepage/service package sections — always from lib/data.ts */
+/** Homepage/service package sections from CMS store */
 export async function fetchPackageSections(): Promise<PackageSection[]> {
-  return packageSections;
+  try {
+    const store = await readCmsStore();
+    if (store.sections?.length) {
+      return store.sections;
+    }
+  } catch {
+    // fallback below
+  }
+  return enrichedDefaultSections;
 }
 
 /** @deprecated alias */

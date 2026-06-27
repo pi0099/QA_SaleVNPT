@@ -12,6 +12,14 @@ import {
   textareaClass,
 } from "@/components/admin/cms/ui";
 import { useCmsStore } from "@/components/admin/cms/useCmsStore";
+import {
+  defaultCopyrightText,
+  defaultDesignByText,
+  defaultDesignByUrl,
+  defaultFooterColumns,
+  defaultHeaderSlogan,
+} from "@/lib/cms-store/footer-defaults";
+import type { FooterColumn } from "@/lib/cms-store/types";
 
 export default function AdminSiteSettingsPage() {
   const { store, loading, error, toast, saving, save, patch } = useCmsStore();
@@ -34,6 +42,16 @@ export default function AdminSiteSettingsPage() {
     }));
     setDirty(true);
   }
+
+  function updateFooterColumns(columns: FooterColumn[]) {
+    patch((prev) => ({
+      ...prev,
+      siteSettings: { ...prev.siteSettings, footerColumns: columns },
+    }));
+    setDirty(true);
+  }
+
+  const footerColumns = s.footerColumns ?? defaultFooterColumns;
 
   function handleSave() {
     if (!store) return;
@@ -147,6 +165,55 @@ export default function AdminSiteSettingsPage() {
             onChange={(e) => updateSettings("footerContent", e.target.value)}
           />
         </AdminField>
+
+        <div className="border-t border-slate-100 pt-4">
+          <p className="mb-3 text-sm font-bold text-slate-800">Header & Footer SEO</p>
+          <AdminField label="Header slogan">
+            <input
+              className={inputClass}
+              value={s.headerSlogan ?? defaultHeaderSlogan}
+              onChange={(e) => updateSettings("headerSlogan", e.target.value)}
+            />
+          </AdminField>
+          <AdminField label="Copyright text">
+            <input
+              className={inputClass}
+              value={s.copyrightText ?? defaultCopyrightText}
+              onChange={(e) => updateSettings("copyrightText", e.target.value)}
+            />
+          </AdminField>
+          <div className="grid gap-4 md:grid-cols-2">
+            <AdminField label="Design By text">
+              <input
+                className={inputClass}
+                value={s.designByText ?? defaultDesignByText}
+                onChange={(e) => updateSettings("designByText", e.target.value)}
+              />
+            </AdminField>
+            <AdminField label="Design By URL">
+              <input
+                className={inputClass}
+                value={s.designByUrl ?? defaultDesignByUrl}
+                onChange={(e) => updateSettings("designByUrl", e.target.value)}
+              />
+            </AdminField>
+          </div>
+          <AdminField label="Footer columns (JSON)">
+            <textarea
+              className={textareaClass}
+              rows={8}
+              value={JSON.stringify(footerColumns, null, 2)}
+              onChange={(e) => {
+                try {
+                  const parsed = JSON.parse(e.target.value) as FooterColumn[];
+                  updateFooterColumns(parsed);
+                } catch {
+                  // ignore invalid JSON while typing
+                }
+              }}
+            />
+          </AdminField>
+        </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <AdminField label="Google Analytics ID">

@@ -1,3 +1,11 @@
+import { enrichPackageSections } from "@/lib/packages/helpers";
+
+export type HomepageTier = "budget" | "balanced" | "premium";
+
+export type SectionPricingMode = "dual" | "single";
+
+export type PriceZone = "inner" | "outer";
+
 export type PackageCard = {
   id: string;
   title: string;
@@ -11,6 +19,14 @@ export type PackageCard = {
   promotion: string;
   variant: "blue" | "orange";
   isPopular: boolean;
+  /** Slot trên trang chủ: Rẻ nhất / Phù hợp / Xịn nhất */
+  homepageTier?: HomepageTier;
+  /** Hiển thị trong hero carousel */
+  isHero?: boolean;
+  heroOrder?: number;
+  heroSubtitle?: string;
+  /** Thứ tự trên trang sản phẩm */
+  sortOrder?: number;
 };
 
 export type PackageSection = {
@@ -18,6 +34,12 @@ export type PackageSection = {
   title: string;
   /** CMS: dưới tiêu đề mục + carousel đầu trang (chỉ khi có nội dung) */
   slogan?: string;
+  /** dual = tab Nội/Ngoại thành cấp section; single = ẩn tab */
+  pricingMode?: SectionPricingMode;
+  /** Copy SEO dưới H2 section trang chủ */
+  homepageIntro?: string;
+  /** Slug trang sản phẩm cho nút Xem thêm */
+  serviceSlug?: string;
   cards: PackageCard[];
 };
 
@@ -491,6 +513,9 @@ export const defaultSections: PackageSection[] = [
     ],
   },
 ];
+
+/** Sections with CMS defaults (tiers, hero, pricing mode) applied */
+export const enrichedDefaultSections = enrichPackageSections(defaultSections);
 
 /** @deprecated use defaultSections */
 export const sections = defaultSections;

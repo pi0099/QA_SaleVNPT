@@ -46,7 +46,7 @@ const SERVICE_PAGES = [
   { value: "/wifi-vnpt", label: "WiFi VNPT" },
   { value: "/sim-5g-vnpt", label: "SIM 5G VNPT" },
   { value: "/camera-vnpt", label: "Camera VNPT" },
-  { value: "/wifi-vnpt-quan-12", label: "WiFi Quận 12" },
+  { value: "/wifi-vnpt", label: "WiFi VNPT TP.HCM" },
   { value: "/internet-di-dong-vnpt", label: "Combo Internet + di động" },
 ];
 

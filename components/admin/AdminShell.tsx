@@ -10,6 +10,7 @@ const navSections = [
     items: [
       { href: "/admin", label: "Dashboard" },
       { href: "/admin/settings", label: "Site Settings" },
+      { href: "/admin/homepage", label: "Homepage" },
       { href: "/admin/services", label: "Services" },
       { href: "/admin/packages", label: "Packages" },
       { href: "/admin/news", label: "News / Blog" },

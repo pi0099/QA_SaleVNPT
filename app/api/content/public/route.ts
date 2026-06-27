@@ -1,23 +1,31 @@
 import { NextResponse } from "next/server";
-import { defaultSections, defaultSeo, site } from "@/lib/data";
-import { siteSettings } from "@/data/siteSettings";
+import { readCmsStore } from "@/lib/cms-store/server";
 
-/** Public homepage CMS payload — packages always from lib/data.ts (production). */
+/** Public homepage CMS payload from file-backed store. */
 export async function GET() {
+  const store = await readCmsStore();
+  const { legacySite, homepageSeo, sections, siteSettings } = store;
+
   return NextResponse.json({
-    sections: defaultSections,
-    site,
-    seo: defaultSeo,
+    sections,
+    site: legacySite,
+    seo: homepageSeo,
     siteSettings: {
       siteName: siteSettings.siteName,
       tagline: siteSettings.tagline,
       consultantName: siteSettings.consultantName,
       serviceAreaText: siteSettings.serviceAreaText,
       disclaimer: siteSettings.disclaimer,
-      primaryCtaText: "Gửi thông tin tư vấn",
-      secondaryCtaText: "Gọi tư vấn miễn phí",
+      logo: siteSettings.logo,
+      headerSlogan: siteSettings.headerSlogan,
+      footerColumns: siteSettings.footerColumns,
+      copyrightText: siteSettings.copyrightText,
+      designByText: siteSettings.designByText,
+      designByUrl: siteSettings.designByUrl,
+      primaryCtaText: siteSettings.primaryCtaText,
+      secondaryCtaText: siteSettings.secondaryCtaText,
     },
-    updatedAt: new Date().toISOString(),
+    updatedAt: store.updatedAt,
   });
 }
 

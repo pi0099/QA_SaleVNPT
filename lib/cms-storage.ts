@@ -1,19 +1,39 @@
 import {
-  defaultSections,
   defaultSeo,
+  enrichedDefaultSections,
   site as defaultSite,
+  type HomepageTier,
   type PackageCard,
   type PackageSection,
   type SeoSettings,
   type SiteSettings,
 } from "@/lib/data";
+import type { FooterColumn } from "@/lib/cms-store/types";
+import {
+  defaultFooterColumns,
+  defaultHeaderSlogan,
+  defaultCopyrightText,
+  defaultDesignByText,
+  defaultDesignByUrl,
+} from "@/lib/cms-store/footer-defaults";
+import { defaultSiteSettings } from "@/lib/content/site-settings";
 
 export const CMS_STORAGE_KEY = "vnpt_sale_cms_v1";
+
+export type CmsBranding = {
+  headerSlogan?: string;
+  footerColumns?: FooterColumn[];
+  copyrightText?: string;
+  designByText?: string;
+  designByUrl?: string;
+  logo?: string;
+};
 
 export type CmsPayload = {
   sections: PackageSection[];
   site: SiteSettings;
   seo: SeoSettings;
+  branding?: CmsBranding;
 };
 
 function slugId(prefix: string): string {
@@ -58,6 +78,17 @@ function normalizeCard(raw: Record<string, unknown>, index: number): PackageCard
     promotion: String(raw.promotion ?? ""),
     variant: raw.variant === "orange" ? "orange" : "blue",
     isPopular: raw.isPopular === true,
+    ...(raw.homepageTier === "budget" ||
+    raw.homepageTier === "balanced" ||
+    raw.homepageTier === "premium"
+      ? { homepageTier: raw.homepageTier as HomepageTier }
+      : {}),
+    ...(raw.isHero === true ? { isHero: true } : {}),
+    ...(typeof raw.heroOrder === "number" ? { heroOrder: raw.heroOrder } : {}),
+    ...(typeof raw.heroSubtitle === "string"
+      ? { heroSubtitle: raw.heroSubtitle }
+      : {}),
+    ...(typeof raw.sortOrder === "number" ? { sortOrder: raw.sortOrder } : {}),
   };
 }
 
@@ -89,6 +120,15 @@ function normalizeSection(raw: Record<string, unknown>, index: number): PackageS
   };
   if (sloganTrimmed.length > 0) {
     section.slogan = sloganTrimmed;
+  }
+  if (raw.pricingMode === "dual" || raw.pricingMode === "single") {
+    section.pricingMode = raw.pricingMode;
+  }
+  if (typeof raw.homepageIntro === "string" && raw.homepageIntro.trim()) {
+    section.homepageIntro = raw.homepageIntro.trim();
+  }
+  if (typeof raw.serviceSlug === "string" && raw.serviceSlug.trim()) {
+    section.serviceSlug = raw.serviceSlug.trim();
   }
   return section;
 }
@@ -166,9 +206,17 @@ export function saveCmsToStorage(payload: CmsPayload): void {
 
 export function getDefaultCmsPayload(): CmsPayload {
   return {
-    sections: structuredClone(defaultSections),
+    sections: structuredClone(enrichedDefaultSections),
     site: { ...defaultSite },
     seo: { ...defaultSeo },
+    branding: {
+      headerSlogan: defaultHeaderSlogan,
+      footerColumns: structuredClone(defaultFooterColumns),
+      copyrightText: defaultCopyrightText,
+      designByText: defaultDesignByText,
+      designByUrl: defaultDesignByUrl,
+      logo: defaultSiteSettings.logo,
+    },
   };
 }
 
