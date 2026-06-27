@@ -27,7 +27,7 @@ export default function AdminSiteSettingsPage() {
 
   if (loading || !store) {
     return (
-      <AdminShell title="Site Settings" subtitle="Thông tin website">
+      <AdminShell title="Cài đặt website" subtitle="Thông tin liên hệ, header & footer">
         {loading ? <AdminLoading /> : <AdminError message={error} />}
       </AdminShell>
     );
@@ -60,7 +60,7 @@ export default function AdminSiteSettingsPage() {
   }
 
   return (
-    <AdminShell title="Site Settings" subtitle="Cài đặt website và liên hệ">
+    <AdminShell title="Cài đặt website" subtitle="Cài đặt website và liên hệ">
       <AdminToast message={toast} />
       <AdminError message={error} />
 

@@ -40,12 +40,21 @@ const DEFAULT_TIER_BY_CARD_ID: Record<string, HomepageTier> = {
 };
 
 const DEFAULT_HERO_CARD_IDS = [
+  "5g-u1500",
   "inet-hometv-2",
   "combo-home-sanh-2",
   "5g-soda125",
   "5g-vd120m",
   "sim-m",
 ];
+
+const DEFAULT_HERO_IMAGE_BY_CARD_ID: Record<string, string> = {
+  "5g-u1500": "/sim-data-u1500-banner.png",
+};
+
+const DEFAULT_HERO_LINK_BY_CARD_ID: Record<string, string> = {
+  "5g-u1500": "/sim-u1500-vinaphone",
+};
 
 const DEFAULT_SERVICE_SLUG: Record<string, string> = {
   "internet-gia-dinh": "wifi-vnpt",
@@ -116,7 +125,26 @@ export function getHeroProducts(sections: PackageSection[]): PackageCard[] {
 export type HeroProductEntry = {
   card: PackageCard;
   sectionId: string;
+  href: string;
 };
+
+export function getHeroProductHref(
+  card: PackageCard,
+  section: PackageSection,
+): string {
+  if (card.heroLinkHref?.trim()) return card.heroLinkHref.trim();
+  if (DEFAULT_HERO_LINK_BY_CARD_ID[card.id]) {
+    return DEFAULT_HERO_LINK_BY_CARD_ID[card.id];
+  }
+  const slug = section.serviceSlug ?? DEFAULT_SERVICE_SLUG[section.id];
+  return slug ? `/${slug}` : "#";
+}
+
+export function getHeroImageUrl(card: PackageCard): string | undefined {
+  const custom = card.heroImageUrl?.trim();
+  if (custom) return custom;
+  return DEFAULT_HERO_IMAGE_BY_CARD_ID[card.id];
+}
 
 export function getHeroProductsWithSection(
   sections: PackageSection[],
@@ -125,7 +153,11 @@ export function getHeroProductsWithSection(
     .flatMap((s) =>
       s.cards
         .filter((c) => c.isHero)
-        .map((card) => ({ card, sectionId: s.id })),
+        .map((card) => ({
+          card,
+          sectionId: s.id,
+          href: getHeroProductHref(card, s),
+        })),
     )
     .sort(
       (a, b) =>
@@ -159,12 +191,18 @@ export function enrichPackageCard(
     (isHero
       ? DEFAULT_HERO_CARD_IDS.indexOf(card.id) + 1 || index + 1
       : undefined);
+  const heroImageUrl =
+    card.heroImageUrl ?? DEFAULT_HERO_IMAGE_BY_CARD_ID[card.id];
+  const heroLinkHref =
+    card.heroLinkHref ?? DEFAULT_HERO_LINK_BY_CARD_ID[card.id];
 
   return {
     ...card,
     sortOrder: card.sortOrder ?? index,
     ...(tier ? { homepageTier: tier } : {}),
     ...(isHero ? { isHero: true, heroOrder } : {}),
+    ...(heroImageUrl ? { heroImageUrl } : {}),
+    ...(heroLinkHref ? { heroLinkHref } : {}),
   };
 }
 

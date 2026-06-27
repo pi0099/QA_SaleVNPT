@@ -31,7 +31,10 @@ export async function PUT(req: NextRequest) {
     }
     await writeCmsStore(body);
     return NextResponse.json({ ok: true, updatedAt: body.updatedAt });
-  } catch {
-    return NextResponse.json({ error: "Failed to save store" }, { status: 500 });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to save store";
+    console.error("[admin/store PUT]", error);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

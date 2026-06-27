@@ -40,7 +40,12 @@ export function useCmsStore() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(next),
         });
-        if (!res.ok) throw new Error("Lưu thất bại");
+        if (!res.ok) {
+          const data = (await res.json().catch(() => null)) as
+            | { error?: string }
+            | null;
+          throw new Error(data?.error ?? "Lưu thất bại");
+        }
         setStore(next);
         notifyCmsUpdated();
         setToast("Đã lưu thành công");

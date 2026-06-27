@@ -6,26 +6,26 @@ import type { ReactNode } from "react";
 
 const navSections = [
   {
-    title: "CMS",
+    title: "Quản trị nội dung",
     items: [
-      { href: "/admin", label: "Dashboard" },
-      { href: "/admin/settings", label: "Site Settings" },
-      { href: "/admin/homepage", label: "Homepage" },
-      { href: "/admin/services", label: "Services" },
-      { href: "/admin/packages", label: "Packages" },
-      { href: "/admin/news", label: "News / Blog" },
-      { href: "/admin/blog-generator", label: "Blog Generator" },
-      { href: "/admin/faq", label: "FAQ" },
-      { href: "/admin/local-seo", label: "Local SEO" },
-      { href: "/admin/leads", label: "Leads" },
+      { href: "/admin", label: "Tổng quan" },
+      { href: "/admin/settings", label: "Cài đặt website" },
+      { href: "/admin/homepage", label: "Trang chủ & Banner" },
+      { href: "/admin/services", label: "Dịch vụ" },
+      { href: "/admin/packages", label: "Gói cước" },
+      { href: "/admin/news", label: "Tin tức / Blog" },
+      { href: "/admin/blog-generator", label: "Tạo bài AI" },
+      { href: "/admin/faq", label: "Câu hỏi thường gặp" },
+      { href: "/admin/local-seo", label: "SEO địa phương" },
+      { href: "/admin/leads", label: "Khách hàng tiềm năng" },
     ],
   },
   {
-    title: "SEO Settings",
+    title: "Cài đặt SEO",
     items: [
-      { href: "/admin/seo/keywords", label: "Keyword / Tag" },
-      { href: "/admin/seo/traffic", label: "Lượt truy cập trang" },
-      { href: "/admin/seo/google-ads", label: "Ads Tracking" },
+      { href: "/admin/seo/keywords", label: "Từ khóa / Thẻ" },
+      { href: "/admin/seo/traffic", label: "Lượt truy cập" },
+      { href: "/admin/seo/google-ads", label: "Theo dõi quảng cáo" },
     ],
   },
 ];
@@ -58,23 +58,23 @@ export default function AdminShell({
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             VNPT Sales CMS
           </p>
-          <nav className="mt-4 space-y-5">
+          <nav className="mt-4 space-y-6">
             {navSections.map((section) => (
               <div key={section.title}>
-                <p className="px-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                <p className="px-3 text-sm font-bold text-slate-900">
                   {section.title}
                 </p>
-                <div className="mt-2 flex flex-col gap-1">
+                <div className="mt-2 flex flex-col gap-0.5">
                   {section.items.map((item) => {
                     const active = isActiveHref(item.href);
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`rounded-lg px-3 py-2 text-sm font-medium ${
+                        className={`rounded-lg px-3 py-2 text-[13px] font-medium ${
                           active
                             ? "bg-[#2563eb]/10 text-[#2563eb]"
-                            : "text-slate-700 hover:bg-slate-50"
+                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                         }`}
                       >
                         {item.label}
@@ -110,10 +110,10 @@ export default function AdminShell({
                 <p className="text-sm text-slate-500">{subtitle}</p>
               </div>
             </div>
-            <nav className="mt-4 space-y-3 border-t border-slate-100 pt-4 lg:hidden">
+            <nav className="mt-4 space-y-4 border-t border-slate-100 pt-4 lg:hidden">
               {navSections.map((section) => (
                 <div key={section.title}>
-                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                  <p className="mb-2 text-sm font-bold text-slate-900">
                     {section.title}
                   </p>
                   <div className="flex flex-wrap gap-2">

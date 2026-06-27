@@ -88,6 +88,12 @@ function normalizeCard(raw: Record<string, unknown>, index: number): PackageCard
     ...(typeof raw.heroSubtitle === "string"
       ? { heroSubtitle: raw.heroSubtitle }
       : {}),
+    ...(typeof raw.heroImageUrl === "string" && raw.heroImageUrl.trim()
+      ? { heroImageUrl: raw.heroImageUrl.trim() }
+      : {}),
+    ...(typeof raw.heroLinkHref === "string" && raw.heroLinkHref.trim()
+      ? { heroLinkHref: raw.heroLinkHref.trim() }
+      : {}),
     ...(typeof raw.sortOrder === "number" ? { sortOrder: raw.sortOrder } : {}),
   };
 }

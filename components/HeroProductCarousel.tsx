@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCms } from "@/components/cms/CmsProvider";
 import { contactFromSite, getZaloRegisterUrl, siteHasPhone } from "@/lib/data";
 import type { HeroProductEntry } from "@/lib/packages/helpers";
-import { getDisplayPrice } from "@/lib/packages/helpers";
+import { getDisplayPrice, getHeroImageUrl } from "@/lib/packages/helpers";
 import { trackLeadEvent } from "@/lib/tracking";
 
 type HeroProductCarouselProps = {
@@ -54,9 +54,10 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
     );
   }
 
-  const { card: product, sectionId } = products[activeIndex];
+  const { card: product, sectionId, href } = products[activeIndex];
   const price = getDisplayPrice(product, "inner");
   const zaloHref = getZaloRegisterUrl(product.title, cms.site.zalo);
+  const heroImage = getHeroImageUrl(product);
 
   return (
     <section
@@ -66,11 +67,24 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <div
           className="home-hero-banner relative overflow-hidden rounded-3xl bg-[#071a44] shadow-[0_24px_60px_-28px_rgba(15,23,42,0.45)] ring-1 ring-white/10"
-          style={{ backgroundImage: "url('/home-hero-banner.svg')" }}
+          style={{
+            backgroundImage: heroImage
+              ? `linear-gradient(90deg, rgba(7,26,68,0.92) 0%, rgba(7,26,68,0.55) 45%, rgba(7,26,68,0.35) 100%), url('${heroImage}')`
+              : "url('/home-hero-banner.svg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
-          <div className="home-hero-overlay pointer-events-none absolute inset-0" />
+          {href && href !== "#" ? (
+            <Link
+              href={href}
+              className="absolute inset-0 z-[1]"
+              aria-label={`Xem chi tiết ${product.title}`}
+            />
+          ) : null}
+          <div className="home-hero-overlay pointer-events-none absolute inset-0 z-[2]" />
           <div className="relative z-10 grid min-h-[360px] md:min-h-[400px] md:grid-cols-12">
-            <div className="flex flex-col justify-center px-6 py-10 sm:px-10 md:col-span-7">
+            <div className="pointer-events-none flex flex-col justify-center px-6 py-10 sm:px-10 md:col-span-7">
               {activeIndex === 0 ? (
                 <h1 className="home-hero-text-shadow text-balance text-[1.65rem] font-extrabold leading-[1.2] text-white sm:text-3xl lg:text-4xl">
                   {product.title} — gói VNPT nổi bật
@@ -84,7 +98,28 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
                 {product.heroSubtitle ??
                   `${product.speed} · từ ${price}đ/tháng · tư vấn lắp đặt tận nơi TP.HCM`}
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            </div>
+            <div className="flex flex-col justify-end px-6 pb-8 md:col-span-5 md:items-end md:px-10 md:pb-10">
+              <div className="pointer-events-auto rounded-2xl border border-white/15 bg-white/10 p-5 text-white backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-wider text-sky-200">
+                  Gói nổi bật
+                </p>
+                <p className="mt-1 text-2xl font-extrabold">{product.title}</p>
+                <p className="mt-2 text-3xl font-extrabold">
+                  {price}
+                  <span className="text-lg font-bold">đ/tháng</span>
+                </p>
+                <p className="mt-1 text-sm text-sky-100/90">{product.speed}</p>
+                {href && href !== "#" ? (
+                  <Link
+                    href={href}
+                    className="mt-4 inline-flex text-sm font-semibold text-sky-100 underline decoration-white/40 underline-offset-4 hover:text-white"
+                  >
+                    Xem trang sản phẩm →
+                  </Link>
+                ) : null}
+              </div>
+              <div className="pointer-events-auto mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:justify-end">
                 {zaloHref ? (
                   <a
                     href={zaloHref}
@@ -122,21 +157,8 @@ export default function HeroProductCarousel({ products }: HeroProductCarouselPro
                   Xem bảng giá
                 </Link>
               </div>
-            </div>
-            <div className="flex flex-col justify-end px-6 pb-8 md:col-span-5 md:items-end md:px-10 md:pb-10">
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-5 text-white backdrop-blur-sm">
-                <p className="text-xs font-semibold uppercase tracking-wider text-sky-200">
-                  Gói nổi bật
-                </p>
-                <p className="mt-1 text-2xl font-extrabold">{product.title}</p>
-                <p className="mt-2 text-3xl font-extrabold">
-                  {price}
-                  <span className="text-lg font-bold">đ/tháng</span>
-                </p>
-                <p className="mt-1 text-sm text-sky-100/90">{product.speed}</p>
-              </div>
               {count > 1 ? (
-                <div className="mt-4 flex items-center gap-2">
+                <div className="pointer-events-auto mt-4 flex items-center gap-2 md:justify-end">
                   {products.map((entry, i) => (
                     <button
                       key={entry.card.id}

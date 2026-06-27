@@ -25,6 +25,10 @@ export type PackageCard = {
   isHero?: boolean;
   heroOrder?: number;
   heroSubtitle?: string;
+  /** Ảnh nền banner hero (URL trong /public hoặc CDN) */
+  heroImageUrl?: string;
+  /** Link khi bấm vào banner hero */
+  heroLinkHref?: string;
   /** Thứ tự trên trang sản phẩm */
   sortOrder?: number;
 };

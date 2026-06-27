@@ -27,7 +27,7 @@ export default function AdminPackagesPage() {
 
   if (loading || !store) {
     return (
-      <AdminShell title="Packages" subtitle="Quản lý gói cước">
+      <AdminShell title="Gói cước" subtitle="Quản lý gói cước và banner trang chủ">
         {loading ? <AdminLoading /> : <AdminError message={error} />}
       </AdminShell>
     );
@@ -101,7 +101,7 @@ export default function AdminPackagesPage() {
     : [];
 
   return (
-    <AdminShell title="Packages" subtitle="Gói cước trang chủ (3 tier) & trang sản phẩm">
+    <AdminShell title="Gói cước" subtitle="Gói cước trang chủ (3 tier) & banner hero">
       <AdminToast message={toast} />
       <AdminError message={error} />
 
@@ -310,25 +310,53 @@ export default function AdminPackagesPage() {
                         }))
                       }
                     />
-                    Hero carousel
+                    Hero carousel (banner)
                   </label>
                 </div>
                 {card.isHero ? (
-                  <AdminField label="Hero order">
-                    <input
-                      type="number"
-                      className={inputClass}
-                      value={card.heroOrder ?? ""}
-                      onChange={(e) =>
-                        updateCard(card.id, (c) => ({
-                          ...c,
-                          heroOrder: e.target.value
-                            ? Number(e.target.value)
-                            : undefined,
-                        }))
-                      }
-                    />
-                  </AdminField>
+                  <>
+                    <AdminField label="Thứ tự banner">
+                      <input
+                        type="number"
+                        className={inputClass}
+                        value={card.heroOrder ?? ""}
+                        onChange={(e) =>
+                          updateCard(card.id, (c) => ({
+                            ...c,
+                            heroOrder: e.target.value
+                              ? Number(e.target.value)
+                              : undefined,
+                          }))
+                        }
+                      />
+                    </AdminField>
+                    <AdminField label="Ảnh banner (URL)">
+                      <input
+                        className={inputClass}
+                        value={card.heroImageUrl ?? ""}
+                        placeholder="/sim-data-u1500-banner.png"
+                        onChange={(e) =>
+                          updateCard(card.id, (c) => ({
+                            ...c,
+                            heroImageUrl: e.target.value || undefined,
+                          }))
+                        }
+                      />
+                    </AdminField>
+                    <AdminField label="Link banner (trang sản phẩm)">
+                      <input
+                        className={inputClass}
+                        value={card.heroLinkHref ?? ""}
+                        placeholder="/sim-u1500-vinaphone"
+                        onChange={(e) =>
+                          updateCard(card.id, (c) => ({
+                            ...c,
+                            heroLinkHref: e.target.value || undefined,
+                          }))
+                        }
+                      />
+                    </AdminField>
+                  </>
                 ) : null}
                 <button
                   type="button"

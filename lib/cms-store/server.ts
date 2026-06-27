@@ -1,11 +1,11 @@
-import { promises as fs } from "fs";
-import path from "path";
-import { site as defaultLegacySite } from "@/lib/data";
 import { buildDefaultCmsStore } from "@/lib/cms-store/defaults";
+import {
+  readPersistedStore,
+  writePersistedStore,
+} from "@/lib/cms-store/persistence";
 import { migrateCmsSections } from "@/lib/packages/helpers";
 import type { CmsStore } from "@/lib/cms-store/types";
-
-const STORE_PATH = path.join(process.cwd(), "data", "cms-store.json");
+import { site as defaultLegacySite } from "@/lib/data";
 
 let memoryStore: CmsStore | null = null;
 
@@ -33,23 +33,15 @@ function syncLegacyContact(store: CmsStore): CmsStore {
   };
 }
 
-export function getStorePath() {
-  return STORE_PATH;
-}
+export { getStorePath } from "@/lib/cms-store/persistence";
 
 export async function readCmsStore(): Promise<CmsStore> {
   if (memoryStore) return memoryStore;
 
-  try {
-    await fs.mkdir(path.dirname(STORE_PATH), { recursive: true });
-    const raw = await fs.readFile(STORE_PATH, "utf-8");
-    const parsed = JSON.parse(raw) as CmsStore;
-    if (parsed?.version === 1) {
-      memoryStore = syncLegacyContact(parsed);
-      return memoryStore;
-    }
-  } catch {
-    // fall through to default
+  const persisted = await readPersistedStore();
+  if (persisted) {
+    memoryStore = syncLegacyContact(persisted);
+    return memoryStore;
   }
 
   const defaults = buildDefaultCmsStore();
@@ -57,7 +49,7 @@ export async function readCmsStore(): Promise<CmsStore> {
   try {
     await writeCmsStore(defaults, { skipMemory: true });
   } catch {
-    // read-only filesystem (e.g. serverless) — memory only
+    // read-only filesystem (e.g. serverless without blob) — memory only
   }
   return memoryStore;
 }
@@ -73,8 +65,7 @@ export async function writeCmsStore(
   if (!opts?.skipMemory) {
     memoryStore = payload;
   }
-  await fs.mkdir(path.dirname(STORE_PATH), { recursive: true });
-  await fs.writeFile(STORE_PATH, JSON.stringify(payload, null, 2), "utf-8");
+  await writePersistedStore(payload);
 }
 
 /** Clear memory cache after external write */

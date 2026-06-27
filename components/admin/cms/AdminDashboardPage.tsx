@@ -14,7 +14,7 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <AdminShell title="Dashboard" subtitle="Tổng quan website">
+      <AdminShell title="Tổng quan" subtitle="Thống kê nhanh website">
         <AdminLoading />
       </AdminShell>
     );
@@ -22,7 +22,7 @@ export default function AdminDashboardPage() {
 
   if (!store) {
     return (
-      <AdminShell title="Dashboard" subtitle="Tổng quan website">
+      <AdminShell title="Tổng quan" subtitle="Thống kê nhanh website">
         <AdminError message={error ?? "Không có dữ liệu"} />
       </AdminShell>
     );
@@ -38,41 +38,46 @@ export default function AdminDashboardPage() {
   const newLeads = store.leads.filter((l) => l.status === "new").length;
 
   const stats = [
-    { label: "Bài published", value: publishedPosts },
-    { label: "Bài draft", value: draftPosts },
-    { label: "Dịch vụ active", value: activeServices },
-    { label: "Gói cước", value: activePackages },
-    { label: "Lead mới", value: newLeads },
+    { label: "Bài đã xuất bản", value: publishedPosts, href: "/admin/news" },
+    { label: "Bài nháp", value: draftPosts, href: "/admin/news" },
+    { label: "Dịch vụ đang bật", value: activeServices, href: "/admin/services" },
+    { label: "Gói cước", value: activePackages, href: "/admin/packages" },
+    { label: "Lead mới", value: newLeads, href: "/admin/leads" },
   ];
 
   const quickActions = [
     { href: "/admin/news", label: "Thêm bài viết" },
     { href: "/admin/packages", label: "Thêm/sửa gói cước" },
+    { href: "/admin/homepage", label: "Chỉnh banner trang chủ" },
     { href: "/admin/settings", label: "Cập nhật SĐT/Zalo" },
     { href: "/admin/faq", label: "Cập nhật FAQ" },
   ];
 
   return (
-    <AdminShell title="Dashboard" subtitle="Tổng quan website VNPT sales">
+    <AdminShell title="Tổng quan" subtitle="Website tư vấn VNPT TP.HCM">
       <AdminToast message={toast} />
       <AdminError message={error} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {stats.map((s) => (
-          <div
+          <Link
             key={s.label}
-            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            href={s.href}
+            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[#2563eb]/40 hover:shadow-md"
           >
             <p className="text-xs font-semibold uppercase text-slate-500">
               {s.label}
             </p>
             <p className="mt-2 text-2xl font-bold text-slate-900">{s.value}</p>
-          </div>
+            <p className="mt-2 text-xs font-medium text-[#2563eb]">
+              Mở trang quản lý →
+            </p>
+          </Link>
         ))}
       </div>
 
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="font-bold text-slate-900">Quick actions</h2>
+        <h2 className="font-bold text-slate-900">Thao tác nhanh</h2>
         <div className="mt-4 flex flex-wrap gap-3">
           {quickActions.map((a) => (
             <Link
