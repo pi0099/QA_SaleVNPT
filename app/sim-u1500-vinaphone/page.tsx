@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SimU1500LandingView from "@/components/SimU1500LandingView";
+import { fetchLegacySite } from "@/lib/content";
 import {
   buildBreadcrumbJsonLd,
   buildFaqPageJsonLd,
@@ -27,7 +28,9 @@ export const metadata: Metadata = buildPageMetadata({
   openGraphDescription: simU1500MetaDescription,
 });
 
-export default function SimU1500VinaphonePage() {
+export default async function SimU1500VinaphonePage() {
+  const legacySite = await fetchLegacySite();
+
   const jsonLd = [
     buildProductJsonLd({
       name: "SIM Data U1500 VinaPhone — 500GB/tháng",
@@ -49,7 +52,10 @@ export default function SimU1500VinaphonePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <SimU1500LandingView />
+      <SimU1500LandingView
+        phoneNumber={legacySite.phoneNumber}
+        zaloBaseUrl={legacySite.zalo}
+      />
     </>
   );
 }

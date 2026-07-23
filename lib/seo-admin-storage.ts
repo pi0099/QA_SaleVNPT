@@ -103,8 +103,8 @@ export function getDefaultSeoAdminPayload(): SeoAdminPayload {
     keywords: buildPageKeywordSuggestions(),
     google: {
       googleSearchConsoleUrl: "",
-      googleAnalyticsId: "",
-      googleTagManagerId: "",
+      googleAnalyticsId: process.env.NEXT_PUBLIC_GA_ID ?? "",
+      googleTagManagerId: process.env.NEXT_PUBLIC_GTM_ID ?? "",
       robotsPolicy: "index-follow",
       customRobots: "",
       canonicalBaseUrl: "https://www.ketnoimanghcm.vn",

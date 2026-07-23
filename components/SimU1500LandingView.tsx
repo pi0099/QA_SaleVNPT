@@ -5,7 +5,6 @@ import FaqAccordion from "@/components/FaqAccordion";
 import LeadForm from "@/components/LeadForm";
 import ServiceAreaScope from "@/components/ServiceAreaScope";
 import ServiceBreadcrumbs from "@/components/ServiceBreadcrumbs";
-import { useCms } from "@/components/cms/CmsProvider";
 import {
   SIM_U1500_HERO_IMAGE,
   SIM_U1500_PATH,
@@ -21,8 +20,17 @@ import {
   simU1500SuitableFor,
   simU1500UsageNotes,
 } from "@/lib/content/sim-u1500-data";
-import { contactFromSite, getZaloRegisterUrl, siteHasPhone } from "@/lib/data";
+import {
+  getZaloRegisterUrl,
+  phoneNumberToTelHref,
+} from "@/lib/data";
 import { trackLeadEvent } from "@/lib/tracking";
+
+type Props = {
+  /** From CMS admin site settings (server-fetched). */
+  phoneNumber: string;
+  zaloBaseUrl: string;
+};
 
 function CheckIcon() {
   return (
@@ -46,10 +54,17 @@ function ContentSection({
   );
 }
 
-export default function SimU1500LandingView() {
-  const { cms } = useCms();
-  const contact = contactFromSite(cms.site);
-  const zaloHref = getZaloRegisterUrl("SIM U1500 VinaPhone 500GB", cms.site.zalo);
+export default function SimU1500LandingView({
+  phoneNumber,
+  zaloBaseUrl,
+}: Props) {
+  const phoneDisplay = phoneNumber.trim();
+  const phoneHref = phoneNumberToTelHref(phoneDisplay);
+  const showPhone = /\d/.test(phoneDisplay);
+  const zaloHref = getZaloRegisterUrl(
+    "SIM U1500 VinaPhone 500GB",
+    zaloBaseUrl,
+  );
 
   return (
     <article className="sim-u1500-landing">
@@ -121,18 +136,18 @@ export default function SimU1500LandingView() {
               Đăng ký ngay
             </a>
           ) : null}
-          {siteHasPhone(cms.site) ? (
+          {showPhone ? (
             <a
-              href={contact.phone}
+              href={phoneHref}
               onClick={() =>
                 trackLeadEvent("phone_click", {
                   label: "SIM U1500 landing",
-                  destination: contact.phone,
+                  destination: phoneHref,
                 })
               }
               className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-slate-200 px-6 py-3 text-sm font-bold text-slate-800 hover:border-[#2563eb] hover:text-[#2563eb]"
             >
-              Gọi {contact.phoneDisplay}
+              Gọi {phoneDisplay}
             </a>
           ) : null}
         </div>
