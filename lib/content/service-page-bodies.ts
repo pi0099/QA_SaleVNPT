@@ -130,7 +130,8 @@ export const simRegistrationHtml = `
   <li><strong>Ước lượng mức dùng data</strong> — GB/ngày, có hay livestream, nhà đã có WiFi chưa.</li>
   <li><strong>Chọn gói YOLO / MAX / eSIM</strong> — Theo bảng 5G trên trang chủ; tôi giải thích từng mức.</li>
   <li><strong>Nhận SIM hoặc eSIM</strong> — SIM vật lý giao tận nơi tùy khu vực; eSIM qua QR.</li>
-  <li><strong>Kích hoạt &amp; APN</strong> — Hướng dẫn cài APN nếu cần; xem <a href="/news/apn-5g-vnpt">hướng dẫn APN 5G</a>.</li>
+  <li><strong>Kích hoạt &amp; APN</strong> — Hướng dẫn cài APN nếu cần; xem <a href="/news/apn-5g-vnpt">hướng dẫn APN 5G</a>. Đổi máy mới: <a href="/news/kich-hoat-sim-khi-doi-dien-thoai-vinaphone">xác thực khi đổi điện thoại</a>.</li>
+  <li><strong>SIM chính chủ</strong> — Chuẩn hóa thông tin theo quy định 2026; xem <a href="/news/cach-xac-nhan-sim-chinh-chu-vinaphone">cách xác nhận SIM chính chủ</a>.</li>
 </ol>
 `;
 
@@ -152,6 +153,9 @@ export const simDetailHtml = `
 
 <h3>Đổi SIM 4G lên 5G</h3>
 <p>SIM 4G đời cũ có thể cần đổi USIM mới để dùng 5G. Mang SIM/quầy hoặc gửi ảnh SIM qua Zalo để tôi kiểm tra trước. Điện thoại không hỗ trợ 5G thì đổi SIM vẫn chỉ dùng 4G — không lỗi, chỉ không tận dụng được 5G.</p>
+
+<h3>Đổi máy và SIM chính chủ</h3>
+<p>Cắm SIM sang điện thoại mới cần xác thực khuôn mặt theo quy định 2026 — xem <a href="/news/kich-hoat-sim-khi-doi-dien-thoai-vinaphone">kích hoạt SIM khi đổi điện thoại</a>. Kiểm tra / chuẩn hóa thông tin thuê bao: <a href="/news/cach-xac-nhan-sim-chinh-chu-vinaphone">cách xác nhận SIM chính chủ</a>.</p>
 
 <h3>APN và khắc phục sự cố</h3>
 <p>Sau khi lắp SIM mới, đôi khi cần cấu hình APN đúng. Nếu data chập chờn: kiểm tra vùng phủ, chế độ mạng trên máy, gói cước còn hạn. Chi tiết <a href="/news/apn-5g-vnpt">cài APN 5G VNPT</a> và <a href="/news/goi-5g-vnpt-nao-phu-hop">gói 5G nào phù hợp</a>.</p>

@@ -297,6 +297,40 @@ const post20Faqs: ServiceFaq[] = [
   }
 ];
 
+const post21Body = `<p>Bạn vừa mua máy mới, rút SIM VinaPhone từ máy cũ cắm sang — sóng có, data có, nhưng vài phút sau điện thoại báo cần xác thực khuôn mặt hoặc bị khóa gọi đi? Từ giữa năm 2026 đây không còn chuyện “hiếm”. Tôi hướng dẫn checklist kích hoạt / xác thực SIM khi đổi sang điện thoại khác để bạn không bị cắt liên lạc giữa đường.</p><h2>Vì sao đổi máy lại phải “kích hoạt” lại?</h2><p>Với SIM vật lý, cắm sang máy khác thường vẫn nhận sóng ngay. Tuy nhiên theo Thông tư 08/2026/TT-BKHCN (áp dụng bổ sung từ 15/06/2026 với thay đổi thiết bị đầu cuối), nhà mạng phát hiện số thuê bao chạy trên IMEI/thiết bị mới sẽ yêu cầu chủ thuê bao xác thực sinh trắc học khuôn mặt. Đây chính là bước “kích hoạt an toàn” sau khi đổi máy — không phải đăng ký số mới.</p><p>VinaPhone thường gửi tin nhắn flash và SMS nhắc xác thực. Thời gian vàng: hoàn tất trong khoảng tối đa 2 giờ kể từ khi hệ thống phát hiện đổi thiết bị. Quá hạn có thể bị tạm dừng chiều đi (gọi/SMS đi), trong khi vẫn nhận cuộc gọi đến và dùng Internet/Data.</p><h2>Checklist trước khi rút SIM sang máy mới</h2><ol><li>Cài sẵn app <strong>My VNPT</strong> trên máy mới (App Store / CH Play) và đăng nhập bằng số VinaPhone của bạn.</li><li>Chuẩn bị <strong>CCCD gắn chip</strong> (bản gốc) và đảm bảo khuôn mặt khớp ảnh trên giấy tờ — ánh sáng đủ, không đeo khẩu trang khi quét.</li><li>Nếu đã có <strong>VNeID mức 2</strong>, càng thuận lợi khi liên kết xác thực trên My VNPT.</li><li>Backup danh bạ, ảnh quan trọng trên máy cũ trước khi reset hoặc bán máy.</li><li>Với <strong>eSIM</strong>: đừng chỉ rút — cần hủy/cấp lại profile; mang CCCD ra quầy hoặc nhờ hỗ trợ cấp QR mới rồi quét trên máy mới.</li></ol><h2>Cách xác thực trên máy mới qua My VNPT (khuyên dùng)</h2><ol><li>Cắm SIM (hoặc kích hoạt eSIM) trên điện thoại mới, bật data hoặc dùng WiFi.</li><li>Mở <strong>My VNPT</strong> → đăng nhập bằng số thuê bao đang dùng.</li><li>Khi có banner / mục yêu cầu xác thực khuôn mặt hoặc thông tin thuê bao, chọn <strong>Thực hiện ngay</strong>.</li><li>Nhập OTP gửi về số điện thoại (máy mới phải nhận được SMS).</li><li>Làm theo hướng dẫn: chụp chân dung / quét khuôn mặt, đối chiếu dữ liệu dân cư.</li><li>Ký xác nhận điện tử nếu app yêu cầu, chờ thông báo thành công.</li><li>Thử gọi đi 1 cuộc và gửi SMS — nếu được là đã mở khóa chiều đi.</li></ol><p>Menu trong app có thể đổi theo phiên bản. Không thấy banner: vào mục Thông tin thuê bao / Xác thực thông tin và làm theo các bước trên màn hình. Gặp lỗi camera hoặc “không khớp khuôn mặt”, thử lại nơi sáng, bỏ kính râm/khẩu trang, hoặc mang CCCD ra điểm giao dịch VinaPhone.</p><h2>Cách 2: Xác thực tại quầy VinaPhone</h2><p>Phù hợp người lớn tuổi, máy không quét được khuôn mặt, hoặc app báo lỗi liên tục. Mang CCCD gắn chip + điện thoại đang dùng SIM. Nhân viên hỗ trợ xác thực trực tiếp, thường miễn phí theo hướng dẫn nhà mạng. Tôi hay chỉ khách Quận 12 / TP.HCM quầy gần nhất khi remote không xong trong 15 phút.</p><h2>Sau khi đổi máy — kiểm tra data và APN</h2><p>Xác thực xong nhưng lướt web không được? Thường do APN hoặc chế độ mạng. Restart máy, tắt/bật chế độ máy bay, kiểm tra gói data còn hạn. Android hay cần cài APN VNPT thủ công — xem bài hướng dẫn APN 5G VNPT trên site. iPhone thường tự nhận APN.</p><ul><li>Biểu tượng 4G/5G hiện, tắt WiFi vẫn vào được Google/Zalo.</li><li>Gọi đi và nhận cuộc gọi đều OK.</li><li>My VNPT đăng nhập được, gói cước hiển thị đúng số.</li></ul><h2>Lỗi thường gặp khi đổi SIM sang máy khác</h2><ul><li><strong>Chỉ nhận cuộc gọi, không gọi đi:</strong> chưa xác thực khuôn mặt hoặc quá 2 giờ — mở My VNPT làm ngay hoặc ra quầy.</li><li><strong>Không nhận OTP:</strong> đợi sóng ổn định, tắt WiFi Calling tạm thời, hoặc dùng WiFi + nhờ quầy xác thực offline.</li><li><strong>Máy mới không có NFC / camera lỗi:</strong> ra điểm giao dịch thay vì cố quét chip tại nhà.</li><li><strong>eSIM máy cũ còn active:</strong> cần hủy profile cũ trước khi kích hoạt QR trên máy mới — không “copy” eSIM như rút thẻ nhựa.</li><li><strong>SIM chính chủ người khác:</strong> chủ thuê bao phải tự xác thực; người mượn máy không thay thế được nếu không đúng dữ liệu sinh trắc.</li></ul><h2>Đổi máy nhưng giữ cả 2 điện thoại?</h2><p>Nếu bạn tháo SIM qua lại giữa 2 máy thường xuyên, mỗi lần hệ thống coi là đổi thiết bị có thể lại yêu cầu xác thực. Cân nhắc dịch vụ MultiSIM (SIM phụ cùng số) nếu thực sự cần 2 máy cùng lúc — tránh rút lắp liên tục. Tôi tư vấn case này khi khách vừa dùng máy công việc vừa máy cá nhân.</p><h2>Tóm tắt nhanh</h2><p>Cắm SIM sang máy mới → mở My VNPT → xác thực khuôn mặt trong ~2 giờ → test gọi và data. Đã chính chủ từ trước vẫn phải làm bước này khi đổi thiết bị. eSIM thì thêm bước cấp QR mới. Gặp kẹt, chụp màn hình lỗi gửi tôi qua Zalo — tôi hỗ trợ hướng dẫn remote hoặc chỉ quầy gần khu vực bạn ở TP.HCM.</p>`;
+
+const post21Faqs: ServiceFaq[] = [
+  {
+    "question": "SIM đã chính chủ rồi có cần xác thực khi đổi máy không?",
+    "answer": "Có. Theo quy định từ 15/06/2026, đổi sang thiết bị đầu cuối mới vẫn bắt buộc xác thực sinh trắc học khuôn mặt dù SIM đã đăng ký chính chủ trước đó."
+  },
+  {
+    "question": "Không xác thực trong 2 giờ thì bị gì?",
+    "answer": "Thuê bao có thể bị khóa chiều đi (không gọi/SMS đi được). Vẫn nhận cuộc gọi, tin nhắn đến và dùng data. Xác thực xong thường mở lại ngay."
+  },
+  {
+    "question": "Đổi eSIM sang máy mới có giống SIM vật lý không?",
+    "answer": "eSIM cần cấp QR mới (thường tại quầy hoặc qua hỗ trợ VNPT), không rút thẻ như SIM nhựa. Sau khi gắn eSIM trên máy mới vẫn phải xác thực khuôn mặt như đổi thiết bị."
+  }
+];
+
+const post22Body = `<p>“SIM của tôi đã chính chủ chưa?” là câu khách hỏi tôi gần như mỗi tuần — nhất là khi nhận SMS từ nhà mạng nhắc chuẩn hóa thông tin. Từ 15/04/2026, thuê bao di động cần xác thực thông tin với Cơ sở dữ liệu quốc gia về dân cư. Bài này tôi hướng dẫn cách xác nhận SIM chính chủ VinaPhone ngay tại nhà qua My VNPT / VNeID, và khi nào nên ra quầy.</p><h2>SIM chính chủ nghĩa là gì trong 2026?</h2><p>Không chỉ là “đăng ký đúng tên trên giấy tờ cũ”. Theo quy định mới, mỗi thuê bao cần khớp các trường thông tin cốt lõi với dữ liệu dân cư, thường gồm: số định danh cá nhân (CCCD), họ tên, ngày tháng năm sinh, và dữ liệu sinh trắc học ảnh khuôn mặt. Mục tiêu: giảm SIM rác, hạn chế mạo danh và gắn đúng chủ thể với từng số.</p><p>Nếu thông tin không khớp hoặc chưa xác thực theo lộ trình, thuê bao có thể bị hạn chế dịch vụ theo mức độ: khóa một chiều → khóa hai chiều → chấm dứt hợp đồng / thu hồi số. Vì vậy nên chủ động kiểm tra trên app thay vì chờ đến lúc không gọi được.</p><h2>Hai mốc thời gian cần nhớ</h2><ul><li><strong>Từ 15/04/2026:</strong> triển khai xác thực thông tin thuê bao diện rộng.</li><li><strong>Từ 15/06/2026:</strong> bổ sung bắt buộc xác thực sinh trắc khi <em>thay đổi thiết bị đầu cuối</em> (đổi máy / đổi SIM sang máy khác) — xem bài kích hoạt SIM khi đổi điện thoại.</li></ul><p>Hai việc liên quan nhưng khác nhau: (1) chuẩn hóa SIM chính chủ / thông tin thuê bao; (2) xác thực khuôn mặt mỗi lần đổi máy. Làm xong (1) vẫn phải làm (2) khi cắm SIM sang thiết bị mới.</p><h2>Cách 1: Xác thực trên My VNPT liên kết VNeID (nhanh nhất)</h2><p>Áp dụng khi bạn đã có tài khoản định danh điện tử <strong>VNeID mức độ 2</strong>. Các bước tham khảo (menu có thể hơi khác theo bản app):</p><ol><li>Tải / cập nhật <strong>My VNPT</strong>, đăng nhập bằng số VinaPhone cần xác thực.</li><li>Vào <strong>Thông tin thuê bao</strong> (hoặc banner Xác thực).</li><li>Chọn <strong>Thực hiện ngay → Xác thực ngay</strong>.</li><li>Nhập mã OTP gửi về số điện thoại.</li><li>Chọn hình thức <strong>Liên kết ứng dụng VNeID</strong>.</li><li>Chụp giấy tờ / chân dung theo hướng dẫn (nếu app yêu cầu).</li><li>Mở VNeID để liên kết và xác nhận thông tin.</li><li>Quay lại My VNPT, ký phiếu xác nhận điện tử nếu có.</li><li>Chờ thông báo xác thực thành công — chụp màn hình lưu lại.</li></ol><h2>Cách 2: Quét CCCD gắn chip bằng NFC trên My VNPT</h2><p>Chưa có VNeID mức 2 hoặc muốn xác thực bằng chip CCCD: sau bước OTP, chọn <strong>Quét CCCD gắn chip</strong>. Chụp mặt trước/sau thẻ và ảnh chân dung, áp sát CCCD vào mặt sau điện thoại (vùng NFC — thường gần camera sau). Giữ yên đến khi đọc chip thành công, rồi ký xác nhận trên app.</p><p>Mẹo: tháo ốp dày, đặt thẻ sát đúng vùng NFC, thử xoay nhẹ thẻ. iPhone và Android đều làm được nếu máy hỗ trợ NFC. Máy cũ không có NFC → dùng VNeID mức 2 hoặc ra quầy.</p><h2>Cách 3: Xác nhận trên ứng dụng VNeID</h2><p>Một số hướng dẫn nhà mạng cho phép kiểm tra / xác nhận số thuê bao ngay trên VNeID: vào chức năng liên quan số điện thoại trên trang chủ app (sau khi nhập passcode), xem danh sách thuê bao gắn với định danh của bạn. Nếu số chưa khớp hoặc thiếu, hoàn tất theo gợi ý hoặc chuyển sang My VNPT / quầy để chuẩn hóa.</p><h2>Cách 4: Tại điểm giao dịch</h2><p>Mang CCCD gắn chip đến cửa hàng / điểm giao dịch VinaPhone (và một số điểm hỗ trợ theo danh sách nhà mạng công bố từng thời điểm). Nhân viên hỗ trợ xác thực trực tiếp — phù hợp người lớn tuổi hoặc khi app liên tục báo lỗi. Tôi khuyên đi giờ hành chính, tránh cuối tháng đông khách.</p><h2>Làm sao biết SIM đã chính chủ / đã xác thực?</h2><ul><li>My VNPT không còn banner nhắc xác thực; mục thông tin thuê bao hiển thị trạng thái đã xác thực / khớp dữ liệu.</li><li>Họ tên và số định danh trên app khớp CCCD của bạn (không phải tên người thân nếu bạn là chủ thuê bao).</li><li>Nhận cuộc gọi/SMS đi bình thường, không bị khóa một chiều vì lý do chuẩn hóa thông tin.</li><li>Với nhiều số trên cùng một người: số thứ hai trở đi có thể xác thực qua OTP hoặc video theo hướng dẫn — làm lần lượt từng số.</li></ul><h2>Cảnh báo lừa đảo liên quan “làm chính chủ”</h2><p>Không cung cấp OTP, ảnh CCCD, mã VNeID cho người lạ trên Zalo/Facebook dù họ tự xưng nhân viên VNPT. Xác thực chỉ làm trên app chính thức hoặc tại điểm giao dịch. Tôi không bao giờ xin mật khẩu VNeID của khách — chỉ hướng dẫn bạn tự thao tác hoặc ngồi cạnh hỗ trợ khi bạn đồng ý.</p><h2>Tóm tắt</h2><p>Cách xác nhận SIM chính chủ VinaPhone 2026: mở My VNPT → xác thực bằng VNeID mức 2 hoặc quét chip CCCD → kiểm tra trạng thái thành công. Song song, nhớ quy định xác thực khuôn mặt khi đổi máy từ 15/06/2026. Cần hỗ trợ từng bước, nhắn tôi model máy + ảnh màn hình My VNPT (che bớt số định danh nếu muốn) — tôi hỗ trợ khách TP.HCM / Quận 12 hướng dẫn remote trong giờ hành chính.</p>`;
+
+const post22Faqs: ServiceFaq[] = [
+  {
+    "question": "SIM đã đăng ký tên mình từ trước có phải xác thực lại không?",
+    "answer": "Nếu đã chuẩn hóa khớp dữ liệu dân cư (ví dụ từng xác thực qua VNeID mức 2 / quét chip CCCD theo hướng dẫn nhà mạng), nhiều trường hợp không cần làm lại. Khi My VNPT vẫn hiện banner yêu cầu xác thực thì nên hoàn tất để tránh khóa dịch vụ."
+  },
+  {
+    "question": "Xác thực SIM chính chủ có mất phí không?",
+    "answer": "Theo hướng dẫn triển khai của nhà mạng, xác thực thông tin thuê bao qua app hoặc tại điểm giao dịch thường miễn phí. Cảnh giác nếu ai đó đòi phí “làm chính chủ nhanh” qua Zalo lạ."
+  },
+  {
+    "question": "Đang ở nước ngoài xác thực được không?",
+    "answer": "Có thể xác thực từ xa qua My VNPT kết hợp CCCD gắn chip (NFC) theo hướng dẫn VinaPhone. Nếu máy không đọc chip được, nhờ người thân mang CCCD và ủy quyền theo quy định tại quầy trong nước."
+  }
+];
+
 export const posts: Post[] = [
   createPost(1, post1Body, post1Faqs, {
     slug: "bang-gia-lap-wifi-vnpt-2026",
@@ -396,7 +430,7 @@ export const posts: Post[] = [
     seoTitle: "SIM 5G VNPT có cần đổi SIM không?",
     seoDescription: "Có cần đổi SIM để dùng 5G VNPT không? Hướng dẫn kiểm tra.",
     publishedAt: "2026-06-09",
-    relatedPostSlugs: ["esim-vnpt-la-gi"],
+    relatedPostSlugs: ["esim-vnpt-la-gi","kich-hoat-sim-khi-doi-dien-thoai-vinaphone","cach-xac-nhan-sim-chinh-chu-vinaphone"],
   }),
   createPost(10, post10Body, post10Faqs, {
     slug: "esim-vnpt-la-gi",
@@ -429,7 +463,7 @@ export const posts: Post[] = [
     seoTitle: "APN 5G VNPT — cấu hình đúng",
     seoDescription: "Hướng dẫn cấu hình APN 5G VNPT khi mạng data không ổn định.",
     publishedAt: "2026-06-12",
-    relatedPostSlugs: ["sim-5g-vnpt-co-can-doi-sim"],
+    relatedPostSlugs: ["sim-5g-vnpt-co-can-doi-sim","kich-hoat-sim-khi-doi-dien-thoai-vinaphone"],
   }),
   createPost(13, post13Body, post13Faqs, {
     slug: "goi-5g-vnpt-nao-phu-hop",
@@ -518,5 +552,29 @@ export const posts: Post[] = [
     seoDescription: "Internet gia đình hay tự mất rồi có lại? Nguyên nhân và cách khắc phúc.",
     publishedAt: "2026-06-20",
     relatedPostSlugs: ["wifi-yeu-phai-lam-gi","speedtest-cao-nhung-video-van-lag"],
+  }),
+  createPost(21, post21Body, post21Faqs, {
+    slug: "kich-hoat-sim-khi-doi-dien-thoai-vinaphone",
+    title: "Kích hoạt SIM khi đổi sang điện thoại khác — hướng dẫn VinaPhone 2026",
+    excerpt: "Đổi SIM sang máy mới cần xác thực khuôn mặt trong 2 giờ. Checklist My VNPT và khi nào ra quầy.",
+    category: "sim-5g",
+    tags: ["đổi máy","kích hoạt SIM","xác thực khuôn mặt"],
+    seoTitle: "Kích hoạt SIM khi đổi điện thoại VinaPhone 2026",
+    seoDescription: "Hướng dẫn kích hoạt / xác thực SIM VinaPhone khi đổi sang máy mới theo quy định 2026: My VNPT, thời hạn 2 giờ, lỗi thường gặp.",
+    publishedAt: "2026-07-23",
+    relatedPostSlugs: ["cach-xac-nhan-sim-chinh-chu-vinaphone","apn-5g-vnpt","cach-kich-hoat-esim-vnpt"],
+    featured: true,
+  }),
+  createPost(22, post22Body, post22Faqs, {
+    slug: "cach-xac-nhan-sim-chinh-chu-vinaphone",
+    title: "Cách xác nhận SIM chính chủ VinaPhone 2026 (My VNPT & VNeID)",
+    excerpt: "Chuẩn hóa thông tin thuê bao: 4 trường dữ liệu, xác thực qua My VNPT, VNeID hoặc quầy — tránh khóa dịch vụ.",
+    category: "sim-5g",
+    tags: ["SIM chính chủ","xác thực","VNeID","My VNPT"],
+    seoTitle: "Cách xác nhận SIM chính chủ VinaPhone 2026",
+    seoDescription: "Hướng dẫn xác nhận / xác thực SIM chính chủ VinaPhone theo quy định 2026: My VNPT, VNeID mức 2, quét CCCD chip, mốc 15/4 và 15/6.",
+    publishedAt: "2026-07-23",
+    relatedPostSlugs: ["kich-hoat-sim-khi-doi-dien-thoai-vinaphone","sim-5g-vnpt-co-can-doi-sim","esim-vnpt-la-gi"],
+    featured: true,
   })
 ];
